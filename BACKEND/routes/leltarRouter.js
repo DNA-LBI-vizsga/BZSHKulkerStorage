@@ -1,12 +1,14 @@
 const express = require("express")
-const router = express.Router()
-const storage_place = require("../services/leltarStorage")
-const value = require("../services/leltarValue")
-const name = require("../services/leltarName")
-const functions = require("../services/leltarFunctions")
-const users = require("../services/leltarUser")
 const jwt = require("jsonwebtoken")
-require('dotenv').config(); 
+const router = express.Router()
+
+
+const functions = require("../services/leltarFunctions")
+const items = require("../services/leltarItem")
+const name = require("../services/leltarName")
+const storage_place = require("../services/leltarStorage")
+const users = require("../services/leltarUser")
+const value = require("../services/leltarValue")
 
 //GET endpoints
 //storage_place

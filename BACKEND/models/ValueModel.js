@@ -1,5 +1,6 @@
 const { DataTypes } = require("sequelize");
 const { sequelize } = require("../config.js"); 
+
 const Value = sequelize.define('Value', {
     id: {
         type: DataTypes.INTEGER, 

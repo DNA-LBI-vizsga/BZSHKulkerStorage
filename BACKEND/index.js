@@ -1,19 +1,14 @@
-const express = require('express');
 const app = express();
-const leltarRouters = require('./routes/leltarRouter');
 const cors = require('cors');
+const express = require('express');
+const leltarRouters = require('./routes/leltarRouter');
 const sequelize = require('./config.js');
-const { User } = require('./models/UserModel');
-const { ItemName } = require('./models/ItemNameModel');
-const { Value } = require('./models/ValueModel');
-const { StoragePlace } = require('./models/StoragePlaceModel');
-const { Items } = require('./models/ItemsModel');
 
 app.use(express.json())
 
 async function syncDatabase() {
     try {
-        await sequelize.sequelize.sync({ force: true}); // force: false ensures it won't drop existing tables
+        await sequelize.sequelize.sync({ force: false}); // force: false ensures it won't drop existing tables
         console.log('Database synced!');
     } catch (error) {
         console.error('Error syncing database:', error);

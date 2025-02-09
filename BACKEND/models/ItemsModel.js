@@ -1,9 +1,10 @@
 const { DataTypes } = require("sequelize");
+const { sequelize } = require("../config.js");
+
 const {ItemName} = require("../models/ItemNameModel");
-const {Value} = require("../models/ValueModel");
 const {StoragePlace} = require("../models/StoragePlaceModel");
 const {User} = require("../models/UserModel");
-const { sequelize } = require("../config.js"); 
+const {Value} = require("../models/ValueModel");
 
 const Items = sequelize.define('Item', {
     id: {
