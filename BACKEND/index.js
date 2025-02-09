@@ -13,7 +13,7 @@ app.use(express.json())
 
 async function syncDatabase() {
     try {
-        await sequelize.sequelize.sync({ force: false}); // force: false ensures it won't drop existing tables
+        await sequelize.sequelize.sync({ force: true}); // force: false ensures it won't drop existing tables
         console.log('Database synced!');
     } catch (error) {
         console.error('Error syncing database:', error);

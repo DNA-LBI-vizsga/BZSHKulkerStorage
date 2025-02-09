@@ -5,7 +5,7 @@ const StoragePlace = sequelize.define('StoragePlace', {
     id: {
         type: DataTypes.INTEGER, 
         allowNull: false,
-        autoIncrement: true, 
+        autoIncrement: true,
         primaryKey: true
     },
     storage: {

@@ -9,18 +9,17 @@ const User = sequelize.define('User', {
     },
     user_password: {
         type: DataTypes.STRING(60),
-        allowNull: false,
-        defaultValue: "leltarjelszo"
+        allowNull: true
     },
     isAdmin: {
         type: DataTypes.BOOLEAN,
         defaultValue: false,
-        allowNull: false
+        allowNull: true 
     }
 },
     {
         tableName: 'user',
-        timeStamps: false
+        timeStamps: true
     }
 );
 

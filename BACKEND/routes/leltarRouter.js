@@ -1,11 +1,12 @@
 const express = require("express")
 const router = express.Router()
-const db = require("../config.js");
 const storage_place = require("../services/leltarStorage")
 const value = require("../services/leltarValue")
-
 const name = require("../services/leltarName")
-//const user = require("../services/leltarFunctions")
+const functions = require("../services/leltarFunctions")
+const users = require("../services/leltarUser")
+const jwt = require("jsonwebtoken")
+require('dotenv').config(); 
 
 //GET endpoints
 //storage_place
@@ -106,15 +107,37 @@ router.delete("/itemName/:id",
 })
 
 
-// //functions 
-// router.post('/login', async (req, res) => {
-//     const { username, password } = req.body;
-//     const user = await checkPassword(username, password);
-//     if (user) {
-//         res.status(200).json({ message: "Login successful", user });
-//     } else {
-//         res.status(401).json({ message: "Invalid username or password" });
-//     }
-// });
+//functions 
+router.post('/login', async (req, res) => {
+    try {
+        const { name, user_password } = req.body;
+        if (!name || !user_password) {
+            return res.status(400).json({ message: "Missing name or password" });
+        }
+        const user = await functions.checkPassword(name, user_password);
+        if (!user) {
+            return res.status(401).json({ message: "Invalid credentials" });
+        }else{
+            const token = jwt.sign({ id: user.id, isAdmin: user.isAdmin }, process.env.SECRET_KEY, { expiresIn: "4h" });
+
+            return res.status(200).json({token, message: "Login successful" });
+        }
+    
+        
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+});
+
+router.post('/register', async (req, res) => {
+    try {
+        const { name, user_password, isAdmin } = req.body;
+        const user = await users.createUser(name, user_password, isAdmin);
+        console.log("User created:", user);
+        return res.status(201).json({ message: "User created" });
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+});
 
 module.exports = router

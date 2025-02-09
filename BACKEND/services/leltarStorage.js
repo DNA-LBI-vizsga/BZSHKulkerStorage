@@ -12,14 +12,7 @@ async function getPlaces() {
     }
     }
 
-// async function getPlace(id){
-    
-//     const rows= await db.query(
-//         "select * from storage_place where id=?",
-//         [id]
-//     )
-//     return rows?rows[0]:null
-// }
+
 
 async function createPlace(storage_place){
     try{
