@@ -1,6 +1,6 @@
-const app = express();
-const cors = require('cors');
 const express = require('express');
+const cors = require('cors');
+const app = express();
 const leltarRouters = require('./routes/leltarRouter');
 const sequelize = require('./config.js');
 
