@@ -51,7 +51,7 @@ const Items = sequelize.define('Item', {
         allowNull: false,
         unique: true
     },
-    descreption: {
+    description: {
         type: DataTypes.STRING(255),
         allowNull: false
     }

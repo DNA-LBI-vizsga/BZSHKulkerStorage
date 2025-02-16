@@ -11,7 +11,7 @@ async function getUser(){
 }
 
 async function createUser(name, password, isAdmin){
-    const admin = User.findOne({where})
+    
     
     const userPassword = password || 'leltarjelszo';
     try{

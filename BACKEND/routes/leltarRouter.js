@@ -68,6 +68,20 @@ router.post("/itemName",
         }
 })
 
+//item
+router.post("/item/:quantity", 
+    async function(req, res, next){
+        try{
+            const {quantity} = req.params
+            const {item_name_id, value_id, storage_place_id, user_id, description} = req.body
+            res.json(await items.createItem(item_name_id, value_id, storage_place_id, user_id, description, quantity))
+            console.log(req.body);
+        }
+        catch(err){
+            next(err)
+        }
+})
+
 //UPDATE endpoints
 //item_name
 router.put("/itemName/:id",
@@ -76,6 +90,7 @@ router.put("/itemName/:id",
             const {id} = req.params
             const {item} = req.body
             res.json(await name.updateItemName(id, item))
+            
         }
         catch(err){
             next(err)
