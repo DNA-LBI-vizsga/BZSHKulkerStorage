@@ -1,5 +1,9 @@
 const { ItemName } = require("../models/ItemNameModel");
 const { Items } = require("../models/ItemsModel");
+const { Value } = require("../models/ValueModel");
+
+
+Value.hasMany(Items, { foreignKey: 'value_id'})
 
 async function getItems(){
     try {
@@ -26,22 +30,40 @@ async function createItem(item_name_id, value_id, storage_place_id, user_id, des
 
     const latestItem = await Items.findOne({
         where: { item_name_id: item_name_id },
-        order: [['createdAt', 'DESC']],
+        order: [['id', 'DESC']],
     });
 
-    let lastNumber = 0;
+    
+    let lastNumber = 0
+
     if (latestItem) {
         let codeParts = latestItem.product_code.split('-');
         lastNumber = parseInt(codeParts[codeParts.length - 1]);
-    }
+        
+    } else {
+        lastNumber = 0
+    }   
+    
+    const valueForCode = await Items.findOne(
+        {
+            where:{id: value_id},
+            include:{
+                model: Value,
+                attributes: ['id', 'value']
+            }
+        }
+    )
+    console.log(valueForCode)
+    
+    console.log(Items.associations);
+
 
     const newItems = [];
 
     for (let i = 1; i <= quantity; i++) {
-        lastNumber++
         const newNumber = String(lastNumber + i).padStart(4, '0');
         const item_code = `BZSH-${item_name.item}-${newNumber}`;
-
+        
         newItems.push({
             item_name_id,
             value_id,

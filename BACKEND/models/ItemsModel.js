@@ -48,7 +48,7 @@ const Items = sequelize.define('Item', {
     },
     product_code: {
         type:DataTypes.STRING(50),
-        allowNull: false,
+        allowNull: true,
         unique: true
     },
     description: {

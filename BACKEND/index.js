@@ -3,6 +3,7 @@ const cors = require('cors');
 const app = express();
 const leltarRouters = require('./routes/leltarRouter');
 const sequelize = require('./config.js');
+require("./associations/associations.js");
 
 app.use(express.json())
 
