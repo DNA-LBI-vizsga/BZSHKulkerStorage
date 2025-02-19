@@ -1,3 +1,4 @@
+const { Sequelize } = require('sequelize');
 const { ItemName } = require("../models/ItemNameModel");
 const { Items } = require("../models/ItemsModel");
 const { Value } = require("../models/ValueModel");
@@ -27,7 +28,12 @@ async function createItem(item_name_id, value_id, storage_place_id, user_id, des
     
 
     const latestItem = await Items.findOne({
-        where: { item_name_id: item_name_id },
+        where: { 
+            item_name_id: item_name_id,
+            product_code: {
+                [Sequelize.Op.ne]: null
+            }  
+         },
         order: [['id', 'DESC']],
     });
 
