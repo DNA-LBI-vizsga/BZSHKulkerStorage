@@ -24,9 +24,7 @@ async function createItem(item_name_id, value_id, storage_place_id, user_id, des
         attributes: ['item']
     });
 
-    if (!item_name_id || !value_id || !storage_place_id || !user_id || !quantity) {
-        return res.status(400).json({ message: 'Missing required fields' });
-    }
+    
 
     const latestItem = await Items.findOne({
         where: { item_name_id: item_name_id },
@@ -53,28 +51,46 @@ async function createItem(item_name_id, value_id, storage_place_id, user_id, des
             }
         }
     )
-    console.log(valueForCode)
+
     
-    console.log(Items.associations);
 
 
     const newItems = [];
 
-    for (let i = 1; i <= quantity; i++) {
-        const newNumber = String(lastNumber + i).padStart(4, '0');
-        const item_code = `BZSH-${item_name.item}-${newNumber}`;
-        
-        newItems.push({
-            item_name_id,
-            value_id,
-            storage_place_id,
-            user_id,
-            product_code: item_code,
-            description,
-        });
-
-        
+    
+    if(valueForCode){
+        let itemValue = valueForCode.Value.value
+        if (itemValue == "Drága"){
+            for (let i = 1; i <= quantity; i++) {
+                const newNumber = String(lastNumber + i).padStart(4, '0');
+                const item_code = `BZSH-${item_name.item}-${newNumber}`;
+                
+                newItems.push({
+                    item_name_id,
+                    value_id,
+                    storage_place_id,
+                    user_id,
+                    product_code: item_code,
+                    description,
+                });
+            }
+        }else{
+            for (let i = 1; i <= quantity; i++) {
+            newItems.push({
+                item_name_id,
+                value_id,
+                storage_place_id,
+                user_id,
+                description,
+            });
+        }   
     }
+    
+    // if(valueForCode){
+    //     let itemValue = valueForCode.Value.value
+
+    
+
 
     try{
         await Items.bulkCreate(newItems);
@@ -85,7 +101,7 @@ async function createItem(item_name_id, value_id, storage_place_id, user_id, des
     }
 }
 
-
+}
 
 
 

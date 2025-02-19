@@ -50,6 +50,9 @@ router.post("/storagePlace",
     async function(req, res, next){
         try{
             const {storage} = req.body
+            if (!storage) {
+                return res.status(400).json({ message: 'Missing storage field' });
+            }
             res.json(await storage_place.createPlace(storage))
         }
         catch(err){
@@ -61,6 +64,9 @@ router.post("/itemName",
     async function(req, res, next){
         try{
             const {item} = req.body
+            if (!item) {
+                return res.status(400).json({ message: 'Missing item field' });
+            }
             res.json(await name.createItemName(item))
         }
         catch(err){
@@ -74,8 +80,11 @@ router.post("/item/:quantity",
         try{
             const {quantity} = req.params
             const {item_name_id, value_id, storage_place_id, user_id, description} = req.body
+            if (!item_name_id || !value_id || !storage_place_id || !user_id || !quantity) {
+                return res.status(400).json({ message: 'Missing required fields' });
+            }
             res.json(await items.createItem(item_name_id, value_id, storage_place_id, user_id, description, quantity))
-            console.log(req.body);
+            
         }
         catch(err){
             next(err)
@@ -131,6 +140,7 @@ router.post('/login', async (req, res) => {
         if (!name || !user_password) {
             return res.status(400).json({ message: "Missing name or password" });
         }
+        
         const user = await functions.checkPassword(name, user_password);
         if (!user) {
             return res.status(401).json({ message: "Invalid credentials" });
@@ -149,8 +159,10 @@ router.post('/login', async (req, res) => {
 router.post('/register', async (req, res) => {
     try {
         const { name, user_password, isAdmin } = req.body;
+        if (!name || name=="" || !isAdmin) {
+            return res.status(400).json({ message: 'Missing required fields' });
+        }
         const user = await users.createUser(name, user_password, isAdmin);
-        console.log("User created:", user);
         return res.status(201).json({ message: "User created" });
     } catch (error) {
         return res.status(500).json({ message: error.message });
