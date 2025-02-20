@@ -1,5 +1,8 @@
 const bcrypt = require("bcrypt");
-const {User} = require("../models/UserModel");
+const jwt = require("jsonwebtoken");
+const { User } = require("../models/UserModel");
+require('dotenv').config(); 
+
 
 
 
@@ -20,6 +23,36 @@ async function checkPassword(name, password){
     }
 }
 
+async function validateToken(token) {
+    if(token.split('.').length !=3){
+        throw new Error('Invalid token')
+    }
+
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.split('-').join('+').split('_').join('/');
+    const payload = JSON.parse(Buffer.from(base64, 'base64').toString('utf8'));
+
+
+
+    jwt.verify(token, process.env.SECRET_KEY, (err) =>{
+            if(err){
+                throw new Error('Invalid token signature');
+            }
+        }
+    )
+
+    const expDate = payload.exp
+
+    if (Date.now()>=expDate*1000){
+        throw new Error('Token has expired');
+    }
+    
+    
+    
+}
+    
+
+
 
 
 
@@ -30,5 +63,7 @@ async function checkPassword(name, password){
 
 
 module.exports = {    
-    checkPassword
+    checkPassword,
+    validateToken,
+    validateAdmin
 }

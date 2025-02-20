@@ -156,10 +156,18 @@ router.post('/login', async (req, res) => {
     }
 });
 
-router.post('/register', async (req, res) => {
+router.post('/register',  async (req, res) => {
+    const authHead = req.headers['authorization']
+    if(!authHead){
+        return res.status(401).json({ message: "Authorization header missing"})
+    }
+    const token = authHead.split(' ')[1]
+    
+    
     try {
+        functions.validateToken(token)
         const { name, user_password, isAdmin } = req.body;
-        if (!name || name=="" || !isAdmin) {
+        if (!name || name=="" || isAdmin==null) {
             return res.status(400).json({ message: 'Missing required fields' });
         }
         const user = await users.createUser(name, user_password, isAdmin);
