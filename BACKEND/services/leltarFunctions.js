@@ -24,31 +24,31 @@ async function checkPassword(name, password){
 }
 
 async function validateToken(token) {
-    if(token.split('.').length !=3){
-        throw new Error('Invalid token')
+    if (token.split('.').length !== 3) {
+        throw new Error('Invalid token format');
     }
 
-    const base64Url = token.split('.')[1];
-    const base64 = base64Url.split('-').join('+').split('_').join('/');
-    const payload = JSON.parse(Buffer.from(base64, 'base64').toString('utf8'));
-
-
-
-    jwt.verify(token, process.env.SECRET_KEY, (err) =>{
-            if(err){
-                throw new Error('Invalid token signature');
-            }
-        }
-    )
-
-    const expDate = payload.exp
-
-    if (Date.now()>=expDate*1000){
-        throw new Error('Token has expired');
+    try {
+        
+        jwt.verify(token, process.env.SECRET_KEY);
+    } catch (err) {
+        throw new Error('Invalid token: ' + err.message);
     }
     
     
     
+}
+
+async function validateAdmin(token){
+    const payload = jwt.verify(token, process.env.SECRET_KEY)
+
+
+    const user = await User.findOne({where: { id: payload.id} }) 
+
+    if(user.isAdmin!=true){
+        console.log(user.isAdmin)
+        throw new Error("Access denied");
+    }
 }
     
 

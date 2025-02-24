@@ -33,7 +33,7 @@ async function createItem(item_name_id, value_id, storage_place_id, user_id, des
             product_code: {
                 [Sequelize.Op.ne]: null
             }  
-         },
+        },
         order: [['id', 'DESC']],
     });
 

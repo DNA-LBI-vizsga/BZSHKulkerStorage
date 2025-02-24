@@ -158,6 +158,7 @@ router.post('/login', async (req, res) => {
 
 router.post('/register',  async (req, res) => {
     const authHead = req.headers['authorization']
+    
     if(!authHead){
         return res.status(401).json({ message: "Authorization header missing"})
     }
@@ -165,7 +166,9 @@ router.post('/register',  async (req, res) => {
     
     
     try {
-        functions.validateToken(token)
+        await functions.validateToken(token)
+        await functions.validateAdmin(token)
+        
         const { name, user_password, isAdmin } = req.body;
         if (!name || name=="" || isAdmin==null) {
             return res.status(400).json({ message: 'Missing required fields' });
