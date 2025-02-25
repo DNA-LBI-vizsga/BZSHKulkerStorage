@@ -2,9 +2,8 @@ const { Sequelize } = require('sequelize');
 const { ItemName } = require("../models/ItemNameModel");
 const { Items } = require("../models/ItemsModel");
 const { Value } = require("../models/ValueModel");
+const { StoragePlace } = require("../models/StoragePlaceModel");
 
-
-Value.hasMany(Items, { foreignKey: 'value_id'})
 
 async function getItems(){
     try {
@@ -18,18 +17,17 @@ async function getItems(){
 
 
 
-async function createItem(item_name_id, value_id, storage_place_id, user_id, description, quantity){
+async function createItem(item_name, value, storage_place, user_id, description, quantity){
     
-    const item_name = await ItemName.findOne({
-        where: { id: item_name_id },
-        attributes: ['item']
-    });
+    const itemVal = await Value.findOne({ where:{ value: value}})
+    const itemStorage = await StoragePlace.findOne({ where:{ storage: storage_place}})
+    const itemName = await ItemName.findOne({ where:{ item: item_name}})
 
     
 
     const latestItem = await Items.findOne({
         where: { 
-            item_name_id: item_name_id,
+            item_name_id: itemName.id,
             product_code: {
                 [Sequelize.Op.ne]: null
             }  
@@ -50,7 +48,7 @@ async function createItem(item_name_id, value_id, storage_place_id, user_id, des
     
     const valueForCode = await Items.findOne(
         {
-            where:{id: value_id},
+            where:{id: itemVal.id},
             include:{
                 model: Value,
                 attributes: ['id', 'value']
@@ -59,22 +57,22 @@ async function createItem(item_name_id, value_id, storage_place_id, user_id, des
     )
 
     
-
-
-    const newItems = [];
-
     
+    const newItems = [];
+    
+    
+
     if(valueForCode){
         let itemValue = valueForCode.Value.value
         if (itemValue == "Drága"){
             for (let i = 1; i <= quantity; i++) {
                 const newNumber = String(lastNumber + i).padStart(4, '0');
-                const item_code = `BZSH-${item_name.item}-${newNumber}`;
+                const item_code = `BZSH-${itemName.item}-${newNumber}`;
                 
                 newItems.push({
-                    item_name_id,
-                    value_id,
-                    storage_place_id,
+                    item_name_id: itemName.id,
+                    value_id: itemVal.id,
+                    storage_place_id: itemStorage.id,
                     user_id,
                     product_code: item_code,
                     description,
@@ -83,9 +81,9 @@ async function createItem(item_name_id, value_id, storage_place_id, user_id, des
         }else{
             for (let i = 1; i <= quantity; i++) {
             newItems.push({
-                item_name_id,
-                value_id,
-                storage_place_id,
+                item_name_id: itemName.id,
+                value_id: itemVal.id,
+                storage_place_id: itemStorage.id,
                 user_id,
                 description,
             });

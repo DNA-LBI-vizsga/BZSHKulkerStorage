@@ -94,11 +94,11 @@ router.post("/item/:quantity",
     async function(req, res, next){
         try{
             const {quantity} = req.params
-            const {item_name_id, value_id, storage_place_id, user_id, description} = req.body
-            if (!item_name_id || !value_id || !storage_place_id || !user_id || !quantity) {
+            const {item_name, value, storage_place, user_id, description} = req.body
+            if (!item_name || !value || !storage_place || !user_id || !quantity) {
                 return res.status(400).json({ message: 'Missing required fields' });
             }
-            res.json(await items.createItem(item_name_id, value_id, storage_place_id, user_id, description, quantity))
+            res.json(await items.createItem(item_name, value, storage_place, user_id, description, quantity))
             
         }
         catch(err){
