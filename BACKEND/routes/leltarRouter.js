@@ -8,7 +8,7 @@ const items = require("../services/leltarItem")
 const name = require("../services/leltarName")
 const storage_place = require("../services/leltarStorage")
 const users = require("../services/leltarUser")
-const value = require("../services/leltarValue")
+const values = require("../services/leltarValue")
 
 //GET endpoints
 //storage_place
@@ -23,10 +23,10 @@ router.get("/storagePlace",
 })
 
 //value
-router.get("/values", 
+router.get("/value", 
     async function(req, res, next){
         try{
-            res.json(await value.getValues())
+            res.json(await values.getValues())
         }
         catch(err){
             next(err)
@@ -68,6 +68,21 @@ router.post("/itemName",
                 return res.status(400).json({ message: 'Missing item field' });
             }
             res.json(await name.createItemName(item))
+        }
+        catch(err){
+            next(err)
+        }
+})
+
+//value
+router.post("/value", 
+    async function(req, res, next){
+        try{
+            const {value} = req.body
+            if (!value) {
+                return res.status(400).json({ message: 'Missing value field' });
+            }
+            res.json(await values.createValue(value))
         }
         catch(err){
             next(err)
