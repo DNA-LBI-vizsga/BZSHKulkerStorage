@@ -91,10 +91,22 @@ router.post("/value",
 
 //item
 router.post("/item/:quantity", 
+
     async function(req, res, next){
+        const authHead = req.headers['authorization'] 
+        if(!authHead){
+            return res.status(401).json({ message: "Authorization header missing"})
+        }
+        const token = authHead.split(' ')[1]
         try{
+
+            await functions.validateToken(token)
+
+            const payload = jwt.verify(token, process.env.SECRET_KEY)
+            const user_id = payload.id
+            console.log(payload.id)
             const {quantity} = req.params
-            const {item_name, value, storage_place, user_id, description} = req.body
+            const {item_name, value, storage_place, description} = req.body
             if (!item_name || !value || !storage_place || !user_id || !quantity) {
                 return res.status(400).json({ message: 'Missing required fields' });
             }
