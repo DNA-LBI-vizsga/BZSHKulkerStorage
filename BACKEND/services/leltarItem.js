@@ -1,4 +1,5 @@
-const { Sequelize } = require('sequelize');
+const Sequelize = require('sequelize');
+const { Op } = Sequelize
 const { ItemName } = require("../models/ItemNameModel");
 const { Items } = require("../models/ItemsModel");
 const { Value } = require("../models/ValueModel");
@@ -29,7 +30,7 @@ async function createItem(item_name, value, storage_place, user_id, description,
         where: { 
             item_name_id: itemName.id,
             product_code: {
-                [Sequelize.Op.ne]: null
+                [Op.ne]: null
             }  
         },
         order: [['id', 'DESC']],
@@ -46,25 +47,19 @@ async function createItem(item_name, value, storage_place, user_id, description,
         lastNumber = 0
     }   
     
-    const valueForCode = await Items.findOne(
-        {
-            where:{id: itemVal.id},
-            include:{
-                model: Value,
-                attributes: ['id', 'value']
-            }
-        }
-    )
-
     
+
+
+
     
     const newItems = [];
     
-    
 
-    if(valueForCode){
-        let itemValue = valueForCode.Value.value
-        if (itemValue == "Drága"){
+
+
+  
+        console.log(itemVal.value)
+        if (itemVal.value == "Drága"){
             for (let i = 1; i <= quantity; i++) {
                 const newNumber = String(lastNumber + i).padStart(4, '0');
                 const item_code = `BZSH-${itemName.item}-${newNumber}`;
@@ -103,7 +98,7 @@ async function createItem(item_name, value, storage_place, user_id, description,
         console.error(error);
         return { message: 'Error adding items' };
     }
-}
+
 
 }
 
