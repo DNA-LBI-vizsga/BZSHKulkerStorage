@@ -92,6 +92,25 @@ async function createCode(lastNumber, item, i) {
     return item_code
 }
 
+async function tokenChecker(authHead, res) {
+    if (!authHead) {
+        return res.status(401).json({ message: "Authorization header missing" });
+    }
+
+    const token = authHead.split(' ')[1];
+    if (!token) {
+        return res.status(401).json({ message: "Token missing in authorization header" });
+    }
+    
+    
+    return false; 
+}
+
+async function checkRequiredFields(requiredField, res) {
+    if (!requiredField || requiredField == "") {
+        return res.status(400).json({ message: `Missing ${requiredField} field` });
+    }
+}
 
 
 
@@ -107,5 +126,7 @@ module.exports = {
     validateAdmin,
     getLastNumber, 
     latestItemQuery,
-    createCode
+    createCode,
+    tokenChecker,
+    checkRequiredFields
 }

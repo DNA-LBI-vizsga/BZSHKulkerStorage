@@ -14,7 +14,14 @@ const values = require("../services/leltarValue")
 //storage_place
 router.get("/storagePlace", 
     async function(req, res, next){
+        const authHead = req.headers['authorization'] 
+
+        const tokenError = await functions.tokenChecker(authHead, res)
+        if(tokenError) return
+        
+        const token = authHead.split(' ')[1]
         try{
+            await functions.validateToken(token)
             res.json(await storage_place.getPlaces())
         }
         catch(err){
@@ -25,7 +32,14 @@ router.get("/storagePlace",
 //value
 router.get("/value", 
     async function(req, res, next){
+        const authHead = req.headers['authorization'] 
+
+        const tokenError = await functions.tokenChecker(authHead, res)
+        if(tokenError) return
+        
+        const token = authHead.split(' ')[1]
         try{
+            await functions.validateToken(token)
             res.json(await values.getValues())
         }
         catch(err){
@@ -36,7 +50,14 @@ router.get("/value",
 //item_name
 router.get("/itemName", 
     async function(req, res, next){
+        const authHead = req.headers['authorization'] 
+
+        const tokenError = await functions.tokenChecker(authHead, res)
+        if(tokenError) return
+        
+        const token = authHead.split(' ')[1]
         try{
+            await functions.validateToken(token)
             res.json(await name.getItemNames())
         }
         catch(err){
@@ -48,11 +69,17 @@ router.get("/itemName",
 //storage_place
 router.post("/storagePlace",
     async function(req, res, next){
+        const authHead = req.headers['authorization'] 
+
+        const tokenError = await functions.tokenChecker(authHead, res)
+        if(tokenError) return
+        
+        const token = authHead.split(' ')[1]
         try{
+            await functions.validateToken(token)
+            await functions.validateAdmin(token)
             const {storage} = req.body
-            if (!storage) {
-                return res.status(400).json({ message: 'Missing storage field' });
-            }
+            functions.checkRequiredFields(storage, res)
             res.json(await storage_place.createPlace(storage))
         }
         catch(err){
@@ -62,11 +89,17 @@ router.post("/storagePlace",
 //item_name
 router.post("/itemName", 
     async function(req, res, next){
+        const authHead = req.headers['authorization'] 
+
+        const tokenError = await functions.tokenChecker(authHead, res)
+        if(tokenError) return
+        
+        const token = authHead.split(' ')[1]
         try{
+            await functions.validateToken(token)
+            await functions.validateAdmin(token)
             const {item} = req.body
-            if (!item) {
-                return res.status(400).json({ message: 'Missing item field' });
-            }
+            functions.checkRequiredFields(item, res)
             res.json(await name.createItemName(item))
         }
         catch(err){
@@ -77,11 +110,17 @@ router.post("/itemName",
 //value
 router.post("/value", 
     async function(req, res, next){
+        const authHead = req.headers['authorization'] 
+
+        const tokenError = await functions.tokenChecker(authHead, res)
+        if(tokenError) return
+        
+        const token = authHead.split(' ')[1]
         try{
+            await functions.validateToken(token)
+            await functions.validateAdmin(token)
             const {value} = req.body
-            if (!value) {
-                return res.status(400).json({ message: 'Missing value field' });
-            }
+            functions.checkRequiredFields(value, res)
             res.json(await values.createValue(value))
         }
         catch(err){
@@ -94,12 +133,12 @@ router.post("/item/:quantity",
 
     async function(req, res, next){
         const authHead = req.headers['authorization'] 
-        if(!authHead){
-            return res.status(401).json({ message: "Authorization header missing"})
-        }
+
+        const tokenError = await functions.tokenChecker(authHead, res)
+        if(tokenError) return
+        
         const token = authHead.split(' ')[1]
         try{
-
             await functions.validateToken(token)
 
             const payload = jwt.verify(token, process.env.SECRET_KEY)
@@ -122,7 +161,15 @@ router.post("/item/:quantity",
 //item_name
 router.put("/itemName/:id",
     async function(req, res, next){
+        const authHead = req.headers['authorization'] 
+
+        const tokenError = await functions.tokenChecker(authHead, res)
+        if(tokenError) return
+        
+        const token = authHead.split(' ')[1]
         try{
+            await functions.validateToken(token)
+            await functions.validateAdmin(token)
             const {id} = req.params
             const {item} = req.body
             res.json(await name.updateItemName(id, item))
@@ -136,12 +183,14 @@ router.put("/itemName/:id",
 router.put("/item/:id",
     async function (req, res, next) {
         const authHead = req.headers['authorization'] 
-        if(!authHead){
-            return res.status(401).json({ message: "Authorization header missing"})
-        }
+
+        const tokenError = await functions.tokenChecker(authHead, res)
+        if(tokenError) return
+        
         const token = authHead.split(' ')[1]
         try{
             await functions.validateToken(token)
+            await functions.validateAdmin(token)
             const payload = jwt.verify(token, process.env.SECRET_KEY)
             const update_id = payload.id
 
@@ -162,7 +211,15 @@ router.put("/item/:id",
 //storage_place
 router.delete("/storagePlace/:id",
     async function(req, res, next){
+        const authHead = req.headers['authorization'] 
+
+        const tokenError = await functions.tokenChecker(authHead, res)
+        if(tokenError) return
+        
+        const token = authHead.split(' ')[1]
         try{
+            await functions.validateToken(token)
+            await functions.validateAdmin(token)
             const {id} = req.params
             res.json(await storage_place.deletePlace(id))
         }
@@ -173,7 +230,15 @@ router.delete("/storagePlace/:id",
 //item_name
 router.delete("/itemName/:id",
     async function(req, res, next){
+        const authHead = req.headers['authorization'] 
+
+        const tokenError = await functions.tokenChecker(authHead, res)
+        if(tokenError) return
+        
+        const token = authHead.split(' ')[1]
         try{
+            await functions.validateToken(token)
+            await functions.validateAdmin(token)
             const {id} = req.params
             res.json(await name.deleteItemName(id))
         }
@@ -185,7 +250,15 @@ router.delete("/itemName/:id",
 //item
 router.delete("/items/:id",
     async function(req, res, next){
+        const authHead = req.headers['authorization'] 
+
+        const tokenError = await functions.tokenChecker(authHead, res)
+        if(tokenError) return
+        
+        const token = authHead.split(' ')[1]
         try{
+            await functions.validateToken(token)
+            await functions.validateAdmin(token)
             const {id} = req.params
             res.json(await items.deleteItem(id))
         }
@@ -219,12 +292,12 @@ router.post('/login', async (req, res) => {
 });
 
 router.post('/register',  async (req, res) => {
-    // const authHead = req.headers['authorization']
-    
-    // if(!authHead){
-    //     return res.status(401).json({ message: "Authorization header missing"})
-    // }
-    // const token = authHead.split(' ')[1]
+        // const authHead = req.headers['authorization'] 
+
+        // const tokenError = await functions.tokenChecker(authHead, res)
+        // if(tokenError) return
+        
+        // const token = authHead.split(' ')[1]
     
     
     try {
