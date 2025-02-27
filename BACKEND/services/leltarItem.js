@@ -26,15 +26,6 @@ async function createItem(item_name, value, storage_place, user_id, description,
     const itemName = await ItemName.findOne({ where:{ item: item_name}})
 
     
-
-    
-
-    
-    
-    
-    
-    
-    
     const newItems = [];
     
     
