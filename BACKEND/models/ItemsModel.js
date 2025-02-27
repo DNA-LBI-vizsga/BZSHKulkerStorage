@@ -15,36 +15,15 @@ const Items = sequelize.define('Item', {
     },
     item_name_id: {
         type: DataTypes.INTEGER,
-        allowNull: false,
-        references: {
-            model: ItemName, 
-            key: "id"    
-        },
-
+        allowNull: false
     },
     value_id: {
         type: DataTypes.INTEGER,
-        allowNull: false,
-        references: {
-            model: Value, 
-            key: "id"
-        }
+        allowNull: false
     },
     storage_place_id: {
         type: DataTypes.INTEGER,
-        allowNull: false,
-        references: {
-            model: StoragePlace, 
-            key: "id"
-        }
-    },
-    user_id: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        references: {
-            model: User, 
-            key: "id"
-        }
+        allowNull: false
     },
     product_code: {
         type:DataTypes.STRING(50),
@@ -54,6 +33,14 @@ const Items = sequelize.define('Item', {
     description: {
         type: DataTypes.STRING(255),
         allowNull: false
+    },
+    user_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+    },
+    updated_by:{
+        type: DataTypes.INTEGER,
+        allowNull: true
     }
     },  
     {

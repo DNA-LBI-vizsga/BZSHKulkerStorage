@@ -17,6 +17,9 @@ Items.belongsTo(StoragePlace, { foreignKey: 'storage_place_id' });
 User.hasMany(Items, { foreignKey: 'user_id' });
 Items.belongsTo(User, { foreignKey: 'user_id' });
 
+User.hasMany(Items, { foreignKey: 'updated_by' });
+Items.belongsTo(User, { foreignKey: 'updated_by' });
+
 
 
 module.exports = {

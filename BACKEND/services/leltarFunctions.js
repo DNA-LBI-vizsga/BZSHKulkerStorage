@@ -1,6 +1,9 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { User } = require("../models/UserModel");
+const { Items } = require("../models/ItemsModel");
+const Sequelize = require('sequelize');
+const { Op } = Sequelize
 require('dotenv').config(); 
 
 
@@ -46,12 +49,48 @@ async function validateAdmin(token){
     const user = await User.findOne({where: { id: payload.id} }) 
 
     if(user.isAdmin!=true){
-        console.log(user.isAdmin)
+        
         throw new Error("Access denied");
     }
 }
-    
 
+
+async function getLastNumber(item) {
+    let lastNumber = 0
+
+    if (item) {
+        let codeParts = item.product_code.split('-');
+        lastNumber = parseInt(codeParts[codeParts.length - 1]);
+        
+    } else {
+        lastNumber = 0
+    } 
+
+    return lastNumber
+}
+    
+async function latestItemQuery(currentId = null) {
+    const latestItem = await Items.findOne({
+        where: { 
+            id: {
+                [Op.ne]: currentId
+            },
+            product_code: {
+                [Op.ne]: null
+            }  
+        },
+        order: [['id', 'DESC']],
+    });
+
+    return latestItem
+}
+
+
+async function createCode(lastNumber, item, i) {
+    const newNumber = String(lastNumber + i).padStart(4, '0');
+    const item_code = `BZSH-${item}-${newNumber}`;
+    return item_code
+}
 
 
 
@@ -65,5 +104,8 @@ async function validateAdmin(token){
 module.exports = {    
     checkPassword,
     validateToken,
-    validateAdmin
+    validateAdmin,
+    getLastNumber, 
+    latestItemQuery,
+    createCode
 }

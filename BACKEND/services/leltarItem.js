@@ -4,6 +4,7 @@ const { ItemName } = require("../models/ItemNameModel");
 const { Items } = require("../models/ItemsModel");
 const { Value } = require("../models/ValueModel");
 const { StoragePlace } = require("../models/StoragePlaceModel");
+const functions = require("../services/leltarFunctions")
 
 
 async function getItems(){
@@ -26,43 +27,27 @@ async function createItem(item_name, value, storage_place, user_id, description,
 
     
 
-    const latestItem = await Items.findOne({
-        where: { 
-            item_name_id: itemName.id,
-            product_code: {
-                [Op.ne]: null
-            }  
-        },
-        order: [['id', 'DESC']],
-    });
-
-    
-    let lastNumber = 0
-
-    if (latestItem) {
-        let codeParts = latestItem.product_code.split('-');
-        lastNumber = parseInt(codeParts[codeParts.length - 1]);
-        
-    } else {
-        lastNumber = 0
-    }   
-    
     
 
-
-
+    
+    
+    
+    
+    
     
     const newItems = [];
     
+    
+    
+    let latestItem = await functions.latestItemQuery()
+    console.log(latestItem)
 
-
-
-  
-        console.log(itemVal.value)
+    let lastNumber = await functions.getLastNumber(latestItem)
+    console.log(lastNumber)
+        
         if (itemVal.value == "Drága"){
             for (let i = 1; i <= quantity; i++) {
-                const newNumber = String(lastNumber + i).padStart(4, '0');
-                const item_code = `BZSH-${itemName.item}-${newNumber}`;
+                let item_code = await functions.createCode(lastNumber, itemName.item, i)
                 
                 newItems.push({
                     item_name_id: itemName.id,
@@ -79,6 +64,7 @@ async function createItem(item_name, value, storage_place, user_id, description,
                 item_name_id: itemName.id,
                 value_id: itemVal.id,
                 storage_place_id: itemStorage.id,
+                product_code: null,
                 user_id,
                 description,
             });
@@ -102,12 +88,100 @@ async function createItem(item_name, value, storage_place, user_id, description,
 
 }
 
+async function deleteItem(id){
+    try{
+        const item = await Items.findOne({where:{id:id}}); 
+        item.destroy()
+            
+        
+        return {message: "Item deleted"}
+    }
+    catch(err){
+        return {message: err.message + "Failed to delete item"}
+    }
+    
+}
 
+
+async function updateItem(id, update_id, newValue = null, newStorage = null, newItemName = null, newDescription) {
+
+    try{
+        const item = await Items.findOne({where:{id:id}}) 
+        if (item){
+            
+            if (newValue !== null){
+                const itemVal = await Value.findOne({ where:{ value: newValue}})
+                item.set({
+                    updated_by: update_id,
+                    value_id: itemVal.id
+                })
+                if(newItemName == null){
+                    
+                    if (newValue == "Drága"){
+                        let latestItem = await functions.latestItemQuery(id)
+                        let lastNumber = await functions.getLastNumber(latestItem)
+                        let item_code = await functions.createCode(lastNumber, item.item_name, 1) 
+                        item.set({
+                            product_code: item_code
+                        })    
+                    }else{
+                        item.set({
+                            product_code: null
+                        })
+                        }
+                }
+                if(newItemName != null){
+                    if (newValue == "Drága"){
+                        let latestItem = await functions.latestItemQuery(id)
+                        let lastNumber = await functions.getLastNumber(latestItem)
+                        let item_code = await functions.createCode(lastNumber, newItemName, 1) 
+                        item.set({
+                            product_code: item_code
+                        })
+                    }else{
+                        item.set({
+                            product_code: null
+                        })
+                        }
+                }
+                
+            }
+            if (newStorage !== null){
+                const itemStorage = await StoragePlace.findOne({ where:{ storage: newStorage}})
+                item.set({
+                    updated_by: update_id,
+                    storage_place_id: itemStorage.id
+                })
+            }
+            if (newItemName !== null){
+                const itemName = await ItemName.findOne({ where:{ item: newItemName}})
+                item.set({
+                    updated_by: update_id,
+                    item_name_id: itemName.id 
+                })
+            }
+            if (newDescription !== null){
+                item.set({
+                    updated_by: update_id,
+                    description: newDescription 
+                })
+            }
+            
+        }
+        await item.save();
+        return {message: "Item updated"}
+    }
+    catch(err){
+        return {message: err.message + "Failed to update item"}
+    }    
+}
 
 
 
 
 module.exports = {
     getItems,
-    createItem
+    createItem, 
+    deleteItem,
+    updateItem
 }

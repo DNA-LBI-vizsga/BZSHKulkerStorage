@@ -18,7 +18,7 @@ async function syncDatabase() {
 
 
 app.get("/",(req,res)=>
-    { res.json({"message":"Minden OK"})}
+    { res.json({message:"Minden OK"})}
 )
 
 app.use(cors())

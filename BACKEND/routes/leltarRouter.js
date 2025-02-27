@@ -104,7 +104,7 @@ router.post("/item/:quantity",
 
             const payload = jwt.verify(token, process.env.SECRET_KEY)
             const user_id = payload.id
-            console.log(payload.id)
+            
             const {quantity} = req.params
             const {item_name, value, storage_place, description} = req.body
             if (!item_name || !value || !storage_place || !user_id || !quantity) {
@@ -133,6 +133,29 @@ router.put("/itemName/:id",
         }
 })
 
+router.put("/item/:id",
+    async function (req, res, next) {
+        const authHead = req.headers['authorization'] 
+        if(!authHead){
+            return res.status(401).json({ message: "Authorization header missing"})
+        }
+        const token = authHead.split(' ')[1]
+        try{
+            await functions.validateToken(token)
+            const payload = jwt.verify(token, process.env.SECRET_KEY)
+            const update_id = payload.id
+
+            const {id} = req.params
+            
+            const {value = null, storage_place = null, item_name  = null, description = null} = req.body
+            res.json(await items.updateItem(id, update_id, value, storage_place, item_name, description))
+            
+        }
+        catch(err){
+            next(err)
+        }
+    })
+
 
 
 //DELETE endpoints
@@ -153,6 +176,18 @@ router.delete("/itemName/:id",
         try{
             const {id} = req.params
             res.json(await name.deleteItemName(id))
+        }
+        catch(err){
+            next(err)
+        }
+})
+
+//item
+router.delete("/items/:id",
+    async function(req, res, next){
+        try{
+            const {id} = req.params
+            res.json(await items.deleteItem(id))
         }
         catch(err){
             next(err)
@@ -184,17 +219,17 @@ router.post('/login', async (req, res) => {
 });
 
 router.post('/register',  async (req, res) => {
-    const authHead = req.headers['authorization']
+    // const authHead = req.headers['authorization']
     
-    if(!authHead){
-        return res.status(401).json({ message: "Authorization header missing"})
-    }
-    const token = authHead.split(' ')[1]
+    // if(!authHead){
+    //     return res.status(401).json({ message: "Authorization header missing"})
+    // }
+    // const token = authHead.split(' ')[1]
     
     
     try {
-        await functions.validateToken(token)
-        await functions.validateAdmin(token)
+        // await functions.validateToken(token)
+        // await functions.validateAdmin(token)
         
         const { name, user_password, isAdmin } = req.body;
         if (!name || name=="" || isAdmin==null) {
