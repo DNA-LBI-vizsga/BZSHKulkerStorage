@@ -1,0 +1,58 @@
+<div class="dashboard-container">
+    <h2>Dashboard</h2>
+  
+    <div class="crud-admin" *ngIf="isAdmin()">
+      <h3>Storage Places</h3>
+      <ul>
+        <li *ngFor="let place of storagePlaces">
+          {{place.storage}}
+          <button (click)="deleteStoragePlace(place.id)">Delete</button>
+        </li>
+      </ul>
+      <input [(ngModel)]="newStoragePlace" placeholder="New Storage Place">
+      <button (click)="createStoragePlace()">Add</button>
+    </div>
+  
+    <div class="crud-admin" *ngIf="isAdmin()">
+      <h3>Item Names</h3>
+      <ul>
+        <li *ngFor="let item of itemNames">
+          {{ item.item }}
+          <button (click)="deleteItemName(item.id)">Delete</button>
+          <input [(ngModel)]="item.updatedItemName" placeholder="Update Item Name">
+      <button (click)="updateItemName(item.id, item.updatedItemName)">Update</button>
+        </li>
+      </ul>
+      <input [(ngModel)]="newItemName" placeholder="New Item Name">
+      <button (click)="createItemName()">Add</button>
+    </div>
+  
+    <!-- <div class="crud-admin" *ngIf="isAdmin()">
+      <h3>Values</h3>
+      <ul>
+        <li *ngFor="let value of values">
+          {{ value.value }}
+        </li>
+      </ul>
+      <input [(ngModel)]="newValue" placeholder="New Value">
+      <button (click)="createValue()">Add</button>
+    </div> -->
+  
+    <div class="crud-section">
+      <h3>Create Item</h3>
+      <select [(ngModel)]="newItem.item_name">
+        <option *ngFor="let item of itemNames" [value]="item.item">{{ item.item }}</option>
+      </select>
+      <select [(ngModel)]="newItem.storage_place">
+        <option *ngFor="let place of storagePlaces" [value]="place.storage">{{ place.storage }}</option>
+      </select>
+      <input [(ngModel)]="newItem.quantity" placeholder="Quantity">
+      <select [(ngModel)]="newItem.value">
+        <option *ngFor="let value of values" [value]="value.value">{{ value.value }}</option>
+      </select>
+      <input [(ngModel)]="newItem.description" placeholder="Description">
+      <button (click)="createItem()">Add Item</button>
+    </div>
+  </div>
+
+
