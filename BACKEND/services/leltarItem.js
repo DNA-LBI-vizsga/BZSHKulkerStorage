@@ -1,21 +1,54 @@
 const Sequelize = require('sequelize');
+const moment = require('moment-timezone')
 const { Op } = Sequelize
 const { ItemName } = require("../models/ItemNameModel");
 const { Items } = require("../models/ItemsModel");
 const { Value } = require("../models/ValueModel");
 const { StoragePlace } = require("../models/StoragePlaceModel");
-const functions = require("../services/leltarFunctions")
+const functions = require("../services/leltarFunctions");
+const { User } = require('../models/UserModel');
 
 
-async function getItems(){
+async function getItems() {
     try {
-        const items = await Items.findAll()
-
-        return items
+      const items = await Items.findAll();
+      const formattedItems = await Promise.all(
+        items.map(async (item) => {
+          const [itemValue, itemStorage, itemName, createdByUser, updatedByUser] = await Promise.all([
+            Value.findOne({ where: { id: item.value_id } }),
+            StoragePlace.findOne({ where: { id: item.storage_place_id } }),
+            ItemName.findOne({ where: { id: item.item_name_id } }),
+            User.findOne({ where: { id: item.user_id } }),
+            User.findOne({ where: { id: item.updated_by } })
+          ]);
+  
+          const createdAt = moment(item.createdAt).format('YYYY.MM.DD HH:mm:ss');
+          const updatedAt = moment(item.updatedAt).format('YYYY.MM.DD HH:mm:ss');
+  
+          console.log(updatedByUser ? updatedByUser.name : 'No updates');
+  
+          return {
+            id: item.id,
+            item: itemName.item,
+            value: itemValue.value,
+            storage: itemStorage.storage,
+            product_code: item.product_code,
+            description: item.description,
+            user_id: createdByUser.name,
+            updated_by: updatedByUser ? updatedByUser.name : 'No updates',
+            createdAt,
+            updatedAt
+          };
+        })
+      );
+  
+      return formattedItems;
     } catch (error) {
-        return {message: "Error fetching items"}
+      console.error(error);
+      return { message: "Error fetching items" };
     }
-}
+  }
+  
 
 
 

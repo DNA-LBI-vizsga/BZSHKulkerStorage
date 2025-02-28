@@ -65,6 +65,25 @@ router.get("/itemName",
         }
 })
 
+router.get("/item", 
+    async function(req, res, next){
+        const authHead = req.headers['authorization'] 
+
+        const tokenError = await functions.tokenChecker(authHead, res)
+        if(tokenError) return
+        
+        const token = authHead.split(' ')[1]
+        try{
+            await functions.validateToken(token)
+            res.json(await items.getItems())
+        }
+        catch(err){
+            next(err)
+        }
+})
+
+
+
 //CREATE endpoints
 //storage_place
 router.post("/storagePlace",
