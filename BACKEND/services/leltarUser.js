@@ -1,6 +1,5 @@
-const { User } = require("../models/UserModel")
+const {User} = require("../models/UserModel")
 const bcrypt = require("bcrypt")
-
 
 async function getUser(){
     try {
@@ -19,51 +18,18 @@ async function createUser(name, password, isAdmin){
         const numSalts = 10
         const hashedPassword = await bcrypt.hash(userPassword, numSalts) 
         const user = await User.create(
-            { userName: name, userPassword: hashedPassword, isAdmin: isAdmin }
+            { name: name, user_password: hashedPassword, isAdmin: isAdmin }
 
         )
         
-        return {message: "User created successfully" }
+        return {message: "User created successfully"}
     }
     catch(err){
         return {message: err.message + "Failed to create user"}
     }
 }
 
-
-async function updateUser(userName, newPassword) {
-    console.log(newPassword, userName)
-    //findOne({ where: {id: id}})
-    try{
-        const user = await User.findOne({where:{name: userName}})
-        console.log(user)
-
-        if (!user) {
-            throw new Error("User not found");
-        }
-
-        const numSalts = 10
-        const hashedPassword = await bcrypt.hash(newPassword, numSalts) 
-
-        console.log(hashedPassword, newPassword)
-
-        user.set({
-            userName: user.userName,
-            userPassword: hashedPassword,
-            isAdmin: user.isAdmin
-        })  
-
-        await user.save()
-
-        return {message: "Password changed"}
-    }catch(err){
-        return {message: err.message + " Error changing password"}
-    }
-}
-
-
 module.exports = {
     getUser,
-    createUser,
-    updateUser
+    createUser
 }
