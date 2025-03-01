@@ -31,11 +31,7 @@ async function getItems() {
                 id: item.id,
                 item: itemName.item,
                 storage: itemStorage.storage,
-                description: item.description,
-                createdBy: createdByUser.userName,
-                updatedBy: updatedByUser ? updatedByUser.userName : 'No updates',
-                createdAt,
-                updatedAt
+                description: item.description
             }
 
 

@@ -3,37 +3,46 @@ const { sequelize } = require("../config.js");
 
 
 
-const Items = sequelize.define('Item', {
+const Logs = sequelize.define('Log', {
     id: {
         type: DataTypes.INTEGER, 
         allowNull: false,
         autoIncrement: true, 
         primaryKey: true
     },
-    itemNameId: {
+    itemId:{
         type: DataTypes.INTEGER,
         allowNull: false
     },
-    storagePlaceId: {
+    actionTypeId: {
         type: DataTypes.INTEGER,
         allowNull: false
     },
-    description: {
+    oldValue: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+    },
+    newValue: {
+        type: DataTypes.INTEGER,
+        allowNull: false
+    },
+    details: {
         type: DataTypes.STRING(255),
         allowNull: false
     },
-    isActive:{
-        type: DataTypes.BOOLEAN,
-        allowNull: false
+    updatedBy:{
+        type: DataTypes.INTEGER,
+        allowNull: true
     }
     },  
     {
-        tableName: 'items',
-        timestamps: false
+        tableName: 'logs',
+        timestamps: true,
+        createdAt: false
     }
 );
 
 module.exports = {  
-    Items 
+    Logs 
 };
     
