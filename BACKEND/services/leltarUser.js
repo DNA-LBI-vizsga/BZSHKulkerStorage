@@ -23,10 +23,10 @@ async function createUser(name, password, isAdmin){
 
         )
         
-        return {message: "User created successfully" }
+        return {message: `User ${user.userName} created successfully` }
     }
     catch(err){
-        return {message: err.message + "Failed to create user"}
+        throw new Error('Failed to create user'); 
     }
 }
 
@@ -39,7 +39,7 @@ async function updateUser(userName, newPassword) {
         console.log(user)
 
         if (!user) {
-            throw new Error("User not found");
+            throw new Error(`User ${user.userName} not found`);
         }
 
         const numSalts = 10
@@ -57,7 +57,7 @@ async function updateUser(userName, newPassword) {
 
         return {message: "Password changed"}
     }catch(err){
-        return {message: err.message + " Error changing password"}
+        throw new Error('Error changing password'); 
     }
 }
 

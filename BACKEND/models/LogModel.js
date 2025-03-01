@@ -18,18 +18,6 @@ const Logs = sequelize.define('Log', {
         type: DataTypes.INTEGER,
         allowNull: false
     },
-    oldValue: {
-        type: DataTypes.INTEGER,
-        allowNull: false
-    },
-    newValue: {
-        type: DataTypes.INTEGER,
-        allowNull: false
-    },
-    details: {
-        type: DataTypes.STRING(255),
-        allowNull: false
-    },
     updatedBy:{
         type: DataTypes.INTEGER,
         allowNull: true

@@ -7,8 +7,7 @@ async function getPlaces() {
         const storage = await StoragePlace.findAll(); // Sequelize ORM method to get all items
         return storage 
     } catch (error) {
-        console.error("Error fetching item names:", error);
-        return "Error fetching item names";
+        throw new Error("Error fetching item names");
     }
     }
 
@@ -22,7 +21,7 @@ async function createPlace(storage_place){
         return {message: "Storage place created"}
     }
     catch(err){
-        return {message: err.message + "Failed to create storage place"}
+        throw new Error("Failed to create storage place");
     }
     
 }
@@ -36,7 +35,7 @@ async function deletePlace(id){
         return {message: "Storage place deleted"}
     }
     catch(err){
-        return {message: err.message + "Failed to delete storage place"}
+        throw new Error("Failed to delete storage place");
     }
     
 }

@@ -1,6 +1,7 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { User } = require("../models/UserModel");
+const { Items } = require("../models/ItemsModel");
 require('dotenv').config(); 
 
 
@@ -70,12 +71,6 @@ async function checkRequiredFields(requiredField, res) {
         return res.status(400).json({ message: `Missing ${requiredField} field` });
     }
 }
-
-
-
-
-
-
 
 
 

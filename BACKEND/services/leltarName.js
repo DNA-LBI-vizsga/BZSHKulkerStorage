@@ -5,8 +5,7 @@ try {
     const item = await ItemName.findAll(); // Sequelize ORM method to get all items
     return item 
 } catch (error) {
-    console.error("Error fetching item names:", error);
-    return "Error fetching item names";
+    throw new Error("Error fetching item names");
 }
 }
 async function createItemName(item_name){
@@ -17,7 +16,7 @@ async function createItemName(item_name){
         return {message: "Item created successfully"} 
     }
     catch(err){
-        return {message: err.message + "Failed to create item"}
+        throw new Error("Failed to create item");
     }
     
 }
@@ -32,7 +31,7 @@ async function updateItemName(id, item_name){
         return {message: "Item updated successfully"} 
     }
     catch(err){
-        return {message: err.message + "Failed to update item"}
+        throw new Error("Failed to update item");
     }
     
 }
@@ -44,7 +43,7 @@ async function deleteItemName(id){
         return {message: "Item deleted"}
     }
     catch(err){
-        return {message: err.message + "Failed to delete item"}
+        throw new Error("Failed to delete item");
     }
     
 }

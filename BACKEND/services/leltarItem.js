@@ -41,8 +41,7 @@ async function getItems() {
 
     return formattedItems;
     } catch (error) {
-    console.error(error);
-    return { message: "Error fetching items" };
+        throw new Error("Error fetching items");
     }
 }
 
@@ -69,11 +68,10 @@ async function createItem(itemNameId, storagePlaceId, createdBy, description, qu
     console.log(newItems)
 
     try{
-        await Items.bulkCreate(newItems);
-        return { message: 'Items added successfully' };
+        const item = await Items.bulkCreate(newItems);
+        return item;
     }catch (error) {
-        console.error(error);
-        return { message: 'Error adding items' };
+        throw new Error("Failed to create item(s)");
     }
 
 
@@ -91,7 +89,7 @@ async function deleteItem(id){
         return {message: "Item deleted"}
     }
     catch(err){
-        return {message: err.message + "Failed to delete item"}
+        throw new Error("Failed to delete item");
     }
     
 }
@@ -111,7 +109,7 @@ async function updateItem(id, updatedBy, storagePlaceId, itemNameId, description
         return {message: "Item updated"}
     }
     catch(err){
-        return {message: err.message + "Failed to update item"}
+        throw new Error("Failed to update item");
     }    
 }
 

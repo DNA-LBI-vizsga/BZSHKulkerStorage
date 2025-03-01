@@ -2,12 +2,19 @@ const express = require("express")
 const jwt = require("jsonwebtoken")
 const router = express.Router()
 
+const { Items } = require("../models/ItemsModel")
+
 
 const functions = require("../services/leltarFunctions")
 const items = require("../services/leltarItem")
 const name = require("../services/leltarName")
 const storage_place = require("../services/leltarStorage")
 const users = require("../services/leltarUser")
+const action = require("../services/leltarActionType")
+const logs = require("../services/leltarLogs")
+const { where } = require("sequelize")
+
+
 
 
 //GET endpoints
@@ -123,17 +130,35 @@ router.post("/item/:quantity",
         const token = authHead.split(' ')[1]
         try{
             await functions.validateToken(token)
+            const httpMethod = req.method
 
             const payload = jwt.verify(token, process.env.SECRET_KEY)
             const createdBy = payload.id
-            
+
             const {quantity} = req.params
             const {itemNameId, storagePlaceId, description} = req.body
+
             if (!itemNameId || !storagePlaceId || !createdBy || !quantity) {
                 return res.status(400).json({ message: 'Missing required fields' });
             }
+
             res.json(await items.createItem(itemNameId, storagePlaceId, createdBy, description, quantity))
-            
+            const item = await Items.findOne({ order: [['id', 'DESC']]})
+
+
+            logs.createLogs(item.id, createdBy, httpMethod)
+        }
+        catch(err){
+            next(err)
+        }
+})
+
+//actiontype
+router.post("/action", 
+    async function(req, res, next){
+        try{
+            const {actionType} = req.body
+            res.json(await action.createActionType(actionType))
         }
         catch(err){
             next(err)
@@ -175,12 +200,15 @@ router.put("/item/:id",
             await functions.validateToken(token)
             await functions.validateAdmin(token)
             const payload = jwt.verify(token, process.env.SECRET_KEY)
-            const updatedBy = payload.id
-
+            const createdBy = payload.id
+            const httpMethod = req.method
             const {id} = req.params
             
             const {storagePlaceId, itemNameId, description} = req.body
-            res.json(await items.updateItem(id, updatedBy, storagePlaceId, itemNameId, description))
+            res.json(await items.updateItem(id, createdBy, storagePlaceId, itemNameId, description))
+
+            const item = await Items.findOne({ order: [['id', 'DESC']]})
+            logs.createLogs(item.id, createdBy, httpMethod)
             
         }
         catch(err){
@@ -246,19 +274,26 @@ router.delete("/itemName/:id",
 })
 
 //item
-router.patch("/items/:id",
+router.patch("/item/:id",
     async function(req, res, next){
         const authHead = req.headers['authorization'] 
-
+        
+        
         const tokenError = await functions.tokenChecker(authHead, res)
+        const token = authHead.split(' ')[1]
         if(tokenError) return
         
-        const token = authHead.split(' ')[1]
         try{
             await functions.validateToken(token)
             await functions.validateAdmin(token)
+            const httpMethod = req.method
+            const payload = jwt.verify(token, process.env.SECRET_KEY)
+            const createdBy = payload.id
             const {id} = req.params
             res.json(await items.deleteItem(id))
+
+            const item = await Items.findOne({ order: [['id', 'DESC']]})
+            logs.createLogs(item.id, createdBy, httpMethod)
         }
         catch(err){
             next(err)
