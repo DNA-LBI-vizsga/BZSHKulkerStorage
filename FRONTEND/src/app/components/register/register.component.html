@@ -1,0 +1,24 @@
+<div class="register-container">
+    <h2>Register</h2>
+    <form (ngSubmit)="registerUser()">
+      <div>
+        <label for="name">Username:</label>
+        <input type="text" id="name" [(ngModel)]="name" name="name" required>
+      </div>
+      <div>
+        <label for="password">Password:</label>
+        <input type="password" id="password" [(ngModel)]="user_password" name="user_password" required>
+      </div>
+      <div>
+        <label for="isAdmin">Is Admin:</label>
+        <input type="checkbox" id="isAdmin" [(ngModel)]="isAdmin" name="isAdmin">
+      </div>
+      <button type="submit">Register</button>
+    </form>
+    <div *ngIf="errorMessage" class="error-message">
+      {{ errorMessage }}
+    </div>
+    <div *ngIf="successMessage" class="success-message">
+      {{ successMessage }}
+    </div>
+  </div>

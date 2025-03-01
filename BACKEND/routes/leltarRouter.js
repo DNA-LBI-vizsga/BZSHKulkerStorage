@@ -65,6 +65,25 @@ router.get("/itemName",
         }
 })
 
+router.get("/item", 
+    async function(req, res, next){
+        const authHead = req.headers['authorization'] 
+
+        const tokenError = await functions.tokenChecker(authHead, res)
+        if(tokenError) return
+        
+        const token = authHead.split(' ')[1]
+        try{
+            await functions.validateToken(token)
+            res.json(await items.getItems())
+        }
+        catch(err){
+            next(err)
+        }
+})
+
+
+
 //CREATE endpoints
 //storage_place
 router.post("/storagePlace",
@@ -110,15 +129,15 @@ router.post("/itemName",
 //value
 router.post("/value", 
     async function(req, res, next){
-        const authHead = req.headers['authorization'] 
+        // const authHead = req.headers['authorization'] 
 
-        const tokenError = await functions.tokenChecker(authHead, res)
-        if(tokenError) return
+        // const tokenError = await functions.tokenChecker(authHead, res)
+        // if(tokenError) return
         
-        const token = authHead.split(' ')[1]
+        // const token = authHead.split(' ')[1]
         try{
-            await functions.validateToken(token)
-            await functions.validateAdmin(token)
+            // await functions.validateToken(token)
+            // await functions.validateAdmin(token)
             const {value} = req.body
             functions.checkRequiredFields(value, res)
             res.json(await values.createValue(value))
@@ -204,6 +223,21 @@ router.put("/item/:id",
             next(err)
         }
     })
+
+router.put("/passwordChange",
+    async function(req, res, next){
+        try{
+        
+        const {name, newPassword} = req.body
+        console.log(name, newPassword)
+        res.json(await users.updateUser(name, newPassword))
+        
+    }
+    catch(err){
+        next(err)
+    }
+}
+)
 
 
 
@@ -305,6 +339,8 @@ router.post('/register',  async (req, res) => {
         // await functions.validateAdmin(token)
         
         const { name, user_password, isAdmin } = req.body;
+
+        
         if (!name || name=="" || isAdmin==null) {
             return res.status(400).json({ message: 'Missing required fields' });
         }
