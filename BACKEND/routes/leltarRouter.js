@@ -8,7 +8,7 @@ const items = require("../services/leltarItem")
 const name = require("../services/leltarName")
 const storage_place = require("../services/leltarStorage")
 const users = require("../services/leltarUser")
-const values = require("../services/leltarValue")
+
 
 //GET endpoints
 //storage_place
@@ -29,24 +29,7 @@ router.get("/storagePlace",
         }
 })
 
-//value
-router.get("/value", 
-    async function(req, res, next){
-        const authHead = req.headers['authorization'] 
-
-        const tokenError = await functions.tokenChecker(authHead, res)
-        if(tokenError) return
-        
-        const token = authHead.split(' ')[1]
-        try{
-            await functions.validateToken(token)
-            res.json(await values.getValues())
-        }
-        catch(err){
-            next(err)
-        }
-})
-
+/
 //item_name
 router.get("/itemName", 
     async function(req, res, next){
@@ -126,26 +109,7 @@ router.post("/itemName",
         }
 })
 
-//value
-router.post("/value", 
-    async function(req, res, next){
-        // const authHead = req.headers['authorization'] 
 
-        // const tokenError = await functions.tokenChecker(authHead, res)
-        // if(tokenError) return
-        
-        // const token = authHead.split(' ')[1]
-        try{
-            // await functions.validateToken(token)
-            // await functions.validateAdmin(token)
-            const {value} = req.body
-            functions.checkRequiredFields(value, res)
-            res.json(await values.createValue(value))
-        }
-        catch(err){
-            next(err)
-        }
-})
 
 //item
 router.post("/item/:quantity", 
@@ -161,14 +125,14 @@ router.post("/item/:quantity",
             await functions.validateToken(token)
 
             const payload = jwt.verify(token, process.env.SECRET_KEY)
-            const user_id = payload.id
+            const createdBy = payload.id
             
             const {quantity} = req.params
-            const {item_name, value, storage_place, description} = req.body
-            if (!item_name || !value || !storage_place || !user_id || !quantity) {
+            const {itemNameId, storagePlaceId, description} = req.body
+            if (!itemNameId || !storagePlaceId || !createdBy || !quantity) {
                 return res.status(400).json({ message: 'Missing required fields' });
             }
-            res.json(await items.createItem(item_name, value, storage_place, user_id, description, quantity))
+            res.json(await items.createItem(itemNameId, storagePlaceId, createdBy, description, quantity))
             
         }
         catch(err){
@@ -211,12 +175,12 @@ router.put("/item/:id",
             await functions.validateToken(token)
             await functions.validateAdmin(token)
             const payload = jwt.verify(token, process.env.SECRET_KEY)
-            const update_id = payload.id
+            const updatedBy = payload.id
 
             const {id} = req.params
             
-            const {value = null, storage_place = null, item_name  = null, description = null} = req.body
-            res.json(await items.updateItem(id, update_id, value, storage_place, item_name, description))
+            const {storagePlaceId, itemNameId, description} = req.body
+            res.json(await items.updateItem(id, updatedBy, storagePlaceId, itemNameId, description))
             
         }
         catch(err){
@@ -228,9 +192,9 @@ router.put("/passwordChange",
     async function(req, res, next){
         try{
         
-        const {name, newPassword} = req.body
-        console.log(name, newPassword)
-        res.json(await users.updateUser(name, newPassword))
+        const {userName, newPassword} = req.body
+        console.log(userName, newPassword)
+        res.json(await users.updateUser(userName, newPassword))
         
     }
     catch(err){
@@ -282,7 +246,7 @@ router.delete("/itemName/:id",
 })
 
 //item
-router.delete("/items/:id",
+router.patch("/items/:id",
     async function(req, res, next){
         const authHead = req.headers['authorization'] 
 
@@ -305,12 +269,12 @@ router.delete("/items/:id",
 //functions 
 router.post('/login', async (req, res) => {
     try {
-        const { name, user_password } = req.body;
-        if (!name || !user_password) {
+        const { userName, userPassword } = req.body;
+        if (!userName || !userPassword) {
             return res.status(400).json({ message: "Missing name or password" });
         }
         
-        const user = await functions.checkPassword(name, user_password);
+        const user = await functions.checkPassword(userName, userPassword);
         if (!user) {
             return res.status(401).json({ message: "Invalid credentials" });
         }else{
@@ -338,14 +302,15 @@ router.post('/register',  async (req, res) => {
         // await functions.validateToken(token)
         // await functions.validateAdmin(token)
         
-        const { name, user_password, isAdmin } = req.body;
+        const { userName, userPassword, isAdmin } = req.body;
+        console.log(userName)
 
         
-        if (!name || name=="" || isAdmin==null) {
+        if (!userName || userName=="" || isAdmin==null) {
             return res.status(400).json({ message: 'Missing required fields' });
         }
-        const user = await users.createUser(name, user_password, isAdmin);
-        return res.status(201).json({ message: "User created" });
+        const user = await users.createUser(userName, userPassword, isAdmin);
+        return res.status(201).json({ message: `User created` });
     } catch (error) {
         return res.status(500).json({ message: error.message });
     }
