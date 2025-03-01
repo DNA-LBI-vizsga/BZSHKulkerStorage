@@ -1,30 +1,26 @@
 const { ItemName } = require("../models/ItemNameModel");
 const { Items } = require("../models/ItemsModel");
 const { StoragePlace } = require("../models/StoragePlaceModel");
-const { Value } = require("../models/ValueModel");
+
 const { User } = require("../models/UserModel");
 
 
-ItemName.hasMany(Items, { foreignKey: 'item_name_id' });
-Items.belongsTo(ItemName, { foreignKey: 'item_name_id' });
+ItemName.hasMany(Items, { foreignKey: 'itemNameId' });
+Items.belongsTo(ItemName, { foreignKey: 'itemNameId' });
 
-Value.hasMany(Items, { foreignKey: 'value_id' });
-Items.belongsTo(Value, { foreignKey: 'value_id' });
+StoragePlace.hasMany(Items, { foreignKey: 'storagePlaceId' });
+Items.belongsTo(StoragePlace, { foreignKey: 'storagePlaceId' });
 
-StoragePlace.hasMany(Items, { foreignKey: 'storage_place_id' });
-Items.belongsTo(StoragePlace, { foreignKey: 'storage_place_id' });
+User.hasMany(Items, { foreignKey: 'createdBy' });
+Items.belongsTo(User, { foreignKey: 'createdBy' });
 
-User.hasMany(Items, { foreignKey: 'user_id' });
-Items.belongsTo(User, { foreignKey: 'user_id' });
-
-User.hasMany(Items, { foreignKey: 'updated_by' });
-Items.belongsTo(User, { foreignKey: 'updated_by' });
+User.hasMany(Items, { foreignKey: 'updatedBy' });
+Items.belongsTo(User, { foreignKey: 'updatedBy' });
 
 
 
 module.exports = {
     ItemName,
-    Value,
     StoragePlace,
     User,
     Items

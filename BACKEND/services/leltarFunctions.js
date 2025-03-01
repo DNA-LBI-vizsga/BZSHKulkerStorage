@@ -1,9 +1,6 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { User } = require("../models/UserModel");
-const { Items } = require("../models/ItemsModel");
-const Sequelize = require('sequelize');
-const { Op } = Sequelize
 require('dotenv').config(); 
 
 
@@ -11,11 +8,11 @@ require('dotenv').config();
 
 async function checkPassword(name, password){
     try {
-        const user = await User.findOne({where:{name}})
+        const user = await User.findOne({where:{userName:name}})
         
         if(!user){return null}
         
-        const isMatch = await bcrypt.compare(password, user.user_password);
+        const isMatch = await bcrypt.compare(password, user.userPassword);
         
         if(!isMatch){return null}
         
@@ -54,44 +51,6 @@ async function validateAdmin(token){
     }
 }
 
-
-async function getLastNumber(item) {
-    let lastNumber = 0
-
-    if (item) {
-        let codeParts = item.product_code.split('-');
-        lastNumber = parseInt(codeParts[codeParts.length - 1]);
-        
-    } else {
-        lastNumber = 0
-    } 
-
-    return lastNumber
-}
-    
-async function latestItemQuery(currentId = null) {
-    const latestItem = await Items.findOne({
-        where: { 
-            id: {
-                [Op.ne]: currentId
-            },
-            product_code: {
-                [Op.ne]: null
-            }  
-        },
-        order: [['id', 'DESC']],
-    });
-
-    return latestItem
-}
-
-
-async function createCode(lastNumber, item, i) {
-    const newNumber = String(lastNumber + i).padStart(4, '0');
-    const item_code = `BZSH-${item}-${newNumber}`;
-    return item_code
-}
-
 async function tokenChecker(authHead, res) {
     if (!authHead) {
         return res.status(401).json({ message: "Authorization header missing" });
@@ -124,9 +83,6 @@ module.exports = {
     checkPassword,
     validateToken,
     validateAdmin,
-    getLastNumber, 
-    latestItemQuery,
-    createCode,
     tokenChecker,
     checkRequiredFields
 }
