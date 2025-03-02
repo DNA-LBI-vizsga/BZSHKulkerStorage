@@ -8,17 +8,17 @@ import { BaseService } from '../../services/base.service';
   styleUrl: './login.component.css'
 })
 export class LoginComponent {
-  name: string = '';
-  user_password: string = '';
+  userName: string = '';
+  userPassword: string = '';
   errorMessage: string = '';
 
   constructor(private baseService: BaseService, private router: Router) { }
 
   loginUser(): void {
-    this.baseService.loginUser(this.name, this.user_password).subscribe(
+    this.baseService.loginUser(this.userName, this.userPassword).subscribe(
       response => {
         if (response.token) {
-          this.baseService.storeToken(response.token);
+          localStorage.setItem('authToken',response.token);
           this.router.navigate(['/navbar']); // Navigate to the home page or another page after login
           console.log('Logged in:', response);
         }
@@ -28,11 +28,5 @@ export class LoginComponent {
         console.error('Error logging in:', error);
       }
     );
-  }
-
-  logoutUser(): void {
-    this.baseService.removeToken();
-    this.router.navigate(['/login']); // Navigate to the login page after logout
-    console.log('Logged out');
   }
 }

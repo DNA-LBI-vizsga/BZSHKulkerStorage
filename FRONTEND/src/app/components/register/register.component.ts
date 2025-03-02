@@ -18,7 +18,7 @@ export class RegisterComponent {
   constructor(private baseService: BaseService, private router: Router) { }
 
   registerUser(): void {
-    const token = this.baseService.getToken();
+    const token = localStorage.getItem('authToken');
     if (token) {
       this.baseService.registerUser(this.name, this.user_password, this.isAdmin).subscribe(
         response => {

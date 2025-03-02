@@ -11,7 +11,7 @@ export class NavbarComponent {
   constructor(private baseService: BaseService, private router: Router) { }
 
   isAdmin(): boolean {
-    const token = this.baseService.getToken();
+    const token = localStorage.getItem('authToken');
     if (token) {
       const payload = JSON.parse(atob(token.split('.')[1]));
       return payload.isAdmin;
@@ -20,8 +20,8 @@ export class NavbarComponent {
   }
 
   logoutUser(): void {
-    this.baseService.removeToken();
-    this.router.navigate(['/login']); // Navigate to the login page after logout
+    localStorage.removeItem('token'); // Remove the token from local storage
+    this.router.navigate(['/login']); // Redirect to the login page
     console.log('Logged out');
   }
 }

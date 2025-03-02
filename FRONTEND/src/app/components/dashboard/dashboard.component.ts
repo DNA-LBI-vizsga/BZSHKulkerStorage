@@ -8,19 +8,19 @@ import { BaseService } from '../../services/base.service';
 })
 export class DashboardComponent implements OnInit {
   storagePlaces: any[] = [];
-  values: any[] = [];
+
   itemNames: any[] = [];
+
+  items: any[] = [];
 
   updatedItemName: string = '';
 
   newStoragePlace: string = '';
   newItemName: string = '';
-  newValue: string = '';
   newItem: any = {
     quantity: 0,
-    item_name: '',
-    value: '',
-    storage_place: '',
+    itemNameId: null,
+    storagePlaceId: null,
     description: ''
   };
 
@@ -28,12 +28,12 @@ export class DashboardComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadStoragePlaces();
-    this.loadValues();
     this.loadItemNames();
+    this.loadItems();
   }
 
   isAdmin(): boolean {
-    const token = this.baseService.getToken();
+    const token = localStorage.getItem('authToken');
     if (token) {
       const payload = JSON.parse(atob(token.split('.')[1]));
       return payload.isAdmin;
@@ -44,25 +44,26 @@ export class DashboardComponent implements OnInit {
   loadStoragePlaces(): void {
     this.baseService.getStoragePlaces().subscribe(data => {
       this.storagePlaces = data;
-      console.log(this.values)
-    });
-  }
-
-  loadValues(): void {
-    this.baseService.getValues().subscribe(data => {
-      this.values = data;
-      console.log(this.values)
     });
   }
 
   loadItemNames(): void {
     this.baseService.getItemNames().subscribe(data => {
       this.itemNames = data;
-      console.log(this.itemNames)
+    });
+  }
+
+  loadItems(): void {
+    this.baseService.getItems().subscribe(data => {
+      this.items = data;
     });
   }
 
   createStoragePlace(): void {
+    if (!this.newStoragePlace || this.newStoragePlace.trim() === '') {
+      alert('Storage place name cannot be blank');
+      return;
+    }
     this.baseService.createStoragePlace(this.newStoragePlace).subscribe(() => {
       this.loadStoragePlaces();
       this.newStoragePlace = '';
@@ -70,39 +71,35 @@ export class DashboardComponent implements OnInit {
   }
 
   createItemName(): void {
+    if (!this.newItemName || this.newItemName.trim() === '') {
+      alert('Item name cannot be blank');
+      return;
+    }
     this.baseService.createItemName(this.newItemName).subscribe(() => {
       this.loadItemNames();
       this.newItemName = '';
     });
   }
 
-  // createValue(): void {
-  //   this.baseService.createValue(this.newValue).subscribe(() => {
-  //     this.loadValues();
-  //     this.newValue = '';
-  //   });
-  // }
-
-  createItem(): void {
+  createItem(){
     this.baseService.createItem(
-      this.newItem.quantity,
-      this.newItem.item_name,
-      this.newItem.value,
-      this.newItem.storage_place,
-      this.newItem.description
+      this.newItem.itemNameId,
+      this.newItem.storagePlaceId,
+      this.newItem.description,
+      this.newItem.quantity
     ).subscribe(() => {
+      //this.loadItems();
       this.newItem = {
-        quantity: 0,
-        item_name: '',
-        value: '',
-        storage_place: '',
-        description: ''
+        itemNameId: null,
+        storagePlaceId: null,
+        description: '',
+        quantity: 0
       };
     });
   }
 
-  updateItemName(id: number, newName: string) {
-    this.baseService.updateItemName(id, newName).subscribe(() => {
+  updateItemName(id: number, newName: string){
+    this.baseService.updateItemName(id, newName ).subscribe(() => {
       this.loadItemNames();
       this.updatedItemName = '';
     });
