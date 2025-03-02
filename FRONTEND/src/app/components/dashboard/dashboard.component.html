@@ -39,6 +39,21 @@
     <input [(ngModel)]="newItem.description" placeholder="Description">
     <button (click)="createItem()">Add Item</button>
   </div>
+
+  <div class="item-render">
+    <h3>Items</h3>
+    <ul>
+      <li *ngFor="let item of items">
+        <span>{{ item.item.itemName }}</span>
+        <span>{{ item.place.storage }}</span>
+        <span>{{ item.quantity }}</span>
+        <span>{{ item.description }}</span>
+        <button (click)="deleteItem(item.id)">Delete</button>
+        <input [(ngModel)]="item.quantity" placeholder="Updated Quantity">
+        <button (click)="updateItem(item.id, item.place.id, item.item.id, item.description )">Update</button>
+      </li>
+    </ul>
+  </div>
 </div>
 
 

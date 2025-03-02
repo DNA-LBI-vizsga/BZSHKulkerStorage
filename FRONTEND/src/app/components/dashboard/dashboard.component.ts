@@ -14,6 +14,7 @@ export class DashboardComponent implements OnInit {
   items: any[] = [];
 
   updatedItemName: string = '';
+  updatedItemQuantity: number = 0;
 
   newStoragePlace: string = '';
   newItemName: string = '';
@@ -114,6 +115,18 @@ export class DashboardComponent implements OnInit {
   deleteItemName(id: number): void {
     this.baseService.deleteItemName(id).subscribe(() => {
       this.loadItemNames();
+    });
+  }
+
+  deleteItem(id: number): void {
+    this.baseService.deleteItem(id).subscribe(() => {
+      this.loadItems();
+    });
+  }
+
+  updateItem(id: number, storagePlaceId: number, itemNameId: number, description: string): void {
+    this.baseService.updateItem(id, storagePlaceId, itemNameId, description).subscribe(() => {
+      this.loadItems();
     });
   }
 }
