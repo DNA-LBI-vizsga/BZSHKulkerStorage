@@ -1,12 +1,7 @@
-const Sequelize = require('sequelize');
-const moment = require('moment-timezone')
-const { Op } = Sequelize
 const { ItemName } = require("../models/ItemNameModel");
 const { Items } = require("../models/ItemsModel");
-
 const { StoragePlace } = require("../models/StoragePlaceModel");
-const functions = require("../services/leltarFunctions");
-const { User } = require('../models/UserModel');
+
 
 
 async function getItems() {
@@ -14,16 +9,11 @@ async function getItems() {
     const items = await Items.findAll();
     const formattedItems = await Promise.all(
         items.filter(item => item.isActive !== false).map(async (item) => {
-        const [ itemStorage, itemName, createdByUser, updatedByUser] = await Promise.all([
+        const [ itemStorage, itemName] = await Promise.all([
             
             StoragePlace.findOne({ where: { id: item.storagePlaceId } }),
-            ItemName.findOne({ where: { id: item.itemNameId } }),
-            User.findOne({ where: { id: item.createdBy } }),
-            User.findOne({ where: { id: item.updatedBy } })
+            ItemName.findOne({ where: { id: item.itemNameId } })
         ]);
-
-        const createdAt = moment(item.createdAt).format('YYYY.MM.DD HH:mm:ss');
-        const updatedAt = moment(item.updatedAt).format('YYYY.MM.DD HH:mm:ss');
 
         
 
