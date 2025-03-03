@@ -8,6 +8,8 @@ import { BaseService } from '../../services/base.service';
 })
 export class DashboardComponent implements OnInit {
   // showAdminCrud: boolean = false;
+  itemNameId: number = 0;
+  storagePlaceId: number = 0;
 
   newStoragePlace: string = '';
   storagePlaces: any[] = [];
@@ -31,12 +33,19 @@ export class DashboardComponent implements OnInit {
     description: '',
     itemCode:''
   };
-  itemModels = [
-    {key: 'item', text:'item', type: 'string'},
-    {key: 'storage', text:'storage', type: 'string'},
-    {key: 'description', text:'description', type: 'string'},
-    {key: 'itemCode', text:'itemCode', type: 'string'}
-  ]
+
+  updatedItem: any = {
+    id: null,
+    itemNameId: null,
+    storagePlaceId: null,
+    description:''
+  }
+  // itemModels = [
+  //   {key: 'item', text:'item', type: 'string'},
+  //   {key: 'storage', text:'storage', type: 'string'},
+  //   {key: 'description', text:'description', type: 'string'},
+  //   {key: 'itemCode', text:'itemCode', type: 'string'}
+  // ]
   
   constructor(private baseService: BaseService) { }
 
@@ -62,7 +71,6 @@ export class DashboardComponent implements OnInit {
   loadStoragePlaces(): void {
     this.baseService.getStoragePlaces().subscribe(data => {
       this.storagePlaces = data;
-      console.log(this.storagePlaces);
     });
   }
 
@@ -120,6 +128,7 @@ export class DashboardComponent implements OnInit {
   loadItems(): void {
     this.baseService.getItems().subscribe(data => {
       this.items = data;
+      console.log(this.items);
     });
   }
 

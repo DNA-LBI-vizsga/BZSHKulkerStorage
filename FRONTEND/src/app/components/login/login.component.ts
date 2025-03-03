@@ -19,7 +19,7 @@ export class LoginComponent {
       response => {
         if (response.token) {
           localStorage.setItem('authToken',response.token);
-          this.router.navigate(['/navbar']); // Navigate to the home page or another page after login
+          this.router.navigate(['/navbar/dashboard']); // Navigate to the home page or another page after login
           console.log('Logged in:', response);
         }
       },
