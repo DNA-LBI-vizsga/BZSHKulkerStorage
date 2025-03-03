@@ -1,4 +1,4 @@
-const { StoragePlace } = require("../models/StoragePlaceModel");
+const { StoragePlace } = require("../../models/StoragePlaceModel");
 
 
 //storage_place endpoints

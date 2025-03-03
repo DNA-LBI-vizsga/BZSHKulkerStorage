@@ -4,31 +4,40 @@ const router = express.Router()
 
 const { Items } = require("../models/ItemsModel")
 
+const authUtils = require("../services/auth/authUtils.service")
+const users = require("../services/auth/User.service")
 
-const functions = require("../services/leltarFunctions")
-const items = require("../services/leltarItem")
-const name = require("../services/leltarName")
-const storage_place = require("../services/leltarStorage")
-const users = require("../services/leltarUser")
-const action = require("../services/leltarActionType")
-const logs = require("../services/leltarLogs")
-const { where } = require("sequelize")
+const items = require("../services/storage/Item.service")
+const name = require("../services/storage/ItemName.service")
+const storage_place = require("../services/storage/Storage.service")
+
+const action = require("../services/log/ActionType.service")
+const logs = require("../services/log/Logs.service")
 
 
+
+router.use(authUtils.authMiddle)
+
+router.post("/mail",
+    async function (req, res, next) {
+        const {to, subject, text, html} = req.body
+        try{
+            await authUtils.sendEmail(to, subject, text, html);
+        res.status(200).json({ message: 'Email sent successfully' });
+        }catch(err){
+            next(err)
+        }
+    }
+)
 
 
 //GET endpoints
 //storage_place
 router.get("/storagePlace", 
     async function(req, res, next){
-        const authHead = req.headers['authorization'] 
-
-        const tokenError = await functions.tokenChecker(authHead, res)
-        if(tokenError) return
         
-        const token = authHead.split(' ')[1]
+        
         try{
-            await functions.validateToken(token)
             res.json(await storage_place.getPlaces())
         }
         catch(err){
@@ -39,15 +48,8 @@ router.get("/storagePlace",
 /
 //item_name
 router.get("/itemName", 
-    async function(req, res, next){
-        const authHead = req.headers['authorization'] 
-
-        const tokenError = await functions.tokenChecker(authHead, res)
-        if(tokenError) return
-        
-        const token = authHead.split(' ')[1]
+    async function(res, next){
         try{
-            await functions.validateToken(token)
             res.json(await name.getItemNames())
         }
         catch(err){
@@ -56,15 +58,8 @@ router.get("/itemName",
 })
 
 router.get("/item", 
-    async function(req, res, next){
-        const authHead = req.headers['authorization'] 
-
-        const tokenError = await functions.tokenChecker(authHead, res)
-        if(tokenError) return
-        
-        const token = authHead.split(' ')[1]
+    async function(res, next){
         try{
-            await functions.validateToken(token)
             res.json(await items.getItems())
         }
         catch(err){
@@ -76,17 +71,9 @@ router.get("/item",
 
 //CREATE endpoints
 //storage_place
-router.post("/storagePlace",
+router.post("/storagePlace", authUtils.validateAdmin,
     async function(req, res, next){
-        const authHead = req.headers['authorization'] 
-
-        const tokenError = await functions.tokenChecker(authHead, res)
-        if(tokenError) return
-        
-        const token = authHead.split(' ')[1]
         try{
-            await functions.validateToken(token)
-            await functions.validateAdmin(token)
             const {storage} = req.body
             functions.checkRequiredFields(storage, res)
             res.json(await storage_place.createPlace(storage))
@@ -96,17 +83,10 @@ router.post("/storagePlace",
         }
 })
 //item_name
-router.post("/itemName", 
+router.post("/itemName", authUtils.validateAdmin, 
     async function(req, res, next){
-        const authHead = req.headers['authorization'] 
 
-        const tokenError = await functions.tokenChecker(authHead, res)
-        if(tokenError) return
-        
-        const token = authHead.split(' ')[1]
         try{
-            await functions.validateToken(token)
-            await functions.validateAdmin(token)
             const {item} = req.body
             functions.checkRequiredFields(item, res)
             res.json(await name.createItemName(item))
@@ -122,18 +102,11 @@ router.post("/itemName",
 router.post("/item/:quantity", 
 
     async function(req, res, next){
-        const authHead = req.headers['authorization'] 
 
-        const tokenError = await functions.tokenChecker(authHead, res)
-        if(tokenError) return
-        
-        const token = authHead.split(' ')[1]
         try{
-            await functions.validateToken(token)
             const httpMethod = req.method
 
-            const payload = jwt.verify(token, process.env.SECRET_KEY)
-            const createdBy = payload.id
+            const createdBy = req.user.id
 
             const {quantity} = req.params
             const {itemNameId, storagePlaceId, description} = req.body
@@ -154,7 +127,7 @@ router.post("/item/:quantity",
 })
 
 //actiontype
-router.post("/action", 
+router.post("/action", authUtils.validateAdmin,
     async function(req, res, next){
         try{
             const {actionType} = req.body
@@ -167,17 +140,11 @@ router.post("/action",
 
 //UPDATE endpoints
 //item_name
-router.put("/itemName/:id",
+router.put("/itemName/:id", authUtils.validateAdmin,
     async function(req, res, next){
-        const authHead = req.headers['authorization'] 
 
-        const tokenError = await functions.tokenChecker(authHead, res)
-        if(tokenError) return
-        
-        const token = authHead.split(' ')[1]
         try{
-            await functions.validateToken(token)
-            await functions.validateAdmin(token)
+
             const {id} = req.params
             const {item} = req.body
             res.json(await name.updateItemName(id, item))
@@ -188,19 +155,11 @@ router.put("/itemName/:id",
         }
 })
 
-router.put("/item/:id",
+router.put("/item/:id", authUtils.validateAdmin,
     async function (req, res, next) {
-        const authHead = req.headers['authorization'] 
 
-        const tokenError = await functions.tokenChecker(authHead, res)
-        if(tokenError) return
-        
-        const token = authHead.split(' ')[1]
         try{
-            await functions.validateToken(token)
-            await functions.validateAdmin(token)
-            const payload = jwt.verify(token, process.env.SECRET_KEY)
-            const createdBy = payload.id
+            const createdBy = req.user.id
             const httpMethod = req.method
             const {id} = req.params
             
@@ -237,15 +196,7 @@ router.put("/passwordChange",
 //storage_place
 router.delete("/storagePlace/:id",
     async function(req, res, next){
-        const authHead = req.headers['authorization'] 
-
-        const tokenError = await functions.tokenChecker(authHead, res)
-        if(tokenError) return
-        
-        const token = authHead.split(' ')[1]
         try{
-            await functions.validateToken(token)
-            await functions.validateAdmin(token)
             const {id} = req.params
             res.json(await storage_place.deletePlace(id))
         }
@@ -254,17 +205,11 @@ router.delete("/storagePlace/:id",
         }
 })
 //item_name
-router.delete("/itemName/:id",
+router.delete("/itemName/:id", authUtils.validateAdmin,
     async function(req, res, next){
-        const authHead = req.headers['authorization'] 
 
-        const tokenError = await functions.tokenChecker(authHead, res)
-        if(tokenError) return
-        
-        const token = authHead.split(' ')[1]
         try{
-            await functions.validateToken(token)
-            await functions.validateAdmin(token)
+
             const {id} = req.params
             res.json(await name.deleteItemName(id))
         }
@@ -274,21 +219,11 @@ router.delete("/itemName/:id",
 })
 
 //item
-router.patch("/item/:id",
+router.patch("/item/:id", authUtils.validateAdmin,
     async function(req, res, next){
-        const authHead = req.headers['authorization'] 
-        
-        
-        const tokenError = await functions.tokenChecker(authHead, res)
-        const token = authHead.split(' ')[1]
-        if(tokenError) return
-        
         try{
-            await functions.validateToken(token)
-            await functions.validateAdmin(token)
             const httpMethod = req.method
-            const payload = jwt.verify(token, process.env.SECRET_KEY)
-            const createdBy = payload.id
+            const createdBy = req.user.id
             const {id} = req.params
             res.json(await items.deleteItem(id))
 

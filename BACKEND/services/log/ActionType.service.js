@@ -1,4 +1,4 @@
-const { ActionType } = require("../models/ActionTypeModel");
+const { ActionType } = require("../../models/ActionTypeModel");
 
 async function createActionType(actionType){
     try{

@@ -1,4 +1,4 @@
-const { ItemName } = require("../models/ItemNameModel");
+const { ItemName } = require("../../models/ItemNameModel");
 
 async function getItemNames() {
 try {

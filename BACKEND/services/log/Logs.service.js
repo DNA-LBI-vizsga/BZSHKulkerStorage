@@ -1,4 +1,4 @@
-const { Logs } = require("../models/LogModel");
+const { Logs } = require("../../models/LogModel");
 
 
 async function createLogs(itemId, updatedBy, httpMethod) {
