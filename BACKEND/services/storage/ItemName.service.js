@@ -1,4 +1,4 @@
-const { ItemName } = require("../../models/ItemNameModel");
+import { ItemName } from "../../models/ItemNameModel.js";
 
 async function getItemNames() {
 try {
@@ -47,7 +47,7 @@ async function deleteItemName(id){
     }
     
 }
-module.exports = {
+export{
     getItemNames,
     createItemName,
     updateItemName,

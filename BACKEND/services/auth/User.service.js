@@ -1,5 +1,5 @@
-const { User } = require("../../models/UserModel")
-const bcrypt = require("bcrypt")
+import { User } from "../../models/UserModel.js"
+import { hash } from "bcrypt"
 
 
 async function getUser(){
@@ -14,10 +14,10 @@ async function getUser(){
 async function createUser(name, password, isAdmin){
     
     
-    const userPassword = password || 'leltarjelszo';
+    const userPassword = password;
     try{
         const numSalts = 10
-        const hashedPassword = await bcrypt.hash(userPassword, numSalts) 
+        const hashedPassword = await hash(String(userPassword), numSalts) 
         const user = await User.create(
             { userName: name, userPassword: hashedPassword, isAdmin: isAdmin }
 
@@ -26,6 +26,7 @@ async function createUser(name, password, isAdmin){
         return {message: `User ${user.userName} created successfully` }
     }
     catch(err){
+        console.error(err);
         throw new Error('Failed to create user'); 
     }
 }
@@ -43,7 +44,7 @@ async function updateUser(userName, newPassword) {
         }
 
         const numSalts = 10
-        const hashedPassword = await bcrypt.hash(newPassword, numSalts) 
+        const hashedPassword = await hash(newPassword, numSalts) 
 
         console.log(hashedPassword, newPassword)
 
@@ -62,7 +63,7 @@ async function updateUser(userName, newPassword) {
 }
 
 
-module.exports = {
+export{
     getUser,
     createUser,
     updateUser

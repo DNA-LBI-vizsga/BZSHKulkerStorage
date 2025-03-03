@@ -1,4 +1,4 @@
-const { Logs } = require("../../models/LogModel");
+import { Logs } from "../../models/LogModel.js";
 
 
 async function createLogs(itemId, updatedBy, httpMethod) {
@@ -29,6 +29,6 @@ async function createLogs(itemId, updatedBy, httpMethod) {
     
 }
 
-module.exports = {
+export{
     createLogs
 }

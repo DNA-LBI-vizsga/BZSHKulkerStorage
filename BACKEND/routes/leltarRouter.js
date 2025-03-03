@@ -1,28 +1,35 @@
-const express = require("express")
-const jwt = require("jsonwebtoken")
-const router = express.Router()
+import { Router } from "express"
+import pkg from 'jsonwebtoken';
+const { sign } = pkg;
+const router = Router()
 
-const { Items } = require("../models/ItemsModel")
+import { Items } from "../models/ItemsModel.js"
 
-const authUtils = require("../services/auth/authUtils.service")
-const users = require("../services/auth/User.service")
+import { authMiddle, checkPassword, genPassword, sendEmail, validateAdmin } from "../services/auth/authUtils.service.js"
+import { updateUser, createUser } from "../services/auth/User.service.js"
 
-const items = require("../services/storage/Item.service")
-const name = require("../services/storage/ItemName.service")
-const storage_place = require("../services/storage/Storage.service")
+import { getItems, createItem, updateItem, deleteItem } from "../services/storage/Item.service.js"
+import { getItemNames, createItemName, updateItemName, deleteItemName } from "../services/storage/ItemName.service.js"
+import { getPlaces, createPlace, deletePlace } from "../services/storage/Storage.service.js"
 
-const action = require("../services/log/ActionType.service")
-const logs = require("../services/log/Logs.service")
+import { createActionType } from "../services/log/ActionType.service.js"
+import { createLogs } from "../services/log/Logs.service.js"
 
 
 
-router.use(authUtils.authMiddle)
+
+router.use((req, res, next) => {
+    if (req.path === '/login') {
+        return next(); 
+    }
+    return authMiddle(req, res, next);
+});
 
 router.post("/mail",
     async function (req, res, next) {
         const {to, subject, text, html} = req.body
         try{
-            await authUtils.sendEmail(to, subject, text, html);
+            await sendEmail(to, subject, text, html);
         res.status(200).json({ message: 'Email sent successfully' });
         }catch(err){
             next(err)
@@ -38,7 +45,7 @@ router.get("/storagePlace",
         
         
         try{
-            res.json(await storage_place.getPlaces())
+            res.json(await getPlaces())
         }
         catch(err){
             next(err)
@@ -48,9 +55,9 @@ router.get("/storagePlace",
 /
 //item_name
 router.get("/itemName", 
-    async function(res, next){
+    async function(req, res, next){
         try{
-            res.json(await name.getItemNames())
+            res.json(await getItemNames())
         }
         catch(err){
             next(err)
@@ -58,9 +65,9 @@ router.get("/itemName",
 })
 
 router.get("/item", 
-    async function(res, next){
+    async function(req, res, next){
         try{
-            res.json(await items.getItems())
+            res.json(await getItems())
         }
         catch(err){
             next(err)
@@ -71,25 +78,25 @@ router.get("/item",
 
 //CREATE endpoints
 //storage_place
-router.post("/storagePlace", authUtils.validateAdmin,
+router.post("/storagePlace", validateAdmin,
     async function(req, res, next){
         try{
             const {storage} = req.body
-            functions.checkRequiredFields(storage, res)
-            res.json(await storage_place.createPlace(storage))
+            checkRequiredFields(storage, res)
+            res.json(await createPlace(storage))
         }
         catch(err){
             next(err)
         }
 })
 //item_name
-router.post("/itemName", authUtils.validateAdmin, 
+router.post("/itemName", validateAdmin, 
     async function(req, res, next){
 
         try{
             const {item} = req.body
-            functions.checkRequiredFields(item, res)
-            res.json(await name.createItemName(item))
+            checkRequiredFields(item, res)
+            res.json(await createItemName(item))
         }
         catch(err){
             next(err)
@@ -115,11 +122,11 @@ router.post("/item/:quantity",
                 return res.status(400).json({ message: 'Missing required fields' });
             }
 
-            res.json(await items.createItem(itemNameId, storagePlaceId, createdBy, description, quantity))
+            res.json(await createItem(itemNameId, storagePlaceId, createdBy, description, quantity))
             const item = await Items.findOne({ order: [['id', 'DESC']]})
 
 
-            logs.createLogs(item.id, createdBy, httpMethod)
+            createLogs(item.id, createdBy, httpMethod)
         }
         catch(err){
             next(err)
@@ -127,11 +134,11 @@ router.post("/item/:quantity",
 })
 
 //actiontype
-router.post("/action", authUtils.validateAdmin,
+router.post("/action", validateAdmin,
     async function(req, res, next){
         try{
             const {actionType} = req.body
-            res.json(await action.createActionType(actionType))
+            res.json(await createActionType(actionType))
         }
         catch(err){
             next(err)
@@ -140,14 +147,14 @@ router.post("/action", authUtils.validateAdmin,
 
 //UPDATE endpoints
 //item_name
-router.put("/itemName/:id", authUtils.validateAdmin,
+router.put("/itemName/:id", validateAdmin,
     async function(req, res, next){
 
         try{
 
             const {id} = req.params
             const {item} = req.body
-            res.json(await name.updateItemName(id, item))
+            res.json(await updateItemName(id, item))
             
         }
         catch(err){
@@ -155,7 +162,7 @@ router.put("/itemName/:id", authUtils.validateAdmin,
         }
 })
 
-router.put("/item/:id", authUtils.validateAdmin,
+router.put("/item/:id", validateAdmin,
     async function (req, res, next) {
 
         try{
@@ -164,10 +171,10 @@ router.put("/item/:id", authUtils.validateAdmin,
             const {id} = req.params
             
             const {storagePlaceId, itemNameId, description} = req.body
-            res.json(await items.updateItem(id, createdBy, storagePlaceId, itemNameId, description))
+            res.json(await updateItem(id, createdBy, storagePlaceId, itemNameId, description))
 
             const item = await Items.findOne({ order: [['id', 'DESC']]})
-            logs.createLogs(item.id, createdBy, httpMethod)
+            createLogs(item.id, createdBy, httpMethod)
             
         }
         catch(err){
@@ -181,7 +188,7 @@ router.put("/passwordChange",
         
         const {userName, newPassword} = req.body
         console.log(userName, newPassword)
-        res.json(await users.updateUser(userName, newPassword))
+        res.json(await updateUser(userName, newPassword))
         
     }
     catch(err){
@@ -198,20 +205,20 @@ router.delete("/storagePlace/:id",
     async function(req, res, next){
         try{
             const {id} = req.params
-            res.json(await storage_place.deletePlace(id))
+            res.json(await deletePlace(id))
         }
         catch(err){
             next(err)
         }
 })
 //item_name
-router.delete("/itemName/:id", authUtils.validateAdmin,
+router.delete("/itemName/:id", validateAdmin,
     async function(req, res, next){
 
         try{
 
             const {id} = req.params
-            res.json(await name.deleteItemName(id))
+            res.json(await deleteItemName(id))
         }
         catch(err){
             next(err)
@@ -219,16 +226,16 @@ router.delete("/itemName/:id", authUtils.validateAdmin,
 })
 
 //item
-router.patch("/item/:id", authUtils.validateAdmin,
+router.patch("/item/:id", validateAdmin,
     async function(req, res, next){
         try{
             const httpMethod = req.method
             const createdBy = req.user.id
             const {id} = req.params
-            res.json(await items.deleteItem(id))
+            res.json(await deleteItem(id))
 
             const item = await Items.findOne({ order: [['id', 'DESC']]})
-            logs.createLogs(item.id, createdBy, httpMethod)
+            createLogs(item.id, createdBy, httpMethod)
         }
         catch(err){
             next(err)
@@ -244,11 +251,11 @@ router.post('/login', async (req, res) => {
             return res.status(400).json({ message: "Missing name or password" });
         }
         
-        const user = await functions.checkPassword(userName, userPassword);
+        const user = await checkPassword(userName, userPassword);
         if (!user) {
             return res.status(401).json({ message: "Invalid credentials" });
         }else{
-            const token = jwt.sign({ id: user.id, isAdmin: user.isAdmin }, process.env.SECRET_KEY, { expiresIn: "4h" });
+            const token = sign({ id: user.id, isAdmin: user.isAdmin }, process.env.SECRET_KEY, { expiresIn: "4h" });
 
             return res.status(200).json({token, message: "Login successful" });
         }
@@ -260,30 +267,25 @@ router.post('/login', async (req, res) => {
 });
 
 router.post('/register',  async (req, res) => {
-        // const authHead = req.headers['authorization'] 
-
-        // const tokenError = await functions.tokenChecker(authHead, res)
-        // if(tokenError) return
         
-        // const token = authHead.split(' ')[1]
     
     
     try {
-        // await functions.validateToken(token)
-        // await functions.validateAdmin(token)
         
-        const { userName, userPassword, isAdmin } = req.body;
-        console.log(userName)
+        const userPassword = await genPassword() 
+        const { userEmail, userName, isAdmin } = req.body;
+        console.log(userName, userPassword)
 
         
-        if (!userName || userName=="" || isAdmin==null) {
+        if (!userName || userName==""|| (await userPassword).length != 16 ||  userPassword==null || isAdmin==null) {
             return res.status(400).json({ message: 'Missing required fields' });
         }
-        const user = await users.createUser(userName, userPassword, isAdmin);
+        const user = await createUser(userName, userPassword, isAdmin);
+        const email = await sendEmail(userEmail, 'Jelszó', `Felhasználónév:${userName}\n Jelszó: ${String(userPassword)}`, ` Felhasználónév:${userName}\n Jelszó: ${String(userPassword)}`)
         return res.status(201).json({ message: `User created` });
     } catch (error) {
         return res.status(500).json({ message: error.message });
     }
 });
 
-module.exports = router
+export default router

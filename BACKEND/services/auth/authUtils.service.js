@@ -1,23 +1,26 @@
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
-const { User } = require("../../models/UserModel");
-require('dotenv').config(); 
-const sgMail = require('@sendgrid/mail')
+import { compare } from "bcrypt";
+import gkp from 'jsonwebtoken';
+const { verify } = gkp;
+import { User } from "../../models/UserModel.js";
+import dotenv from 'dotenv';
+dotenv.config();
+
+import crypto from 'crypto'
+import sgMail from '@sendgrid/mail';
 
 const mailing = {
     apiKey: process.env.SENDGRID_API_KEY
 };
 
-
 sgMail.setApiKey(mailing.apiKey)
 
 async function sendEmail(to, subject, text, html) {
     const msg = {
-        to: to,
+        to,
         from: 'levaibalazsistvan@ktch.hu',
-        subject: subject,
-        text: text,
-        html: html,
+        subject,
+        text,
+        html
     };
 
     try {
@@ -28,14 +31,13 @@ async function sendEmail(to, subject, text, html) {
     }
 }
 
-
 async function checkPassword(name, password){
     try {
         const user = await User.findOne({where:{userName:name}})
         
         if(!user){return null}
         
-        const isMatch = await bcrypt.compare(password, user.userPassword);
+        const isMatch = await compare(password, user.userPassword);
         
         if(!isMatch){return null}
         
@@ -68,7 +70,7 @@ async function validateToken(token) {
     }
 
     try {
-        return jwt.verify(token, process.env.SECRET_KEY);
+        return verify(token, process.env.SECRET_KEY);
     } catch (err) {
         throw new Error('Invalid token: ' + err.message);
     }
@@ -108,11 +110,16 @@ async function checkRequiredFields(requiredField, res) {
     }
 }
 
+async function genPassword(){
+    const randomString = crypto.randomBytes(8).toString('hex'); 
+    return randomString
+}
 
-module.exports = {    
+export{    
     checkPassword,
     validateAdmin,
     checkRequiredFields,
     authMiddle,
-    sendEmail
+    sendEmail,
+    genPassword
 }

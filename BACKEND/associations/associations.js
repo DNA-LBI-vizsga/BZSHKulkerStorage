@@ -1,9 +1,9 @@
-const { ItemName } = require("../models/ItemNameModel");
-const { Items } = require("../models/ItemsModel");
-const { StoragePlace } = require("../models/StoragePlaceModel");
-const { ActionType } = require("../models/ActionTypeModel");
-const { Logs } = require("../models/LogModel");
-const { User } = require("../models/UserModel");
+import { ItemName } from "../models/ItemNameModel.js";
+import { Items } from "../models/ItemsModel.js";
+import { StoragePlace } from "../models/StoragePlaceModel.js";
+import { ActionType } from "../models/ActionTypeModel.js";
+import { Logs } from "../models/LogModel.js";
+import { User } from "../models/UserModel.js";
 
 
 ItemName.hasMany(Items, { foreignKey: 'itemNameId' });
@@ -21,7 +21,7 @@ Logs.belongsTo(ActionType, { foreignKey: 'actionTypeId' });
 Items.hasMany(Logs, { foreignKey: 'itemId' });
 Logs.belongsTo(Items, { foreignKey: 'itemId' });
 
-module.exports = {
+export{
     ItemName,
     StoragePlace,
     User,

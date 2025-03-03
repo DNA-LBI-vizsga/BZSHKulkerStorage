@@ -1,15 +1,15 @@
-const express = require('express');
-const cors = require('cors');
+import express from 'express';
+import cors from 'cors';
 const app = express();
-const leltarRouters = require('./routes/leltarRouter');
-const sequelize = require('./config.js');
-require("./associations/associations.js");
+import leltarRouters from './routes/leltarRouter.js';
+import { sequelize as _sequelize } from './config.js';
+import "./associations/associations.js";
 
 app.use(express.json())
 
 async function syncDatabase() {
     try {
-        await sequelize.sequelize.sync({ force: false}); // force: false ensures it won't drop existing tables
+        await _sequelize.sync({ force: false}); // force: false ensures it won't drop existing tables
         console.log('Database synced!');
     } catch (error) {
         console.error('Error syncing database:', error);
@@ -37,12 +37,11 @@ app.use(
     }
 )
 
-syncDatabase();
-
-
-
-app.listen(3000, () => {
-    console.log('Server is running on port 3000');
-    
+syncDatabase().then(() => {
+    app.listen(3000, () => {
+        console.log('Server is running on port 3000');
+    });
 });
+
+
 

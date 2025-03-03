@@ -1,4 +1,4 @@
-const { ActionType } = require("../../models/ActionTypeModel");
+import { ActionType } from "../../models/ActionTypeModel.js";
 
 async function createActionType(actionType){
     try{
@@ -14,6 +14,6 @@ async function createActionType(actionType){
 }
 
 
-module.exports = {
+export{
     createActionType
 }

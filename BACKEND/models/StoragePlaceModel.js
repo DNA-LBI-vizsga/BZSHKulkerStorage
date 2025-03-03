@@ -1,5 +1,6 @@
-const { DataTypes } = require("sequelize");
-const { sequelize } = require("../config.js");
+import pkg from 'sequelize';
+const { DataTypes } = pkg;
+import { sequelize } from "../config.js";
 
 const StoragePlace = sequelize.define('StoragePlace', {
     id: {
@@ -20,6 +21,6 @@ const StoragePlace = sequelize.define('StoragePlace', {
 );
 
 
-module.exports = { 
+export{ 
     StoragePlace 
 };

@@ -1,6 +1,6 @@
-const { ItemName } = require("../../models/ItemNameModel");
-const { Items } = require("../../models/ItemsModel");
-const { StoragePlace } = require("../../models/StoragePlaceModel");
+import { ItemName } from "../../models/ItemNameModel.js";
+import { Items } from "../../models/ItemsModel.js";
+import { StoragePlace } from "../../models/StoragePlaceModel.js";
 
 
 
@@ -106,7 +106,7 @@ async function updateItem(id, updatedBy, storagePlaceId, itemNameId, description
 
 
 
-module.exports = {
+export{
     getItems,
     createItem, 
     deleteItem,

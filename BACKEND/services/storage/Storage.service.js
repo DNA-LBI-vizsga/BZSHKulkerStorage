@@ -1,4 +1,4 @@
-const { StoragePlace } = require("../../models/StoragePlaceModel");
+import { StoragePlace } from "../../models/StoragePlaceModel.js";
 
 
 //storage_place endpoints
@@ -41,7 +41,7 @@ async function deletePlace(id){
 }
 
 
-module.exports = {
+export{
     getPlaces,
     createPlace,
     deletePlace

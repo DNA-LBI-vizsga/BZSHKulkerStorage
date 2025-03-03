@@ -1,5 +1,6 @@
-require('dotenv').config(); 
-const { Sequelize } = require('sequelize');
+import dotenv from 'dotenv';
+dotenv.config();
+import { Sequelize } from 'sequelize';
 
 const config = {
     db: {
@@ -22,7 +23,7 @@ const sequelize = new Sequelize(config.db.database, config.db.user, config.db.pa
     timezone: '+01:00'
 });
 
-module.exports = {
+export{
     sequelize,
     mailing
 };

@@ -1,5 +1,6 @@
-const { DataTypes } = require("sequelize");
-const { sequelize } = require("../config.js");
+import pkg from 'sequelize';
+const { DataTypes } = pkg;
+import { sequelize } from "../config.js";
 
 
 
@@ -33,7 +34,7 @@ const Items = sequelize.define('Item', {
     }
 );
 
-module.exports = {  
+export{  
     Items 
 };
     
