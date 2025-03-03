@@ -1,6 +1,6 @@
-const { ItemName } = require("../models/ItemNameModel");
-const { Items } = require("../models/ItemsModel");
-const { StoragePlace } = require("../models/StoragePlaceModel");
+const { ItemName } = require("../../models/ItemNameModel");
+const { Items } = require("../../models/ItemsModel");
+const { StoragePlace } = require("../../models/StoragePlaceModel");
 
 
 

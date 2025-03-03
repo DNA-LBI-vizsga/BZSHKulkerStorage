@@ -11,6 +11,10 @@ const config = {
     }
 };
 
+const mailing = {
+    apiKey: process.env.SENDGRID_API_KEY
+}
+
 const sequelize = new Sequelize(config.db.database, config.db.user, config.db.password, {
     host: config.db.host,
     dialect: config.db.dialect,
@@ -19,5 +23,6 @@ const sequelize = new Sequelize(config.db.database, config.db.user, config.db.pa
 });
 
 module.exports = {
-    sequelize
+    sequelize,
+    mailing
 };
