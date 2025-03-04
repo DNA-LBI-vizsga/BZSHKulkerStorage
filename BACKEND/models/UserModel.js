@@ -3,7 +3,7 @@ const { DataTypes } = pkg;
 import { sequelize } from "../config.js"; 
 
 const User = sequelize.define('User', {
-    userName: {
+    userEmail: {
         type: DataTypes.STRING,
         allowNull: false,
         unique: true,
@@ -16,6 +16,11 @@ const User = sequelize.define('User', {
         type: DataTypes.BOOLEAN,
         defaultValue: false,
         allowNull: true 
+    },
+    isFirstLogin: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: true,
+        allowNull: false
     }
 },
     {

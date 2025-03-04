@@ -61,7 +61,7 @@ async function createItem(itemNameId, storagePlaceId, createdBy, description, qu
         const item = await Items.bulkCreate(newItems);
         return item;
     }catch (error) {
-        throw new Error("Failed to create item(s)");
+        throw new Error("Failed to create item(s)" + error);
     }
 
 

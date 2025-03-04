@@ -1,6 +1,7 @@
+import { sequelize } from "../config.js"; 
 import pkg from 'sequelize';
 const { DataTypes } = pkg;
-import { sequelize } from "../config.js"; 
+
 
 const ItemName = sequelize.define('ItemName', {
     id: {
@@ -10,9 +11,8 @@ const ItemName = sequelize.define('ItemName', {
         primaryKey: true
     },
     item: {
-        type: DataTypes.STRING(35),
-        allowNull: false,
-        unique: true
+        type: DataTypes.STRING(30),
+        allowNull: false
     }},
     {
         tableName: 'item_name',

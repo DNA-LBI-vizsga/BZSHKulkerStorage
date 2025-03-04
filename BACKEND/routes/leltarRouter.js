@@ -5,7 +5,7 @@ const router = Router()
 
 import { Items } from "../models/ItemsModel.js"
 
-import { authMiddle, checkPassword, genPassword, sendEmail, validateAdmin } from "../services/auth/authUtils.service.js"
+import { authMiddle, checkPassword, checkRequiredFields, genPassword, sendEmail, validateAdmin } from "../services/auth/authUtils.service.js"
 import { updateUser, createUser } from "../services/auth/User.service.js"
 
 import { getItems, createItem, updateItem, deleteItem } from "../services/storage/Item.service.js"
@@ -19,7 +19,7 @@ import { createLogs } from "../services/log/Logs.service.js"
 
 
 router.use((req, res, next) => {
-    if (req.path === '/login') {
+    if (req.path === '/login' || req.path ==='/register') {
         return next(); 
     }
     return authMiddle(req, res, next);
@@ -186,9 +186,9 @@ router.put("/passwordChange",
     async function(req, res, next){
         try{
         
-        const {userName, newPassword} = req.body
-        console.log(userName, newPassword)
-        res.json(await updateUser(userName, newPassword))
+        const {userEmail, newPassword} = req.body
+        console.log(userEmail, newPassword)
+        res.json(await updateUser(userEmail, newPassword))
         
     }
     catch(err){
@@ -273,15 +273,14 @@ router.post('/register',  async (req, res) => {
     try {
         
         const userPassword = await genPassword() 
-        const { userEmail, userName, isAdmin } = req.body;
-        console.log(userName, userPassword)
+        const { userEmail,  isAdmin } = req.body;
 
         
-        if (!userName || userName==""|| (await userPassword).length != 16 ||  userPassword==null || isAdmin==null) {
+        if (!userEmail || userEmail==""|| isAdmin==null) {
             return res.status(400).json({ message: 'Missing required fields' });
         }
-        const user = await createUser(userName, userPassword, isAdmin);
-        const email = await sendEmail(userEmail, 'Jelszó', `Felhasználónév:${userName}\n Jelszó: ${String(userPassword)}`, ` Felhasználónév:${userName}\n Jelszó: ${String(userPassword)}`)
+        const user = await createUser(userEmail, userPassword, isAdmin);
+        const email = await sendEmail(userEmail, 'Jelszó', `Jelszó: ${String(userPassword)}`, `Jelszó: ${String(userPassword)}`)
         return res.status(201).json({ message: `User created` });
     } catch (error) {
         return res.status(500).json({ message: error.message });

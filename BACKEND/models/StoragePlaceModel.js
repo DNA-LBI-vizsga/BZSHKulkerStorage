@@ -1,6 +1,7 @@
+import { sequelize } from "../config.js";
 import pkg from 'sequelize';
 const { DataTypes } = pkg;
-import { sequelize } from "../config.js";
+
 
 const StoragePlace = sequelize.define('StoragePlace', {
     id: {
@@ -11,9 +12,9 @@ const StoragePlace = sequelize.define('StoragePlace', {
     },
     storage: {
         type: DataTypes.STRING(20),
-        allowNull: false,
-        unique: true
-    }},
+        allowNull: false
+    }
+},
     {
         tableName: 'storage_place',
         timestamps: false 

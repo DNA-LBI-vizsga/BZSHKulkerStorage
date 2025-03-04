@@ -11,7 +11,7 @@ async function getUser(){
     }
 }
 
-async function createUser(name, password, isAdmin){
+async function createUser(email, password, isAdmin){
     
     
     const userPassword = password;
@@ -19,11 +19,11 @@ async function createUser(name, password, isAdmin){
         const numSalts = 10
         const hashedPassword = await hash(String(userPassword), numSalts) 
         const user = await User.create(
-            { userName: name, userPassword: hashedPassword, isAdmin: isAdmin }
+            { userEmail: email, userPassword: hashedPassword, isAdmin: isAdmin }
 
         )
         
-        return {message: `User ${user.userName} created successfully` }
+        return {message: `User created successfully` }
     }
     catch(err){
         console.error(err);
@@ -32,15 +32,15 @@ async function createUser(name, password, isAdmin){
 }
 
 
-async function updateUser(userName, newPassword) {
-    console.log(newPassword, userName)
-    //findOne({ where: {id: id}})
+async function updateUser(userEmail, newPassword) {
+
+
     try{
-        const user = await User.findOne({where:{name: userName}})
+        const user = await User.findOne({where:{userEmail: userEmail}})
         console.log(user)
 
         if (!user) {
-            throw new Error(`User ${user.userName} not found`);
+            throw new Error(`User not found`);
         }
 
         const numSalts = 10
@@ -49,9 +49,10 @@ async function updateUser(userName, newPassword) {
         console.log(hashedPassword, newPassword)
 
         user.set({
-            userName: user.userName,
+            userEmail: user.userEmail,
             userPassword: hashedPassword,
-            isAdmin: user.isAdmin
+            isAdmin: user.isAdmin,
+            isFirstLogin: false
         })  
 
         await user.save()
@@ -61,7 +62,6 @@ async function updateUser(userName, newPassword) {
         throw new Error('Error changing password'); 
     }
 }
-
 
 export{
     getUser,

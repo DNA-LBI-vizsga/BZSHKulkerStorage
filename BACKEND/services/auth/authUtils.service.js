@@ -51,7 +51,7 @@ async function checkPassword(name, password){
 
 async function validateAdmin(req, res, next) {
     try {
-        const user = await User.findOne({ where: { id: req.user.userId } });
+        const user = await User.findOne({ where: { id: req.user.id } });
 
         if (!user || !user.isAdmin) {
             return res.status(403).json({ message: 'Access denied' });
@@ -115,11 +115,20 @@ async function genPassword(){
     return randomString
 }
 
+async function isFirstLogin(req, res, next) {
+    const user = await User.findOne({where:{
+        id: req.user.id,
+        isFirstLogin: true
+    }})
+    return user
+}
+
 export{    
     checkPassword,
     validateAdmin,
     checkRequiredFields,
     authMiddle,
     sendEmail,
-    genPassword
+    genPassword,
+    isFirstLogin
 }
