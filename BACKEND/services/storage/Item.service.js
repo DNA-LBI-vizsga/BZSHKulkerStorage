@@ -1,8 +1,8 @@
 import { ItemName } from "../../models/ItemNameModel.js";
 import { Items } from "../../models/ItemsModel.js";
 import { StoragePlace } from "../../models/StoragePlaceModel.js";
-
-
+import Sequelize from 'sequelize';
+const { Op } = Sequelize;
 
 async function getItems() {
     try {
@@ -85,21 +85,30 @@ async function deleteItem(id){
 }
 
 
-async function updateItem(id, updatedBy, storagePlaceId, itemNameId, description) {
+async function updateItem(storagePlaceId, description, quantity) {
 
     try{
-        const item = await Items.findOne({where:{id:id}}) 
-        item.set({
-            updatedBy: updatedBy,
-            storagePlaceId: storagePlaceId,
-            itemNameId: itemNameId,
-            description: description
+        const items = await Items.findAll(
+            {where: {
+                storagePlaceId: {
+                  [Op.ne]: storagePlaceId
+                }},
+            order: [['id', 'DESC']],
+            limit: parseInt(quantity)
         })
-        await item.save();
+       
+        items.forEach(item => {
+            item.set({
+                storagePlaceId: storagePlaceId,
+                description: description
+            });
+        });
+        await Promise.all(items.map(item => item.save()));
+        
         return {message: "Item updated"}
     }
     catch(err){
-        throw new Error("Failed to update item");
+        throw new Error("Failed to update item" + err);
     }    
 }
 

@@ -162,20 +162,22 @@ router.put("/itemName/:id", validateAdmin,
         }
 })
 
-router.put("/item/:id", validateAdmin,
+router.put("/item/:quantity", validateAdmin,
     async function (req, res, next) {
 
         try{
             const createdBy = req.user.id
             const httpMethod = req.method
-            const {id} = req.params
+            const {quantity} = req.params
             
-            const {storagePlaceId, itemNameId, description} = req.body
-            res.json(await updateItem(id, createdBy, storagePlaceId, itemNameId, description))
+            const {storagePlaceId,  description} = req.body
+            res.json(await updateItem(storagePlaceId, description, quantity))
 
-            const item = await Items.findOne({ order: [['id', 'DESC']]})
-            createLogs(item.id, createdBy, httpMethod)
-            
+            const items = await Items.findAll({ order: [['id', 'DESC']], limit: parseInt(quantity) })
+            for (let i = 0; i < items.length; i++) {
+                const item = items[i];
+                createLogs(item.id, createdBy, httpMethod);
+            }
         }
         catch(err){
             next(err)
@@ -272,15 +274,15 @@ router.post('/register',  async (req, res) => {
     
     try {
         
-        const userPassword = await genPassword() 
-        const { userEmail,  isAdmin } = req.body;
+        //const userPassword = await genPassword() 
+        const { userEmail, userPassword, isAdmin } = req.body;
 
         
         if (!userEmail || userEmail==""|| isAdmin==null) {
             return res.status(400).json({ message: 'Missing required fields' });
         }
         const user = await createUser(userEmail, userPassword, isAdmin);
-        const email = await sendEmail(userEmail, 'Jelszó', `Jelszó: ${String(userPassword)}`, `Jelszó: ${String(userPassword)}`)
+        //const email = await sendEmail(userEmail, 'Jelszó', `Jelszó: ${String(userPassword)}`, `Jelszó: ${String(userPassword)}`)
         return res.status(201).json({ message: `User created` });
     } catch (error) {
         return res.status(500).json({ message: error.message });
