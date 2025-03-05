@@ -31,9 +31,9 @@ async function sendEmail(to, subject, text, html) {
     }
 }
 
-async function checkPassword(name, password){
+async function checkPassword(userEmail, password){
     try {
-        const user = await User.findOne({where:{userName:name}})
+        const user = await User.findOne({where:{userEmail:userEmail}})
         
         if(!user){return null}
         

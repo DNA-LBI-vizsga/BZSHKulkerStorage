@@ -246,12 +246,12 @@ router.patch("/item/:id", validateAdmin,
 //functions 
 router.post('/login', async (req, res) => {
     try {
-        const { userName, userPassword } = req.body;
-        if (!userName || !userPassword) {
+        const { userEmail, userPassword } = req.body;
+        if (!userEmail || !userPassword) {
             return res.status(400).json({ message: "Missing name or password" });
         }
         
-        const user = await checkPassword(userName, userPassword);
+        const user = await checkPassword(userEmail, userPassword);
         if (!user) {
             return res.status(401).json({ message: "Invalid credentials" });
         }else{
