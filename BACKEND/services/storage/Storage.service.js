@@ -21,7 +21,7 @@ async function createPlace(storage_place){
         return {message: "Storage place created"}
     }
     catch(err){
-        throw new Error("Failed to create storage place" +err);
+        throw new Error("Failed to create storage place" + err);
     }
     
 }

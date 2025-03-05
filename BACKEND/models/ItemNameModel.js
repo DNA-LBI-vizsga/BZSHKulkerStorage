@@ -12,10 +12,11 @@ const ItemName = sequelize.define('ItemName', {
     },
     item: {
         type: DataTypes.STRING(30),
-        allowNull: false
+        allowNull: false,
+        unique: true    
     }},
     {
-        tableName: 'item_name',
+        tableName: 'ITEM_NAME',
         timestamps: false 
     }
 );

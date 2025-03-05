@@ -5,14 +5,12 @@ const router = Router()
 
 import { Items } from "../models/ItemsModel.js"
 
-import { authMiddle, checkPassword, checkRequiredFields, genPassword, sendEmail, validateAdmin } from "../services/auth/authUtils.service.js"
+import { authMiddle, checkPassword, checkRequiredFields, genPassword, sendEmail,  } from "../services/auth/authUtils.service.js"
 import { updateUser, createUser } from "../services/auth/User.service.js"
 
 import { getItems, createItem, updateItem, deleteItem } from "../services/storage/Item.service.js"
 import { getItemNames, createItemName, updateItemName, deleteItemName } from "../services/storage/ItemName.service.js"
 import { getPlaces, createPlace, deletePlace } from "../services/storage/Storage.service.js"
-
-import { createActionType } from "../services/log/ActionType.service.js"
 import { createLogs } from "../services/log/Logs.service.js"
 
 
@@ -78,11 +76,11 @@ router.get("/item",
 
 //CREATE endpoints
 //storage_place
-router.post("/storagePlace", validateAdmin,
+router.post("/storagePlace", 
     async function(req, res, next){
         try{
             const {storage} = req.body
-            checkRequiredFields(storage, res)
+            await checkRequiredFields(storage, res)
             res.json(await createPlace(storage))
         }
         catch(err){
@@ -90,12 +88,12 @@ router.post("/storagePlace", validateAdmin,
         }
 })
 //item_name
-router.post("/itemName", validateAdmin, 
+router.post("/itemName", 
     async function(req, res, next){
 
         try{
             const {item} = req.body
-            checkRequiredFields(item, res)
+            await checkRequiredFields(item, res)
             res.json(await createItemName(item))
         }
         catch(err){
@@ -106,7 +104,7 @@ router.post("/itemName", validateAdmin,
 
 
 //item
-router.post("/item/:quantity", 
+router.post("/item", 
 
     async function(req, res, next){
 
@@ -115,39 +113,34 @@ router.post("/item/:quantity",
 
             const createdBy = req.user.id
 
-            const {quantity} = req.params
-            const {itemNameId, storagePlaceId, description} = req.body
+            const {itemNameId, storagePlaceId, quantity, description} = req.body
 
             if (!itemNameId || !storagePlaceId || !createdBy || !quantity) {
                 return res.status(400).json({ message: 'Missing required fields' });
             }
 
+            
+            const item = await Items.findOne({ where: { itemNameId: itemNameId, storagePlaceId: storagePlaceId }});
+            
+            let previousQuantity
+            if (item) {
+                previousQuantity = item.quantity
+            }
+            
+            let  quantityChange = `+${String(quantity)}`
+            await createLogs(itemNameId, storagePlaceId, quantityChange, previousQuantity,  createdBy, httpMethod)
             res.json(await createItem(itemNameId, storagePlaceId, createdBy, description, quantity))
-            const item = await Items.findOne({ order: [['id', 'DESC']]})
-
-
-            createLogs(item.id, createdBy, httpMethod)
         }
         catch(err){
             next(err)
         }
 })
 
-//actiontype
-router.post("/action", validateAdmin,
-    async function(req, res, next){
-        try{
-            const {actionType} = req.body
-            res.json(await createActionType(actionType))
-        }
-        catch(err){
-            next(err)
-        }
-})
+
 
 //UPDATE endpoints
 //item_name
-router.put("/itemName/:id", validateAdmin,
+router.put("/itemName/:id",
     async function(req, res, next){
 
         try{
@@ -162,22 +155,33 @@ router.put("/itemName/:id", validateAdmin,
         }
 })
 
-router.put("/item/:quantity", validateAdmin,
+router.put("/item",
     async function (req, res, next) {
 
         try{
             const createdBy = req.user.id
             const httpMethod = req.method
-            const {quantity} = req.params
             
-            const {storagePlaceId,  description} = req.body
-            res.json(await updateItem(storagePlaceId, description, quantity))
+            const {storagePlaceId, itemNameId, newStoragePlaceId, description, quantity} = req.body
+            res.json(await updateItem(storagePlaceId, itemNameId, newStoragePlaceId, description, quantity))
 
-            const items = await Items.findAll({ order: [['id', 'DESC']], limit: parseInt(quantity) })
-            for (let i = 0; i < items.length; i++) {
-                const item = items[i];
-                createLogs(item.id, createdBy, httpMethod);
+            const item = await Items.findOne({ where: { itemNameId: itemNameId, storagePlaceId: storagePlaceId }});
+            
+            let previousQuantityFrom
+            if (item) {
+                previousQuantityFrom = item.quantity
             }
+
+            const newItem = await Items.findOne({ where: { itemNameId: itemNameId, storagePlaceId: newStoragePlaceId }});
+            let previousQuantityTo
+            if (newItem) {
+                previousQuantityTo = newItem.quantity
+            }
+
+            let  quantityChangeFrom = `-${String(quantity)}`
+            let  quantityChangeTo = `+${String(quantity)}`
+            await createLogs(itemNameId, storagePlaceId,  quantityChangeFrom, previousQuantityFrom,  createdBy, httpMethod)
+            await createLogs(itemNameId, newStoragePlaceId,  quantityChangeTo, previousQuantityTo,  createdBy, httpMethod)
         }
         catch(err){
             next(err)
@@ -214,7 +218,7 @@ router.delete("/storagePlace/:id",
         }
 })
 //item_name
-router.delete("/itemName/:id", validateAdmin,
+router.delete("/itemName/:id",
     async function(req, res, next){
 
         try{
@@ -228,7 +232,7 @@ router.delete("/itemName/:id", validateAdmin,
 })
 
 //item
-router.patch("/item/:id", validateAdmin,
+router.patch("/item/:id",
     async function(req, res, next){
         try{
             const httpMethod = req.method
@@ -255,7 +259,7 @@ router.post('/login', async (req, res) => {
         
         const user = await checkPassword(userEmail, userPassword);
         if (!user) {
-            return res.status(401).json({ message: "Invalid credentials" });
+            return res.status(401).json({ message: "Ind credentials" });
         }else{
             const token = sign({ id: user.id, isAdmin: user.isAdmin }, process.env.SECRET_KEY, { expiresIn: "4h" });
 

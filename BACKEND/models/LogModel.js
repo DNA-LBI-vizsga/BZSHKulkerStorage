@@ -11,23 +11,38 @@ const Logs = sequelize.define('Log', {
         autoIncrement: true, 
         primaryKey: true
     },
-    itemId:{
+    itemNameId:{
         type: DataTypes.INTEGER,
         allowNull: false
     },
-    actionTypeId: {
+    storagePlaceId: {
         type: DataTypes.INTEGER,
         allowNull: false
     },
-    updatedBy:{
+    previousQuantity: {  
         type: DataTypes.INTEGER,
         allowNull: true
+    },
+    quantityChange:{
+        type: DataTypes.STRING(10),
+        allowNull: false,
+        defaultValue: '0'
+    },
+    actionType: {  
+        type: DataTypes.ENUM('ADD', 'UPDATE', 'DELETE'),
+        allowNull: false
+    },
+
+
+    createdBy:{
+        type: DataTypes.INTEGER,
+        allowNull: false
     }
     },  
     {
-        tableName: 'logs',
+        tableName: 'LOGS',
         timestamps: true,
-        createdAt: false
+        updatedAt: false
     }
 );
 

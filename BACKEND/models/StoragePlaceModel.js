@@ -12,11 +12,12 @@ const StoragePlace = sequelize.define('StoragePlace', {
     },
     storage: {
         type: DataTypes.STRING(20),
-        allowNull: false
+        allowNull: false,
+        unique: true
     }
 },
     {
-        tableName: 'storage_place',
+        tableName: 'STORAGE_PLACE',
         timestamps: false 
     }
 );

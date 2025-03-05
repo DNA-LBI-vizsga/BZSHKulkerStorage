@@ -19,17 +19,17 @@ const Items = sequelize.define('Item', {
         type: DataTypes.INTEGER,
         allowNull: false
     },
-    description: {
-        type: DataTypes.STRING(255),
+    quantity: {
+        type: DataTypes.INTEGER,
         allowNull: false
     },
-    isActive:{
-        type: DataTypes.BOOLEAN,
+    description: {
+        type: DataTypes.STRING(255),
         allowNull: false
     }
     },  
     {
-        tableName: 'items',
+        tableName: 'ITEMS',
         timestamps: false
     }
 );

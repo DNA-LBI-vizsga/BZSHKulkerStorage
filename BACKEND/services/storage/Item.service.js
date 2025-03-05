@@ -1,3 +1,4 @@
+import e from "express";
 import { ItemName } from "../../models/ItemNameModel.js";
 import { Items } from "../../models/ItemsModel.js";
 import { StoragePlace } from "../../models/StoragePlaceModel.js";
@@ -42,23 +43,20 @@ async function createItem(itemNameId, storagePlaceId, createdBy, description, qu
     
 
     
-    const newItems = [];
-
-    for(let i = 0; i<quantity; i++){
-        newItems.push({
+    const newItems = {
             itemNameId: itemNameId,
             storagePlaceId: storagePlaceId,
             createdBy: createdBy,
             description: description,
-            isActive: true
-    })
-    }
+            quantity: quantity
+        }
+    
     
     
     console.log(newItems)
 
     try{
-        const item = await Items.bulkCreate(newItems);
+        const item = await Items.create(newItems);
         return item;
     }catch (error) {
         throw new Error("Failed to create item(s)" + error);
@@ -85,25 +83,42 @@ async function deleteItem(id){
 }
 
 
-async function updateItem(storagePlaceId, description, quantity) {
+async function updateItem(storagePlaceId, itemNameId, newStoragePlaceId, description, quantity) {
 
     try{
         const items = await Items.findAll(
             {where: {
-                storagePlaceId: {
-                  [Op.ne]: storagePlaceId
-                }},
-            order: [['id', 'DESC']],
-            limit: parseInt(quantity)
-        })
-       
-        items.forEach(item => {
-            item.set({
                 storagePlaceId: storagePlaceId,
-                description: description
-            });
+                itemNameId: itemNameId
+            }
+            
+        })
+        
+        items.set({
+            storagePlaceId: storagePlaceId,
+            description: description,
+            quantity: items.quantity-quantity
         });
-        await Promise.all(items.map(item => item.save()));
+        
+        items.save()
+        const newItem = await Items.findOne({where:{itemNameId: itemNameId, storagePlaceId: newStoragePlaceId}});
+            if (!newItem) {
+                newItem = await Items.create({
+                    itemNameId: itemNameId,
+                    storagePlaceId: newStoragePlaceId,
+                    description: description,
+                    quantity: quantity
+                });
+            } else {
+                newItem = await Items.set({   
+                    storagePlaceId: newStoragePlaceId,
+                    description: description,
+                    quantity: newItem.quantity+quantity
+                });
+            }
+        
+        
+        newItem.save()
         
         return {message: "Item updated"}
     }

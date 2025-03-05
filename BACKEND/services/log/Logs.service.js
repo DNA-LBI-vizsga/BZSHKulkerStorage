@@ -1,14 +1,18 @@
 import { Logs } from "../../models/LogModel.js";
 
 
-async function createLogs(itemId, updatedBy, httpMethod) {
+async function createLogs(itemNameId, storagePlaceId, quantityChange, previousQuantity, createdBy, httpMethod) {
     try {
         
-        let actionId
+        let actionType
 
-        if(httpMethod == "POST")  actionId = 1
-        else if(httpMethod == "PUT")  actionId = 2
-        else if(httpMethod == "PATCH")  actionId = 3
+        if (httpMethod === "POST") {
+            actionType = 'ADD';
+        } else if (httpMethod === "PUT") {
+            actionType = 'UPDATE';
+        } else if (httpMethod === "DELETE") {
+            actionType = 'DELETE';
+        }
         else{ 
             console.log("Method is not recognized for logging");
             return
@@ -16,9 +20,12 @@ async function createLogs(itemId, updatedBy, httpMethod) {
         const logs = []
 
         logs.push({
-            itemId: itemId,
-            actionTypeId: actionId,
-            updatedBy: updatedBy
+            itemNameId: itemNameId,
+            storagePlaceId: storagePlaceId,
+            quantityChange: quantityChange,
+            previousQuantity: previousQuantity,
+            actionType: actionType,
+            createdBy: createdBy
     })
 
         await Logs.bulkCreate(logs)

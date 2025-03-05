@@ -1,31 +1,33 @@
 import { ItemName } from "../models/ItemNameModel.js";
 import { Items } from "../models/ItemsModel.js";
 import { StoragePlace } from "../models/StoragePlaceModel.js";
-import { ActionType } from "../models/ActionTypeModel.js";
+
 import { Logs } from "../models/LogModel.js";
 import { User } from "../models/UserModel.js";
 
 
-ItemName.hasMany(Items, { foreignKey: 'itemNameId' });
-Items.belongsTo(ItemName, { foreignKey: 'itemNameId' });
+ItemName.hasMany(Items, { foreignKey: 'itemNameId', onDelete: 'NO ACTION', onUpdate: 'NO ACTION' });
+Items.belongsTo(ItemName, { foreignKey: 'itemNameId', onDelete: 'NO ACTION', onUpdate: 'NO ACTION' });
 
-StoragePlace.hasMany(Items, { foreignKey: 'storagePlaceId' });
-Items.belongsTo(StoragePlace, { foreignKey: 'storagePlaceId' });
+StoragePlace.hasMany(Items, { foreignKey: 'storagePlaceId', onDelete: 'NO ACTION', onUpdate: 'NO ACTION' });
+Items.belongsTo(StoragePlace, { foreignKey: 'storagePlaceId', onDelete: 'NO ACTION', onUpdate: 'NO ACTION' });
 
-User.hasMany(Logs, { foreignKey: 'updatedBy' });
-Logs.belongsTo(User, { foreignKey: 'updatedBy' });
+User.hasMany(Logs, { foreignKey: 'createdBy', onDelete: 'NO ACTION', onUpdate: 'NO ACTION' });
+Logs.belongsTo(User, { foreignKey: 'createdBy', onDelete: 'NO ACTION', onUpdate: 'NO ACTION' });
 
-ActionType.hasMany(Logs, { foreignKey: 'actionTypeId' });
-Logs.belongsTo(ActionType, { foreignKey: 'actionTypeId' });
+ItemName.hasMany(Logs, { foreignKey: 'itemNameId', onDelete: 'NO ACTION', onUpdate: 'NO ACTION' });
+Logs.belongsTo(ItemName, { foreignKey: 'itemNameId', onDelete: 'NO ACTION', onUpdate: 'NO ACTION' });
 
-Items.hasMany(Logs, { foreignKey: 'itemId' });
-Logs.belongsTo(Items, { foreignKey: 'itemId' });
+StoragePlace.hasMany(Logs, { foreignKey: 'storagePlaceId', onDelete: 'NO ACTION', onUpdate: 'NO ACTION' });
+Logs.belongsTo(StoragePlace, { foreignKey: 'storagePlaceId', onDelete: 'NO ACTION', onUpdate: 'NO ACTION' });
+
+StoragePlace.hasMany(Logs, { foreignKey: 'newStoragePlaceId', onDelete: 'NO ACTION', onUpdate: 'NO ACTION' });
+Logs.belongsTo(StoragePlace, { foreignKey: 'newStoragePlaceId', onDelete: 'NO ACTION', onUpdate: 'NO ACTION' });
 
 export{
     ItemName,
     StoragePlace,
     User,
     Items,
-    ActionType,
     Logs
 };

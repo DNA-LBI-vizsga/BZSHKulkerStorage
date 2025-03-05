@@ -16,7 +16,7 @@ async function createItemName(item_name){
         return {message: "Item created successfully"} 
     }
     catch(err){
-        throw new Error("Failed to create item");
+        throw new Error("Failed to create item" + err);
     }
     
 }
