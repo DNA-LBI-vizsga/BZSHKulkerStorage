@@ -21,8 +21,7 @@ Logs.belongsTo(ItemName, { foreignKey: 'itemNameId', onDelete: 'NO ACTION', onUp
 StoragePlace.hasMany(Logs, { foreignKey: 'storagePlaceId', onDelete: 'NO ACTION', onUpdate: 'NO ACTION' });
 Logs.belongsTo(StoragePlace, { foreignKey: 'storagePlaceId', onDelete: 'NO ACTION', onUpdate: 'NO ACTION' });
 
-StoragePlace.hasMany(Logs, { foreignKey: 'newStoragePlaceId', onDelete: 'NO ACTION', onUpdate: 'NO ACTION' });
-Logs.belongsTo(StoragePlace, { foreignKey: 'newStoragePlaceId', onDelete: 'NO ACTION', onUpdate: 'NO ACTION' });
+
 
 export{
     ItemName,

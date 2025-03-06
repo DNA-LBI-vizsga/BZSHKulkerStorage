@@ -115,7 +115,7 @@ router.post("/item",
 
             const {itemNameId, storagePlaceId, quantity, description} = req.body
 
-            if (!itemNameId || !storagePlaceId || !createdBy || !quantity) {
+            if (!itemNameId || !storagePlaceId  || !quantity) {
                 return res.status(400).json({ message: 'Missing required fields' });
             }
 
@@ -129,7 +129,7 @@ router.post("/item",
             
             let  quantityChange = `+${String(quantity)}`
             await createLogs(itemNameId, storagePlaceId, quantityChange, previousQuantity,  createdBy, httpMethod)
-            res.json(await createItem(itemNameId, storagePlaceId, createdBy, description, quantity))
+            res.json(await createItem(itemNameId, storagePlaceId, description,  quantity ))
         }
         catch(err){
             next(err)
@@ -163,8 +163,7 @@ router.put("/item",
             const httpMethod = req.method
             
             const {storagePlaceId, itemNameId, newStoragePlaceId, description, quantity} = req.body
-            res.json(await updateItem(storagePlaceId, itemNameId, newStoragePlaceId, description, quantity))
-
+            
             const item = await Items.findOne({ where: { itemNameId: itemNameId, storagePlaceId: storagePlaceId }});
             
             let previousQuantityFrom
@@ -177,11 +176,13 @@ router.put("/item",
             if (newItem) {
                 previousQuantityTo = newItem.quantity
             }
-
+            
             let  quantityChangeFrom = `-${String(quantity)}`
             let  quantityChangeTo = `+${String(quantity)}`
             await createLogs(itemNameId, storagePlaceId,  quantityChangeFrom, previousQuantityFrom,  createdBy, httpMethod)
             await createLogs(itemNameId, newStoragePlaceId,  quantityChangeTo, previousQuantityTo,  createdBy, httpMethod)
+            res.json(await updateItem(storagePlaceId, itemNameId, newStoragePlaceId, description, quantity))
+        
         }
         catch(err){
             next(err)
@@ -232,16 +233,23 @@ router.delete("/itemName/:id",
 })
 
 //item
-router.patch("/item/:id",
+router.patch("/item",
     async function(req, res, next){
         try{
             const httpMethod = req.method
             const createdBy = req.user.id
-            const {id} = req.params
-            res.json(await deleteItem(id))
+            const {itemNameId, storagePlaceId, description, quantity} = req.body
+            
+            const item = await Items.findOne({where: {itemNameId: itemNameId, storagePlaceId: storagePlaceId}})
+            let previousQuantity
+            if (item) {
+                previousQuantity = item.quantity
+            }
+            let quantityChange = `-${String(quantity)}`
+            await createLogs(itemNameId, storagePlaceId,  quantityChange, previousQuantity,  createdBy, httpMethod)
 
-            const item = await Items.findOne({ order: [['id', 'DESC']]})
-            createLogs(item.id, createdBy, httpMethod)
+            res.json(await deleteItem(itemNameId, storagePlaceId, description, quantity))
+        
         }
         catch(err){
             next(err)

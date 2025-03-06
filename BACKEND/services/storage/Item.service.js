@@ -39,25 +39,33 @@ async function getItems() {
 
 
 
-async function createItem(itemNameId, storagePlaceId, createdBy, description, quantity){
+async function createItem(itemNameId, storagePlaceId, description, quantity){
     
-
-    
-    const newItems = {
+    let newItems
+    const item = await Items.findOne({ where: { itemNameId: itemNameId, storagePlaceId: storagePlaceId }});
+    if (item) {
+        
+        item.set({
+            quantity: item.quantity + quantity
+        })
+        await item.save();
+        return item;
+    } else{
+        newItems = {
             itemNameId: itemNameId,
             storagePlaceId: storagePlaceId,
-            createdBy: createdBy,
             description: description,
             quantity: quantity
         }
+    }
     
     
     
     console.log(newItems)
 
     try{
-        const item = await Items.create(newItems);
-        return item;
+        const items = await Items.create(newItems);
+        return items;
     }catch (error) {
         throw new Error("Failed to create item(s)" + error);
     }
@@ -65,11 +73,15 @@ async function createItem(itemNameId, storagePlaceId, createdBy, description, qu
 
 }
 
-async function deleteItem(id){
+async function deleteItem(itemNameId, storagePlaceId, description, quantity){
     try{
-        const item = await Items.findOne({where:{id:id}}); 
+        const item = await Items.findOne({where:{
+            itemNameId:itemNameId,
+            storagePlaceId: storagePlaceId
+        }}); 
         item.set({
-            isActive: 0
+            description: description,
+            quantity: item.quantity-quantity
         })
             
         item.save()
@@ -86,7 +98,7 @@ async function deleteItem(id){
 async function updateItem(storagePlaceId, itemNameId, newStoragePlaceId, description, quantity) {
 
     try{
-        const items = await Items.findAll(
+        const items = await Items.findOne(
             {where: {
                 storagePlaceId: storagePlaceId,
                 itemNameId: itemNameId
@@ -100,8 +112,8 @@ async function updateItem(storagePlaceId, itemNameId, newStoragePlaceId, descrip
             quantity: items.quantity-quantity
         });
         
-        items.save()
-        const newItem = await Items.findOne({where:{itemNameId: itemNameId, storagePlaceId: newStoragePlaceId}});
+        await items.save()
+        let newItem = await Items.findOne({where:{itemNameId: itemNameId, storagePlaceId: newStoragePlaceId}});
             if (!newItem) {
                 newItem = await Items.create({
                     itemNameId: itemNameId,
@@ -110,7 +122,7 @@ async function updateItem(storagePlaceId, itemNameId, newStoragePlaceId, descrip
                     quantity: quantity
                 });
             } else {
-                newItem = await Items.set({   
+                newItem.set({   
                     storagePlaceId: newStoragePlaceId,
                     description: description,
                     quantity: newItem.quantity+quantity
@@ -118,7 +130,7 @@ async function updateItem(storagePlaceId, itemNameId, newStoragePlaceId, descrip
             }
         
         
-        newItem.save()
+        await newItem.save()
         
         return {message: "Item updated"}
     }
