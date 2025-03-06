@@ -36,6 +36,12 @@
       </div>
   </div>
 
+  
+  <h3>Select Storage</h3>
+  <select [(ngModel)]="selectedStoragePlace">       
+    <option *ngFor="let place of storagePlaces" [value]="place.id">{{ place.storage }}</option>
+  </select>
+
   <div class="crud-section">
     <h3>Create Item</h3>
     <select [(ngModel)]="newItem.itemNameId">
@@ -44,7 +50,7 @@
     <select [(ngModel)]="newItem.storagePlaceId">
       <option *ngFor="let place of storagePlaces" [value]="place.id">{{ place.storage }}</option>
     </select>
-    <input [(ngModel)]="newItem.quantity" placeholder="Quantity">
+    <input [(ngModel)]="newItem.quantity" type="number" placeholder="Quantity">
     <input [(ngModel)]="newItem.description" placeholder="Description">
     <button (click)="createItem()">Add Item</button>
   </div>
@@ -52,56 +58,20 @@
   <div class="item-render">
     <h3>Items</h3>
       <ng-container *ngFor="let item of items">
-        {{item|json}}
+        {{item.storagePlaceId}}
       </ng-container>
   </div>
 
-  <h3>Select Storage</h3>
-  <select [(ngModel)]="selectedStoragePlace">       
-    <option *ngFor="let place of storagePlaces" [value]="place.id">{{ place.storage }}</option>
-  </select>
-
-  <div class="item-render">
-    <ng-container *ngFor="let item of items">
-      <ng-container *ngIf="item.storage === selectedStoragePlace">
-        <div class="row my-2">
-          <div class="col-5">
-            <select [(ngModel)]="item.itemNameId">
-              <option *ngFor="let itemName of itemNames" [value]="itemName.id" >{{ itemName.item }}</option>
-            </select>
-            <select [(ngModel)]="item.storagePlaceId">
-              <option *ngFor="let place of storagePlaces" [value]="place.id" >{{ place.storage }}</option>
-            </select>
-            <input [(ngModel)]="item.description" placeholder="Description">
-          </div>
-          <div class="col-5">
-            <button (click)="deleteItem(item.id)">Delete</button>
-            <!-- <button (click)="updateItem(item.id, item.storagePlaceId, item.itemNameId, item.description )">Update</button> -->
-          </div>
-          {{item.itemNameId}}
-      </div>
-      </ng-container>
+  <ng-container *ngFor="let item of items">
+    <ng-container *ngIf="item.storagePlaceId === selectedStoragePlace">
+      <h3>{{item.itemNameId}}</h3>
+      <p>{{item.quantity}}</p>
+      <p>{{item.description}}</p>
+      <button (click)="deleteItem(item.itemNameId,item.storagePlaceId,item.description,item.quantity)">Delete</button>
     </ng-container>
-  </div>
+  </ng-container>
 
-  
-
-  <!-- <div class="item-render">
-    <h3>Items</h3>
-      <ng-container *ngFor="let item of items">
-        <ng-container *ngIf="item.storage === selectedStoragePlace">
-          <div class="row my-1">
-            <div *ngFor="let itemModel of itemModels" class="col-1">
-              <input [(ngModel)]="item[itemModel.key]" [type]="itemModel.type" class="form-control">
-            </div>
-          </div>
-          <div class="col">
-            <button (click)="deleteItem(item.id)">Delete</button>
-            <button (click)="updateItem(item.id, item.place.id, item.item.id, item.description )">Update</button>
-          </div>
-        </ng-container>
-      </ng-container>
-  </div> -->
+ 
 </div>
 
 

@@ -70,15 +70,15 @@ export class BaseService {
     return this.http.get(`${this.apiUrl}/item`, { headers: this.getAuthHeaders() });
   }
 
-  createItem(itemNameId: number, storagePlaceId: number, description: string, quantity: number): Observable<any> {
-    return this.http.post(`${this.apiUrl}/item/${quantity}`, { itemNameId, storagePlaceId, description }, { headers: this.getAuthHeaders() });
+  createItem(itemNameId: number, storagePlaceId: number, quantity: number ,description: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/item`, { itemNameId, storagePlaceId, quantity,description}, { headers: this.getAuthHeaders() });
   }
 
-  updateItem(storagePlaceId:number,description:string,quantity:number): Observable<any> {
-    return this.http.put(`${this.apiUrl}/item/${quantity}`, { storagePlaceId, description }, { headers: this.getAuthHeaders() });
+  updateItem(storagePlaceId:number,itemNameId: number,newStoragePlaceId: number,description:string,quantity:number): Observable<any> {
+    return this.http.put(`${this.apiUrl}/item`, { storagePlaceId, itemNameId,newStoragePlaceId, description, quantity }, { headers: this.getAuthHeaders() });
   }
 
-  deleteItem(id: number): Observable<any> {
-    return this.http.patch(`${this.apiUrl}/item/${id}`, {}, { headers: this.getAuthHeaders() });
+  deleteItem(itemNameId: number, storagePlaceId:number, description:string, quantity:number): Observable<any> {
+    return this.http.patch(`${this.apiUrl}/item`, {itemNameId, storagePlaceId, description, quantity}, { headers: this.getAuthHeaders() });
   }
 }

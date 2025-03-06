@@ -36,8 +36,8 @@ loadStoragePlaces(): void {
   });
 }
 
- moveItem(storagePlaceId:number,description:string,quantity:number): void {
-    this.baseService.updateItem(storagePlaceId,description,quantity).subscribe(
+ moveItem(storagePlaceId:number,itemNameId: number,newStoragePlaceId: number,description:string,quantity:number): void {
+    this.baseService.updateItem(storagePlaceId,itemNameId,newStoragePlaceId,description,quantity).subscribe(
       response => {
         console.log('Item moved:', response);
       },
