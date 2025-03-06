@@ -20,16 +20,16 @@ export class BaseService {
 
   //User management
 
-  loginUser(userName: string, userPassword: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/login`, { userName, userPassword });
+  loginUser(userEmail: string, userPassword: string): Observable<any> {
+    return this.http.post(`${this.apiUrl}/login`, { userEmail, userPassword });
   }
 
-  registerUser(userName: string, userPassword: string, isAdmin: boolean): Observable<any> {
-    return this.http.post(`${this.apiUrl}/register`, { userName, userPassword, isAdmin });
+  registerUser(userEmail: string, userPassword: string, isAdmin: boolean): Observable<any> {
+    return this.http.post(`${this.apiUrl}/register`, { userEmail, userPassword, isAdmin });
   }
 
-  changePassword(userName: string, newPassword: string): Observable<any> {
-    return this.http.put(`${this.apiUrl}/passwordChange`, { userName, newPassword });
+  changePassword(userEmail: string, newPassword: string): Observable<any> {
+    return this.http.put(`${this.apiUrl}/passwordChange`, { userEmail, newPassword });
   }
 
   //Storage place management
@@ -74,8 +74,8 @@ export class BaseService {
     return this.http.post(`${this.apiUrl}/item/${quantity}`, { itemNameId, storagePlaceId, description }, { headers: this.getAuthHeaders() });
   }
 
-  updateItem(id: number, storagePlaceId: number, itemNameId: number, description: string): Observable<any> {
-    return this.http.put(`${this.apiUrl}/item/${id}`, { storagePlaceId, itemNameId, description }, { headers: this.getAuthHeaders() });
+  updateItem(storagePlaceId:number,description:string,quantity:number): Observable<any> {
+    return this.http.put(`${this.apiUrl}/item/${quantity}`, { storagePlaceId, description }, { headers: this.getAuthHeaders() });
   }
 
   deleteItem(id: number): Observable<any> {

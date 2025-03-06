@@ -11,6 +11,11 @@ import { FormsModule } from '@angular/forms';
 import { provideHttpClient } from '@angular/common/http';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { CommonModule } from '@angular/common';
+import { CreateComponent } from './components/create/create.component';
+import { UpdateComponent } from './components/update/update.component';
+import { DeleteComponent } from './components/delete/delete.component';
+import { AdminComponent } from './components/admin/admin.component';
+import { PasswordChangeComponent } from './components/password-change/password-change.component';
 
 @NgModule({
   declarations: [
@@ -18,7 +23,12 @@ import { CommonModule } from '@angular/common';
     NavbarComponent,
     DashboardComponent,
     LoginComponent,
-    RegisterComponent
+    RegisterComponent,
+    CreateComponent,
+    UpdateComponent,
+    DeleteComponent,
+    AdminComponent,
+    PasswordChangeComponent
   ],
   imports: [
     BrowserModule,

@@ -1,16 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { BaseService } from '../../services/base.service';
 
 @Component({
-  selector: 'app-dashboard',
-  templateUrl: './dashboard.component.html',
-  styleUrls: ['./dashboard.component.css']
+  selector: 'app-admin',
+  templateUrl: './admin.component.html',
+  styleUrl: './admin.component.css'
 })
-export class DashboardComponent implements OnInit {
-  // showAdminCrud: boolean = false;
-  itemNameId: number = 0;
-  storagePlaceId: number = 0;
-
+export class AdminComponent {
   newStoragePlace: string = '';
   storagePlaces: any[] = [];
   selectedStoragePlace: string = '';
@@ -24,38 +20,13 @@ export class DashboardComponent implements OnInit {
   itemNameModels = [
     {key:'item', text:'item', type: 'string'}
   ];
-  
-  items: any[] = [];
-  newItem: any = {
-    quantity: 0,
-    itemNameId: null,
-    storagePlaceId: null,
-    description: '',
-    itemCode:''
-  };
 
-  updatedItem: any = {
-    id: null,
-    itemNameId: null,
-    storagePlaceId: null,
-    description:''
-  }
-  // itemModels = [
-  //   {key: 'item', text:'item', type: 'string'},
-  //   {key: 'storage', text:'storage', type: 'string'},
-  //   {key: 'description', text:'description', type: 'string'},
-  //   {key: 'itemCode', text:'itemCode', type: 'string'}
-  // ]
-  
   constructor(private baseService: BaseService) { }
 
   ngOnInit(): void {
     this.loadStoragePlaces();
     this.loadItemNames();
-    this.loadItems();
   }
-
-  //Admin status check
 
   isAdmin(): boolean {
     const token = localStorage.getItem('authToken');
@@ -122,49 +93,4 @@ export class DashboardComponent implements OnInit {
       this.loadItemNames();
     });
   }
-
-  //Item management
-  
-  loadItems(): void {
-    this.baseService.getItems().subscribe(data => {
-      this.items = data;
-      console.log(this.items);
-    });
-  }
-
-  createItem(){
-    this.baseService.createItem(
-      this.newItem.itemNameId,
-      this.newItem.storagePlaceId,
-      this.newItem.description,
-      this.newItem.quantity
-    ).subscribe(() => {
-      this.loadItems();
-      this.newItem = {
-        itemNameId: null,
-        storagePlaceId: null,
-        description: '',
-        quantity: 0,
-        itemCode: ''
-      };
-    });
-  }
-
-  deleteItem(id: number): void {
-    this.baseService.deleteItem(id).subscribe(() => {
-      this.loadItems();
-    });
-  }
-
-  // updateItem(id: number, storagePlaceId: number, itemNameId: number, description: string): void {
-  //   this.baseService.updateItem(id, storagePlaceId, itemNameId, description).subscribe(() => {
-  //     this.loadItems();
-  //   });
-  // }
-
-  // createItemCode(itemName:string, itemId: number): void {
-  //   const paddedId = itemId.toString().padStart(6, '0');
-  //   const itemCode = `BZSH-${itemName}-${paddedId}`;
-  // }
-
 }

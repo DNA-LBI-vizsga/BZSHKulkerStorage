@@ -1,0 +1,34 @@
+<div class="crud-admin" *ngIf="isAdmin()">
+    <!-- <div>
+      <label for="showAdminCrud">Show Admin Crud</label>
+      <input type="checkbox" id="showAdminCrud" [(ngModel)]="showAdminCrud" name="showAdminCrud">
+    </div>
+    <ng-container *ngIf="showAdminCrud"></ng-container> -->
+      <h3>Storage Places</h3>
+      <input [(ngModel)]="newStoragePlace" placeholder="New Storage Place">
+      <button (click)="createStoragePlace()">Add</button>
+
+      <div *ngFor="let storagePlace of storagePlaces" class="row my-1">
+        <div *ngFor="let storagePlaceModel of storagePlaceModels" class="col-1">
+          <input [(ngModel)]="storagePlace[storagePlaceModel.key]" [type]="storagePlaceModel.type" class="form-control">
+        </div>
+        <div class="col">
+          <button (click)="deleteStoragePlace(storagePlace.id)">Delete</button>
+          <!--<button (click)="updateStoragePlace(storagePlace.id, storagePlace.storage)">Update</button> -->
+        </div>
+      </div>
+    
+      <h3>Item Names</h3>
+      <input [(ngModel)]="newItemName" placeholder="New Item Name">
+      <button (click)="createItemName()">Add</button>
+
+      <div *ngFor="let itemName of itemNames" class="row my-1">
+        <div *ngFor="let itemNameModel of itemNameModels" class="col-1">
+          <input [(ngModel)]="itemName[itemNameModel.key]" [type]="itemNameModel.type" class="form-control">
+        </div>
+        <div class="col">
+          <button (click)="deleteItemName(itemName.id)">Delete</button>
+          <button (click)="updateItemName(itemName.id, itemName.item)">Update</button>
+        </div>
+      </div>
+  </div>

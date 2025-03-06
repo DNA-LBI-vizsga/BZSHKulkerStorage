@@ -1,0 +1,10 @@
+<select [(ngModel)]="selectedStoragePlace">       
+  <option *ngFor="let place of storagePlaces" [value]="place.storage">{{ place.storage }}</option>
+</select>
+
+<select [(ngModel)]="selectedItem">       
+  <option *ngFor="let name of itemNames" [value]="name.item">{{ name.item }}</option>
+</select>
+
+
+

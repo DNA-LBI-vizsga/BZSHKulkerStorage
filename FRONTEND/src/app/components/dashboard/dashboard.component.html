@@ -57,7 +57,7 @@
   </div>
 
   <h3>Select Storage</h3>
-  <select [(ngModel)]="selectedStoragePlace">
+  <select [(ngModel)]="selectedStoragePlace">       
     <option *ngFor="let place of storagePlaces" [value]="place.id">{{ place.storage }}</option>
   </select>
 
@@ -76,7 +76,7 @@
           </div>
           <div class="col-5">
             <button (click)="deleteItem(item.id)">Delete</button>
-            <button (click)="updateItem(item.id, item.storagePlaceId, item.itemNameId, item.description )">Update</button>
+            <!-- <button (click)="updateItem(item.id, item.storagePlaceId, item.itemNameId, item.description )">Update</button> -->
           </div>
           {{item.itemNameId}}
       </div>
