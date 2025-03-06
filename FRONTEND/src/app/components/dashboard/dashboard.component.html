@@ -1,77 +1,37 @@
 <div class="dashboard-container">
   <h2>Dashboard</h2>
 
-  <div class="crud-admin" *ngIf="isAdmin()">
-    <!-- <div>
-      <label for="showAdminCrud">Show Admin Crud</label>
-      <input type="checkbox" id="showAdminCrud" [(ngModel)]="showAdminCrud" name="showAdminCrud">
-    </div>
-    <ng-container *ngIf="showAdminCrud"></ng-container> -->
-      <h3>Storage Places</h3>
-      <input [(ngModel)]="newStoragePlace" placeholder="New Storage Place">
-      <button (click)="createStoragePlace()">Add</button>
-
-      <div *ngFor="let storagePlace of storagePlaces" class="row my-1">
-        <div *ngFor="let storagePlaceModel of storagePlaceModels" class="col-1">
-          <input [(ngModel)]="storagePlace[storagePlaceModel.key]" [type]="storagePlaceModel.type" class="form-control">
-        </div>
-        <div class="col">
-          <button (click)="deleteStoragePlace(storagePlace.id)">Delete</button>
-          <!--<button (click)="updateStoragePlace(storagePlace.id, storagePlace.storage)">Update</button> -->
-        </div>
-      </div>
-    
-      <h3>Item Names</h3>
-      <input [(ngModel)]="newItemName" placeholder="New Item Name">
-      <button (click)="createItemName()">Add</button>
-
-      <div *ngFor="let itemName of itemNames" class="row my-1">
-        <div *ngFor="let itemNameModel of itemNameModels" class="col-1">
-          <input [(ngModel)]="itemName[itemNameModel.key]" [type]="itemNameModel.type" class="form-control">
-        </div>
-        <div class="col">
-          <button (click)="deleteItemName(itemName.id)">Delete</button>
-          <button (click)="updateItemName(itemName.id, itemName.item)">Update</button>
-        </div>
-      </div>
-  </div>
-
-  
   <h3>Select Storage</h3>
-  <select [(ngModel)]="selectedStoragePlace">       
+  <select [(ngModel)]="selectedStoragePlace">
     <option *ngFor="let place of storagePlaces" [value]="place.id">{{ place.storage }}</option>
   </select>
 
-  <div class="crud-section">
+  
+  <div *ngIf="selectedStoragePlace" class="crud-section">
     <h3>Create Item</h3>
     <select [(ngModel)]="newItem.itemNameId">
       <option *ngFor="let item of itemNames" [value]="item.id">{{ item.item }}</option>
     </select>
-    <select [(ngModel)]="newItem.storagePlaceId">
+    <!-- <select [(ngModel)]="newItem.storagePlaceId">
       <option *ngFor="let place of storagePlaces" [value]="place.id">{{ place.storage }}</option>
-    </select>
+    </select> -->
     <input [(ngModel)]="newItem.quantity" type="number" placeholder="Quantity">
     <input [(ngModel)]="newItem.description" placeholder="Description">
     <button (click)="createItem()">Add Item</button>
   </div>
 
-  <div class="item-render">
-    <h3>Items</h3>
-      <ng-container *ngFor="let item of items">
-        {{item.storagePlaceId}}
-      </ng-container>
-  </div>
-
-  <ng-container *ngFor="let item of items">
-    <ng-container *ngIf="item.storagePlaceId === selectedStoragePlace">
-      <h3>{{item.itemNameId}}</h3>
-      <p>{{item.quantity}}</p>
-      <p>{{item.description}}</p>
-      <button (click)="deleteItem(item.itemNameId,item.storagePlaceId,item.description,item.quantity)">Delete</button>
+<ng-container *ngFor="let item of items">
+    <ng-container *ngIf="item.storagePlaceId == selectedStoragePlace">
+    <ng-container *ngIf="item.description == ''; else displayDescription">
+      <p>Item Name: {{getItemNameById(item.itemNameId)}} Quantity: {{item.quantity}}
+      <button (click)="deleteItem(item.itemNameId,item.storagePlaceId,item.description,item.quantity)">Delete</button></p>
     </ng-container>
+    <ng-template #displayDescription>
+      <p>Item Name: {{getItemNameById(item.itemNameId)}} Quantity: {{item.quantity}} Description: {{item.description}}
+      <button (click)="deleteItem(item.itemNameId,item.storagePlaceId,item.description,item.quantity)">Delete</button></p>
+    </ng-template> 
   </ng-container>
-
- 
+</ng-container>
 </div>
 
 

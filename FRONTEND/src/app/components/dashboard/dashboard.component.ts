@@ -1,30 +1,17 @@
 import { Component, OnInit } from '@angular/core';
 import { BaseService } from '../../services/base.service';
 
+interface ItemName {
+  id: number;
+  item: string;
+}
+
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css']
 })
 export class DashboardComponent implements OnInit {
-  // showAdminCrud: boolean = false;
-  itemNameId: number = 0;
-  storagePlaceId: number = 0;
-
-  newStoragePlace: string = '';
-  storagePlaces: any[] = [];
-  selectedStoragePlace: number = 0;
-  storagePlaceModels = [
-    {key:'storage', text:'storage', type: 'string'}
-  ];
-
-  newItemName: string = '';
-  itemNames: any[] = [];
-  updatedItemName: string = '';
-  itemNameModels = [
-    {key:'item', text:'item', type: 'string'}
-  ];
-  
   items: any[] = [];
   newItem: any = {
     itemNameId: null,
@@ -36,9 +23,11 @@ export class DashboardComponent implements OnInit {
   updatedItem: any = {
     id: null,
     itemNameId: null,
-    storagePlaceId: null,
     description:''
   }
+  selectedStoragePlace: number = 0;
+  storagePlaces: any;
+  itemNames: ItemName[] = [];
   // itemModels = [
   //   {key: 'item', text:'item', type: 'string'},
   //   {key: 'storage', text:'storage', type: 'string'},
@@ -49,9 +38,9 @@ export class DashboardComponent implements OnInit {
   constructor(private baseService: BaseService) { }
 
   ngOnInit(): void {
+    this.loadItems();
     this.loadStoragePlaces();
     this.loadItemNames();
-    this.loadItems();
   }
 
   //Admin status check
@@ -65,65 +54,22 @@ export class DashboardComponent implements OnInit {
     return false;
   }
 
-  //Storage place management
+  getItemNameById(itemNameId: number): string {
+    const item = this.itemNames.find((i:ItemName) => i.id === itemNameId);
+    return item ? item.item : 'Unknown';
+  }
 
   loadStoragePlaces(): void {
     this.baseService.getStoragePlaces().subscribe(data => {
       this.storagePlaces = data;
-      console.log(this.storagePlaces);
     });
   }
-
-  createStoragePlace(): void {
-    if (!this.newStoragePlace || this.newStoragePlace.trim() === '') {
-      alert('Storage place name cannot be blank');
-      return;
-    }
-    this.baseService.createStoragePlace(this.newStoragePlace).subscribe(() => {
-      this.loadStoragePlaces();
-      this.newStoragePlace = '';
-    });
-  }
-
-  deleteStoragePlace(id: number): void {
-    this.baseService.deleteStoragePlace(id).subscribe(() => {
-      this.loadStoragePlaces();
-    });
-  }
-
-  //Item name management
 
   loadItemNames(): void {
     this.baseService.getItemNames().subscribe(data => {
       this.itemNames = data;
     });
   }
-
-  createItemName(): void {
-    if (!this.newItemName || this.newItemName.trim() === '') {
-      alert('Item name cannot be blank');
-      return;
-    }
-    this.baseService.createItemName(this.newItemName).subscribe(() => {
-      this.loadItemNames();
-      this.newItemName = '';
-    });
-  }
-
-  updateItemName(id: number, newName: string){
-    this.baseService.updateItemName(id, newName ).subscribe(() => {
-      this.loadItemNames();
-      this.updatedItemName = '';
-    });
-  }
-  
-  deleteItemName(id: number): void {
-    this.baseService.deleteItemName(id).subscribe(() => {
-      this.loadItemNames();
-    });
-  }
-
-  //Item management
   
   loadItems(): void {
     this.baseService.getItems().subscribe(data => {
@@ -135,14 +81,13 @@ export class DashboardComponent implements OnInit {
   createItem(){
     this.baseService.createItem(
       this.newItem.itemNameId,
-      this.newItem.storagePlaceId,
+      this.selectedStoragePlace,
       this.newItem.quantity,
       this.newItem.description
     ).subscribe(() => {
       this.loadItems();
       this.newItem = {
         itemNameId: null,
-        storagePlaceId: null,
         quantity: 0,
         description: '',
       };
