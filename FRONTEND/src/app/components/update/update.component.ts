@@ -1,60 +1,109 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { BaseService } from '../../services/base.service';
-import { Router } from '@angular/router';
+
+interface ItemName {
+  id: number;
+  item: string;
+}
 
 @Component({
-  selector: 'app-update',
+  selector: 'app-dashboard',
   templateUrl: './update.component.html',
-  styleUrl: './update.component.css'
+  styleUrls: ['./update.component.css']
 })
-export class UpdateComponent {
- items: any[] = [];
- selectedItem: string ='';
- selectedStoragePlace: string = '';
-  itemNames: any;
+export class UpdateComponent implements OnInit {
+  items: any[] = [];
+  newItem: any = {
+    itemNameId: null,
+    storagePlaceId: null,
+    quantity: 0,
+    description: '',
+  };
+
+  updatedItem: any = {
+    id: null,
+    itemNameId: null,
+    description:''
+  }
+  selectedStoragePlace: number = 0;
   storagePlaces: any;
-  quantity: any;
+  itemNames: ItemName[] = [];
+  newStoragePlaceId: any;
+  // itemModels = [
+  //   {key: 'item', text:'item', type: 'string'},
+  //   {key: 'storage', text:'storage', type: 'string'},
+  //   {key: 'description', text:'description', type: 'string'},
+  //   {key: 'itemCode', text:'itemCode', type: 'string'}
+  // ]
+  
+  constructor(private baseService: BaseService) { }
 
- constructor(private baseService: BaseService, private router: Router) { }
+  ngOnInit(): void {
+    this.loadItems();
+    this.loadStoragePlaces();
+    this.loadItemNames();
+  }
 
- ngOnInit(): void {
-  this.loadItems();
-  this.loadItemNames();
-  this.loadStoragePlaces();
-}
+  //Admin status check
 
-loadItemNames(): void {
-  this.baseService.getItemNames().subscribe(data => {
-    this.itemNames = data;
-    console.log(this.itemNames)
-  });
-}
+  isAdmin(): boolean {
+    const token = localStorage.getItem('authToken');
+    if (token) {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return payload.isAdmin;
+    }
+    return false;
+  }
 
-loadStoragePlaces(): void {
-  this.baseService.getStoragePlaces().subscribe(data => {
-    this.storagePlaces = data;
-  });
-}
+  getItemNameById(itemNameId: number): string {
+    const item = this.itemNames.find((i:ItemName) => i.id === itemNameId);
+    return item ? item.item : 'Unknown';
+  }
 
- moveItem(storagePlaceId:number,itemNameId: number,newStoragePlaceId: number,description:string,quantity:number): void {
-    this.baseService.updateItem(storagePlaceId,itemNameId,newStoragePlaceId,description,quantity).subscribe(
-      response => {
-        console.log('Item moved:', response);
-      },
-      error => {
-        console.error('Error moving item:', error);
- }
-)
-}
-loadItems(): void {
-  this.baseService.getItems().subscribe(data => {
-    this.items = data;
-    console.log(this.items);
-    console.log(this.items.length)
-  });
-}
+  loadStoragePlaces(): void {
+    this.baseService.getStoragePlaces().subscribe(data => {
+      this.storagePlaces = data;
+    });
+  }
 
-getFilteredItems(){
-  return this.items.filter(item => item.item === this.selectedItem && item.storage === this.selectedStoragePlace).length;
-}
+  loadItemNames(): void {
+    this.baseService.getItemNames().subscribe(data => {
+      this.itemNames = data;
+    });
+  }
+  
+  loadItems(): void {
+    this.baseService.getItems().subscribe(data => {
+      this.items = data;
+      console.log(this.items);
+    });
+  }
+
+  createItem(){
+    this.baseService.createItem(
+      this.newItem.itemNameId,
+      this.selectedStoragePlace,
+      this.newItem.quantity,
+      this.newItem.description
+    ).subscribe(() => {
+      this.loadItems();
+      this.newItem = {
+        itemNameId: null,
+        quantity: 0,
+        description: '',
+      };
+    });
+  }
+
+  deleteItem(itemNameId: number, storagePlaceId: number, description:string, quantity:number): void {
+    this.baseService.deleteItem(itemNameId,storagePlaceId,description,quantity).subscribe(() => {
+      this.loadItems();
+    });
+  }
+
+  updateItem(storagePlaceId: number, itemNameId: number, newStoragePlaceId: number,description:string, quantity: number): void {
+    this.baseService.updateItem(storagePlaceId, itemNameId, newStoragePlaceId, description, quantity).subscribe(() => {
+      this.loadItems();
+    });
+  }
 }

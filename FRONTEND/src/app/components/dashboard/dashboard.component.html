@@ -22,14 +22,21 @@
 
 <ng-container *ngFor="let item of items">
     <ng-container *ngIf="item.storagePlaceId == selectedStoragePlace">
-    <ng-container *ngIf="item.description == ''; else displayDescription">
-      <p>Item Name: {{getItemNameById(item.itemNameId)}} Quantity: {{item.quantity}}
-      <button (click)="deleteItem(item.itemNameId,item.storagePlaceId,item.description,item.quantity)">Delete</button></p>
-    </ng-container>
-    <ng-template #displayDescription>
-      <p>Item Name: {{getItemNameById(item.itemNameId)}} Quantity: {{item.quantity}} Description: {{item.description}}
-      <button (click)="deleteItem(item.itemNameId,item.storagePlaceId,item.description,item.quantity)">Delete</button></p>
-    </ng-template> 
+    <ng-container *ngIf="item.quantity != 0"> 
+      <ng-container *ngIf="item.description == ''; else displayDescription">
+        <p>Item Name: {{getItemNameById(item.itemNameId)}} 
+          Quantity: <input [(ngModel)]="item.quantity" type="number">
+        <button (click)="deleteItem(item.itemNameId,item.storagePlaceId,item.description,item.quantity)">Delete</button></p> 
+      </ng-container>
+      <ng-template #displayDescription>
+        <p>Item Name: {{getItemNameById(item.itemNameId)}} 
+          Quantity: <input [(ngModel)]="item.quantity" type="number"> 
+          Description: {{item.description}}
+        <button (click)="deleteItem(item.itemNameId,item.storagePlaceId,item.description,item.quantity)">Delete</button>
+        <button (click)="updateItem(item.itemNameId,item.storagePlaceId,newStoragePlaceId,item.description,item.quantity)"></button>
+        </p>
+      </ng-template> 
+    </ng-container>  
   </ng-container>
 </ng-container>
 </div>

@@ -1,10 +1,52 @@
-<select [(ngModel)]="selectedStoragePlace">       
-  <option *ngFor="let place of storagePlaces" [value]="place.storage">{{ place.storage }}</option>
-</select>
+<div class="dashboard-container">
+  <h2>Dashboard</h2>
 
-<select [(ngModel)]="selectedItem">       
-  <option *ngFor="let name of itemNames" [value]="name.item">{{ name.item }}</option>
-</select>
+  <h3>Select Storage</h3>
+  <select [(ngModel)]="selectedStoragePlace">
+    <option *ngFor="let place of storagePlaces" [value]="place.id">{{ place.storage }}</option>
+  </select>
 
+  
+  <div *ngIf="selectedStoragePlace" class="crud-section">
+    <h3>Create Item</h3>
+    <select [(ngModel)]="newItem.itemNameId">
+      <option *ngFor="let item of itemNames" [value]="item.id">{{ item.item }}</option>
+    </select>
+    <!-- <select [(ngModel)]="newItem.storagePlaceId">
+      <option *ngFor="let place of storagePlaces" [value]="place.id">{{ place.storage }}</option>
+    </select> -->
+    <input [(ngModel)]="newItem.quantity" type="number" placeholder="Quantity">
+    <input [(ngModel)]="newItem.description" placeholder="Description">
+    <button (click)="createItem()">Add Item</button>
+  </div>
+
+<ng-container *ngFor="let item of items">
+    <ng-container *ngIf="item.storagePlaceId == selectedStoragePlace">
+    <ng-container *ngIf="item.quantity != 0"> 
+      <ng-container *ngIf="item.description == ''; else displayDescription">
+        <p>Item Name: {{getItemNameById(item.itemNameId)}} 
+          Quantity: <input [(ngModel)]="item.quantity" type="number">
+        <button (click)="deleteItem(item.itemNameId,item.storagePlaceId,item.description,item.quantity)">Delete</button>
+        <button (click)="updateItem(item.storagePlaceId,item.itemNameId,newStoragePlaceId,item.description,item.quantity)">Update</button>
+        <select [(ngModel)]="newStoragePlaceId">
+          <option *ngFor="let place of storagePlaces" [value]="place.id">{{ place.storage }}</option>ű
+        </select>
+      </p> 
+      </ng-container>
+      <ng-template #displayDescription>
+        <p>Item Name: {{getItemNameById(item.itemNameId)}} 
+          Quantity: <input [(ngModel)]="item.quantity" type="number"> 
+          Description: {{item.description}}
+        <button (click)="deleteItem(item.itemNameId,item.storagePlaceId,item.description,item.quantity)">Delete</button>
+        <button (click)="updateItem(item.storagePlaceId,item.itemNameId,newStoragePlaceId,item.description,item.quantity)">Update</button>
+        <select [(ngModel)]="newStoragePlaceId">
+          <option *ngFor="let place of storagePlaces" [value]="place.id">{{ place.storage }}</option>ű
+        </select>
+        </p>
+      </ng-template> 
+    </ng-container>  
+  </ng-container>
+</ng-container>
+</div>
 
 
