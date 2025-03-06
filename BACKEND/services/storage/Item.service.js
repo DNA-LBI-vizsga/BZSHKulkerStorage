@@ -8,34 +8,23 @@ const { Op } = Sequelize;
 async function getItems() {
     try {
     const items = await Items.findAll();
-    const formattedItems = await Promise.all(
-        items.filter(item => item.isActive !== false).map(async (item) => {
-        const [ itemStorage, itemName] = await Promise.all([
-            
-            StoragePlace.findOne({ where: { id: item.storagePlaceId } }),
-            ItemName.findOne({ where: { id: item.itemNameId } })
-        ]);
-
+   
         
-
-            return{
-                id: item.id,
-                item: itemName.item,
-                storage: itemStorage.storage,
-                description: item.description
-            }
-
-
         
-        })
-    );
+    const result = items.map(item => ({
+        itemNameId: item.itemNameId,
+        storagePlaceId: item.storagePlaceId,
+        quantity: item.quantity,
+        description: item.description
+    }));
 
-    return formattedItems;
+
+            return result
+        
     } catch (error) {
         throw new Error("Error fetching items");
     }
 }
-
 
 
 
