@@ -5,13 +5,14 @@ const router = Router()
 
 import { Items } from "../models/ItemsModel.js"
 
-import { authMiddle, checkPassword, checkRequiredFields, genPassword, sendEmail,  } from "../services/auth/authUtils.service.js"
+import { authMiddle, checkPassword, checkRequiredFields, genPassword, sendEmail,  } from "../services/auth/utilFunctions.utils.js"
 import { updateUser, createUser } from "../services/auth/User.service.js"
 
 import { getItems, createItem, updateItem, deleteItem } from "../services/storage/Item.service.js"
 import { getItemNames, createItemName, updateItemName, deleteItemName } from "../services/storage/ItemName.service.js"
 import { getPlaces, createPlace, deletePlace } from "../services/storage/Storage.service.js"
 import { createLogs } from "../services/log/Logs.service.js"
+import { getLogs, createExcel } from "../services/log/ExcelLog.service.js"
 
 
 
@@ -301,4 +302,18 @@ router.post('/register',  async (req, res) => {
     }
 });
 
+
+router.post('/log', async (req, res) => {
+    try {
+        const data = await getLogs(req); 
+        const excelBuffer = await createExcel(data);
+
+        res.setHeader('Content-Disposition', 'attachment; filename="logs.xlsx"');
+        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        res.send(Buffer.from(excelBuffer));
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Error generating Excel file");
+    }
+});
 export default router
