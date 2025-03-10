@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { BaseService } from '../../services/base.service';
+import { MatDialog } from '@angular/material/dialog';
 
 interface ItemName {
   id: number;
@@ -20,24 +21,32 @@ export class DashboardComponent implements OnInit {
     description: '',
   };
 
-  updatedItem: any = {
-    id: null,
-    itemNameId: null,
-    description:''
-  }
   selectedStoragePlace: number = 0;
   storagePlaces: any;
-  itemNames: ItemName[] = [];
   newStoragePlaceId: any;
-  // itemModels = [
-  //   {key: 'item', text:'item', type: 'string'},
-  //   {key: 'storage', text:'storage', type: 'string'},
-  //   {key: 'description', text:'description', type: 'string'},
-  //   {key: 'itemCode', text:'itemCode', type: 'string'}
-  // ]
-  
+
+  itemNames: ItemName[] = [];
+
+  deleteQuantity:any;
+
+  deleteItemModal: any = {
+    deleteItemNameId: null,
+    deleteStoragePlaceId: null,
+    deleteDescription: '',
+    deleteQuantity: null
+  };
+
   constructor(private baseService: BaseService) { }
 
+  loadDeleteItemModal(itemNameId: number, storagePlaceId: number, description: string, quantity:number): void {
+    this.deleteItemModal = {
+      deleteItemNameId: itemNameId,
+      deleteStoragePlaceId: storagePlaceId,
+      deleteDescription: description,
+      deleteQuantity: quantity
+
+    };
+  }
   ngOnInit(): void {
     this.loadItems();
     this.loadStoragePlaces();
@@ -97,12 +106,6 @@ export class DashboardComponent implements OnInit {
 
   deleteItem(itemNameId: number, storagePlaceId: number, description:string, quantity:number): void {
     this.baseService.deleteItem(itemNameId,storagePlaceId,description,quantity).subscribe(() => {
-      this.loadItems();
-    });
-  }
-
-  updateItem(itemNameId: number, storagePlaceId: number, newStoragePlaceId: number,description:string, quantity: number): void {
-    this.baseService.updateItem(itemNameId, storagePlaceId, newStoragePlaceId, description, quantity).subscribe(() => {
       this.loadItems();
     });
   }

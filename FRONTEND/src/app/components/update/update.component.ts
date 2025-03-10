@@ -20,23 +20,27 @@ export class UpdateComponent implements OnInit {
     description: '',
   };
 
-  updatedItem: any = {
-    id: null,
+  updatedItemModal: any = {
     itemNameId: null,
-    description:''
+    storagePlaceId: null,
+    description: ''
   }
+  newStoragePlaceId: any;
+  moveQuantity: any;
+
   selectedStoragePlace: number = 0;
   storagePlaces: any;
   itemNames: ItemName[] = [];
-  newStoragePlaceId: any;
-  // itemModels = [
-  //   {key: 'item', text:'item', type: 'string'},
-  //   {key: 'storage', text:'storage', type: 'string'},
-  //   {key: 'description', text:'description', type: 'string'},
-  //   {key: 'itemCode', text:'itemCode', type: 'string'}
-  // ]
   
   constructor(private baseService: BaseService) { }
+
+  loadUpdatedItemModal(itemNameId: number, storagePlaceId: number, description: string): void {
+    this.updatedItemModal = {
+      itemNameId: itemNameId,
+      storagePlaceId: storagePlaceId,
+      description: description
+    };
+  }
 
   ngOnInit(): void {
     this.loadItems();
