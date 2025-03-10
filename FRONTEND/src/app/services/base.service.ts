@@ -81,4 +81,10 @@ export class BaseService {
   deleteItem(itemNameId: number, storagePlaceId:number, description:string, quantity:number): Observable<any> {
     return this.http.patch(`${this.apiUrl}/item`, {itemNameId, storagePlaceId, description, quantity}, { headers: this.getAuthHeaders() });
   }
+
+  //Log write to file
+
+  logToFile(): Observable<any> {
+    return this.http.post(`${this.apiUrl}/log`, { headers: this.getAuthHeaders()});
+  }
 }

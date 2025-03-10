@@ -9,22 +9,18 @@
         <li class="nav-item">
           <a class="nav-link" href="#" (click)="logoutUser()">Logout</a>
         </li>
-        <li class="nav-item dropdown">
-          <a class="nav-link" routerLink="dashboard">Dashboard</a>
-          <div class="dropdown-menu" aria-labelledby="dashboardDropdown">
-            <a class="dropdown-item" routerLink="create">Create</a>
-            <a class="dropdown-item" routerLink="update">Update</a>
-            <a class="dropdown-item" routerLink="delete">Delete</a>
-          </div>
-        </li>
         <li class="nav-item" *ngIf="isAdmin()">
           <a class="nav-link" routerLink="register">User Control</a>
         </li>
         <li class="nav-item" *ngIf="isAdmin()">
           <a class="nav-link" routerLink="admin">Admin CRUD</a>
         </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link" routerLink="dashboard">Törlés</a>
+        </li>
         <li class="nav-item">
-          <a class="nav-link" routerLink="update">update</a>
+          <a class="nav-link" routerLink="update">Áthelyezés</a>
+        </li>
       </ul>
     </div>
   </nav>

@@ -1,9 +1,4 @@
 <div class="crud-admin" *ngIf="isAdmin()">
-    <!-- <div>
-      <label for="showAdminCrud">Show Admin Crud</label>
-      <input type="checkbox" id="showAdminCrud" [(ngModel)]="showAdminCrud" name="showAdminCrud">
-    </div>
-    <ng-container *ngIf="showAdminCrud"></ng-container> -->
       <h3>Storage Places</h3>
       <input [(ngModel)]="newStoragePlace" placeholder="New Storage Place">
       <button (click)="createStoragePlace()">Add</button>
@@ -14,7 +9,6 @@
         </div>
         <div class="col">
           <button (click)="deleteStoragePlace(storagePlace.id)">Delete</button>
-          <!--<button (click)="updateStoragePlace(storagePlace.id, storagePlace.storage)">Update</button> -->
         </div>
       </div>
     
@@ -31,4 +25,5 @@
           <button (click)="updateItemName(itemName.id, itemName.item)">Update</button>
         </div>
       </div>
+      
   </div>

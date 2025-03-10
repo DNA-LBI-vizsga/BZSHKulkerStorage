@@ -93,4 +93,5 @@ export class AdminComponent {
       this.loadItemNames();
     });
   }
+
 }
