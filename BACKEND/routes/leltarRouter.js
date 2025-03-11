@@ -256,7 +256,7 @@ router.post('/login', async (req, res) => {
         if (!user) {
             return res.status(401).json({ message: "Invalid credentials" });
         }else{
-            const token = sign({ id: user.id, isAdmin: user.isAdmin }, process.env.SECRET_KEY, { expiresIn: "4h" });
+            const token = sign({ id: user.id, isAdmin: user.isAdmin, isFirstLogin: user.isFirstLogin }, process.env.SECRET_KEY, { expiresIn: "4h" });
 
             return res.status(200).json({token, message: "Login successful" });
         }
