@@ -1,5 +1,5 @@
 <div class="dashboard-container">
-  <h2>Törlés</h2>
+  <h2>Hozzáadás</h2>
 
   <h3>Select Storage</h3>
   <select [(ngModel)]="selectedStoragePlace">
@@ -26,15 +26,13 @@
 
         <ng-container *ngIf="item.description == ''; else displayDescription">
           <p>Item Name: {{getItemNameById(item.itemNameId)}} 
-            Quantity:{{item.quantity}}
-          <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal" (click)="loadDeleteItemModal(item.itemNameId,item.storagePlaceId,item.description,item.quantity)">Törlés</button></p>
+            Quantity:{{item.quantity}}</p>
         </ng-container>
 
         <ng-template #displayDescription>
           <p>Item Name: {{getItemNameById(item.itemNameId)}} 
             Quantity:{{item.quantity}}
-            Description: {{item.description}}
-          <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal" (click)="loadDeleteItemModal(item.itemNameId,item.storagePlaceId,item.description,item.quantity)">Törlés</button></p>
+            Description: {{item.description}}</p>
         </ng-template>
       </ng-container> 
   </ng-container>

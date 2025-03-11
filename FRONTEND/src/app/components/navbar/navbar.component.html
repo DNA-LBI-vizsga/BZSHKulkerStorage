@@ -13,13 +13,16 @@
           <a class="nav-link" routerLink="register">User Control</a>
         </li>
         <li class="nav-item" *ngIf="isAdmin()">
-          <a class="nav-link" routerLink="admin">Admin CRUD</a>
+          <a class="nav-link" routerLink="admin">Admin</a>
         </li>
-        <li class="nav-item dropdown">
-          <a class="nav-link" routerLink="dashboard">Törlés</a>
+        <li class="nav-item dropdown" *ngIf="isAdmin()">
+          <a class="nav-link" routerLink="delete">Törlés</a>
+        </li>
+        <li class="nav-item" *ngIf="isAdmin()">
+          <a class="nav-link" routerLink="update">Áthelyezés</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" routerLink="update">Áthelyezés</a>
+          <a class="nav-link" routerLink="dashboard">Dashboard</a>
         </li>
       </ul>
     </div>

@@ -10,18 +10,19 @@ import { UpdateComponent } from './components/update/update.component';
 import { DeleteComponent } from './components/delete/delete.component';
 import { AdminComponent } from './components/admin/admin.component';
 import { PasswordChangeComponent } from './components/password-change/password-change.component';
+import { adminGuard } from './guards/admin.guard';
 
 const routes: Routes = [
   {path: 'login', component: LoginComponent},
   {path: 'passwordChange', component: PasswordChangeComponent},
   {path:'navbar', component: NavbarComponent, canActivate: [authGuard], 
     children: [
-      {path: 'register', component: RegisterComponent, canActivate: [authGuard]},
+      {path: 'register', component: RegisterComponent, canActivate: [authGuard,adminGuard]},
       {path: 'dashboard', component: DashboardComponent, canActivate: [authGuard]},
-      {path: 'admin', component: AdminComponent, canActivate: [authGuard]},
+      {path: 'admin', component: AdminComponent, canActivate: [authGuard,adminGuard]},
       {path: 'create' , component: CreateComponent, canActivate: [authGuard]},
-      {path: 'update', component: UpdateComponent, canActivate: [authGuard]},
-      {path: 'delete', component: DeleteComponent, canActivate: [authGuard]}
+      {path: 'update', component: UpdateComponent, canActivate: [authGuard,adminGuard]},
+      {path: 'delete', component: DeleteComponent, canActivate: [authGuard,adminGuard]}
     ]
   },
   {path: '', redirectTo: 'login', pathMatch: 'full'}

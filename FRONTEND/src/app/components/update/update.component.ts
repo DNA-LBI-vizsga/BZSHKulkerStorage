@@ -23,7 +23,8 @@ export class UpdateComponent implements OnInit {
   updatedItemModal: any = {
     itemNameId: null,
     storagePlaceId: null,
-    description: ''
+    description: '',
+    quantity: 0
   }
   newStoragePlaceId: any;
   moveQuantity: any;
@@ -34,11 +35,12 @@ export class UpdateComponent implements OnInit {
   
   constructor(private baseService: BaseService) { }
 
-  loadUpdatedItemModal(itemNameId: number, storagePlaceId: number, description: string): void {
+  loadUpdatedItemModal(itemNameId: number, storagePlaceId: number, description: string, quantity:number): void {
     this.updatedItemModal = {
       itemNameId: itemNameId,
       storagePlaceId: storagePlaceId,
-      description: description
+      description: description,
+      quantity: quantity
     };
   }
 

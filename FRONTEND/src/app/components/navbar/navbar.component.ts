@@ -20,7 +20,7 @@ export class NavbarComponent {
   }
 
   logoutUser(): void {
-    localStorage.removeItem('token'); // Remove the token from local storage
+    localStorage.removeItem('authToken'); // Remove the token from local storage
     this.router.navigate(['/login']); // Redirect to the login page
     console.log('Logged out');
   }

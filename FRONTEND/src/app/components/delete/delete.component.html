@@ -1,1 +1,51 @@
-<p>delete works!</p>
+<div class="dashboard-container">
+    <h2>Törlés</h2>
+  
+    <h3>Select Storage</h3>
+    <select [(ngModel)]="selectedStoragePlace">
+      <option *ngFor="let place of storagePlaces" [value]="place.id">{{ place.storage }}</option>
+    </select>
+  
+  <ng-container *ngFor="let item of items">
+      <ng-container *ngIf="item.storagePlaceId == selectedStoragePlace">
+        <ng-container *ngIf="item.quantity != 0"> 
+  
+          <ng-container *ngIf="item.description == ''; else displayDescription">
+            <p>Item Name: {{getItemNameById(item.itemNameId)}} 
+              Quantity:{{item.quantity}}
+            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal" (click)="loadDeleteItemModal(item.itemNameId,item.storagePlaceId,item.description,item.quantity)">Törlés</button></p>
+          </ng-container>
+  
+          <ng-template #displayDescription>
+            <p>Item Name: {{getItemNameById(item.itemNameId)}} 
+              Quantity:{{item.quantity}}
+              Description: {{item.description}}
+            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal" (click)="loadDeleteItemModal(item.itemNameId,item.storagePlaceId,item.description,item.quantity)">Törlés</button></p>
+          </ng-template>
+        </ng-container> 
+    </ng-container>
+  </ng-container>
+  
+  <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLongTitle">Hány darabot szeretne törölni?</h5>
+        </div>
+        <div class="modal-body">
+          <p>Item Name: {{getItemNameById(deleteItemModal.deleteItemNameId)}} 
+            Quantity:{{deleteItemModal.deleteQuantity}}
+          </p>
+          <input [(ngModel)]="deleteQuantity" type="number" placeholder="Darabszám">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Mégse</button>
+          <button type="button" class="btn btn-danger" data-bs-dismiss="modal" (click)="deleteItem(deleteItemModal.deleteItemNameId,deleteItemModal.deleteStoragePlaceId,deleteItemModal.deleteDescription,deleteQuantity)">Törlés</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  </div>
+  
+  

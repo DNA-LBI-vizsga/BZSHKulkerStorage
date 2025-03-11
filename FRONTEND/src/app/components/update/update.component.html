@@ -25,18 +25,18 @@
     <ng-container *ngIf="item.quantity != 0"> 
       <ng-container *ngIf="item.description == ''; else displayDescription">
         <p>Item Name: {{getItemNameById(item.itemNameId)}} 
-          Quantity: <input [(ngModel)]="item.quantity" type="number">
+          Quantity: {{item.quantity}}
         <!-- <button (click)="deleteItem(item.itemNameId,item.storagePlaceId,item.description,item.quantity)">Delete</button> -->
-        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#moveModal" (click)="loadUpdatedItemModal(item.itemNameId,item.storagePlaceId,item.description)">Áthelyezés</button>
+        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#moveModal" (click)="loadUpdatedItemModal(item.itemNameId,item.storagePlaceId,item.description,item.quantity)">Áthelyezés</button>
       </p> 
       </ng-container>
       <ng-template #displayDescription>
         <p>Item Name: {{getItemNameById(item.itemNameId)}} 
-          Quantity: <input [(ngModel)]="item.quantity" type="number"> 
+          Quantity: {{item.quantity}}
           Description: {{item.description}}
         <!-- <button (click)="deleteItem(item.itemNameId,item.storagePlaceId,item.description,item.quantity)">Delete</button> -->
         <!-- <button (click)="updateItem(item.storagePlaceId,item.itemNameId,newStoragePlaceId,item.description,item.quantity)">Update</button> -->
-        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#moveModal" (click)="loadUpdatedItemModal(item.itemNameId,item.storagePlaceId,item.description)">Áthelyezés</button>
+        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#moveModal" (click)="loadUpdatedItemModal(item.itemNameId,item.storagePlaceId,item.description,item.quantity)">Áthelyezés</button>
         </p>
       </ng-template> 
     </ng-container>  
