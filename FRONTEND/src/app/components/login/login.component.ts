@@ -8,14 +8,14 @@ import { BaseService } from '../../services/base.service';
   styleUrl: './login.component.css'
 })
 export class LoginComponent {
-  userName: string = '';
+  userEmail: string = '';
   userPassword: string = '';
   errorMessage: string = '';
 
   constructor(private baseService: BaseService, private router: Router) { }
 
   loginUser(): void {
-    this.baseService.loginUser(this.userName, this.userPassword).subscribe(
+    this.baseService.loginUser(this.userEmail, this.userPassword).subscribe(
       response => {
         if (response.token) {
           localStorage.setItem('authToken',response.token);
@@ -29,4 +29,17 @@ export class LoginComponent {
       }
     );
   }
+
+  passwordChange(userEmail:string): void {
+    this.baseService.passwordChange(this.userEmail).subscribe(
+      response => {
+        console.log('Password change:', response);
+      },
+      error => {
+        console.error('Error changing password:', error);
+      }
+    );
+  }
+
+
 }

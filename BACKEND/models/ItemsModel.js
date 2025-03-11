@@ -21,7 +21,10 @@ const Items = sequelize.define('Item', {
     },
     quantity: {
         type: DataTypes.INTEGER,
-        allowNull: false
+        allowNull: false,
+        validate: {
+            min: 0
+        }
     },
     description: {
         type: DataTypes.STRING(255),

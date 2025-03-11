@@ -5,7 +5,7 @@ import { BaseService } from '../services/base.service';
 @Injectable({
   providedIn: 'root'
 })
-export class adminGuard implements CanActivate {
+export class firstLoginGuard implements CanActivate {
 
   constructor(private baseService: BaseService, private router: Router) { }
 
@@ -13,13 +13,12 @@ export class adminGuard implements CanActivate {
     const token = localStorage.getItem('authToken');
     if (token) {
       const payload = JSON.parse(atob(token.split('.')[1]));
-      if(payload.isAdmin==true){
-        return true;
+      if(payload.isFirstLogin==true){
+        this.router.navigate(['/passwordChange']);
+        return false;
       }
       else{
-        this.router.navigate(['/login']);
-        localStorage.removeItem('authToken');
-        return false;  
+        return true;  
         }
     }
     else{

@@ -11,11 +11,12 @@ import { DeleteComponent } from './components/delete/delete.component';
 import { AdminComponent } from './components/admin/admin.component';
 import { PasswordChangeComponent } from './components/password-change/password-change.component';
 import { adminGuard } from './guards/admin.guard';
+import { firstLoginGuard } from './guards/first-login.guard';
 
 const routes: Routes = [
   {path: 'login', component: LoginComponent},
   {path: 'passwordChange', component: PasswordChangeComponent},
-  {path:'navbar', component: NavbarComponent, canActivate: [authGuard], 
+  {path:'navbar', component: NavbarComponent, canActivate: [authGuard, firstLoginGuard], 
     children: [
       {path: 'register', component: RegisterComponent, canActivate: [authGuard,adminGuard]},
       {path: 'dashboard', component: DashboardComponent, canActivate: [authGuard]},

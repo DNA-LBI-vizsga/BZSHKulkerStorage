@@ -1,7 +1,6 @@
   <div class="d-flex align-items-center justify-content-center vh-100">
     <div class="card p-4 shadow-sm" style="width: 350px">
       <div class="text-center">
-        <img src="assets/logo_new.png" alt="BZSH Külkereskedelmi Technikum" width="50">
         <h3 class="mt-2">Please sign in</h3>
       </div>
   
@@ -12,7 +11,7 @@
             type="text"
             class="form-control"
             id="name"
-            [(ngModel)]="userName"
+            [(ngModel)]="userEmail"
             name="name"
             required
           />
@@ -31,7 +30,26 @@
         </div>
   
         <button type="submit" class="btn btn-primary w-100 mt-3">Sign in</button>
+        <button type="button" class="btn btn-link w-100 mt-3" data-bs-toggle="modal" data-bs-target="#passwordChangeModal">Elfelejtett Jelszó</button>
       </form>
     </div>
+
+    <div class="modal fade" id="passwordChangeModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLongTitle">Írja be email címét!</h5>
+          </div>
+          <div class="modal-body">
+            <input [(ngModel)]="userEmail" type="email" placeholder="Email">
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Mégse</button>
+            <button type="button" class="btn btn-danger" data-bs-dismiss="modal" (click)="passwordChange(userEmail)">Küldés</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
 

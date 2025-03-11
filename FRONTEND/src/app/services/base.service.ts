@@ -24,12 +24,16 @@ export class BaseService {
     return this.http.post(`${this.apiUrl}/login`, { userEmail, userPassword });
   }
 
-  registerUser(userEmail: string, userPassword: string, isAdmin: boolean): Observable<any> {
-    return this.http.post(`${this.apiUrl}/register`, { userEmail, userPassword, isAdmin });
+  firstLogin(userPassword: string): Observable<any> {
+    return this.http.put(`${this.apiUrl}/firstLogin`, {userPassword}, { headers: this.getAuthHeaders() });
   }
 
-  changePassword(userEmail: string, newPassword: string): Observable<any> {
-    return this.http.put(`${this.apiUrl}/passwordChange`, { userEmail, newPassword });
+  passwordChange(userEmail:string) : Observable<any> {
+    return this.http.put(`${this.apiUrl}/passwordChange`, {userEmail});
+  }
+
+  registerUser(userEmail: string, userPassword: string, isAdmin: boolean): Observable<any> {
+    return this.http.post(`${this.apiUrl}/register`, { userEmail, userPassword, isAdmin });
   }
 
   //Storage place management
