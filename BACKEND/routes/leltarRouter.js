@@ -5,7 +5,7 @@ const router = Router()
 
 import { Items } from "../models/ItemsModel.js"
 
-import { authMiddle, checkPassword, checkRequiredFields, genPassword, sendEmail,  } from "../services/auth/utilFunctions.utils.js"
+import { authMiddle, checkPassword, checkRequiredFields, genPassword, sendEmail, firstLoginFalse } from "../services/auth/utilFunctions.utils.js"
 import { updateUser, createUser } from "../services/auth/User.service.js"
 
 import { getItems, createItem, updateItem, deleteItem } from "../services/storage/Item.service.js"
@@ -18,7 +18,7 @@ import { getLogs, createExcel } from "../services/log/ExcelLog.service.js"
 
 
 router.use((req, res, next) => {
-    if (req.path === '/login' || req.path ==='/register') {
+    if (req.path === '/login' || req.path ==='/register' || req.path ==='/passwordChange') {
         return next(); 
     }
     return authMiddle(req, res, next);
@@ -190,20 +190,6 @@ router.put("/item",
         }
     })
 
-router.put("/passwordChange",
-    async function(req, res, next){
-        try{
-        
-        const {userEmail, newPassword} = req.body
-        console.log(userEmail, newPassword)
-        res.json(await updateUser(userEmail, newPassword))
-        
-    }
-    catch(err){
-        next(err)
-    }
-}
-)
 
 
 
@@ -268,7 +254,7 @@ router.post('/login', async (req, res) => {
         
         const user = await checkPassword(userEmail, userPassword);
         if (!user) {
-            return res.status(401).json({ message: "Ind credentials" });
+            return res.status(401).json({ message: "Invalid credentials" });
         }else{
             const token = sign({ id: user.id, isAdmin: user.isAdmin }, process.env.SECRET_KEY, { expiresIn: "4h" });
 
@@ -302,6 +288,34 @@ router.post('/register',  async (req, res) => {
     }
 });
 
+router.put("/firstLogin", 
+    async function(req, res, next){
+        try{
+            const user = await firstLoginFalse(req)
+            const {userPassword} = req.body
+            res.json(await updateUser(user.userEmail, userPassword))
+        }
+        catch(err){
+            next(err)
+        }
+})
+
+router.put("/passwordChange",
+    async function(req, res, next){
+        try{
+        
+        const {userEmail} = req.body
+
+        const newPassword = await genPassword() 
+        await sendEmail(userEmail, 'Jelszó', `Jelszó: ${String(newPassword)}`, `Jelszó: ${String(newPassword)}`)
+        res.json(await updateUser(userEmail, newPassword))
+        
+    }
+    catch(err){
+        next(err)
+    }
+}
+)
 
 router.post('/log', async (req, res) => {
     try {

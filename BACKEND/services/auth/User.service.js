@@ -52,7 +52,7 @@ async function updateUser(userEmail, newPassword) {
             userEmail: user.userEmail,
             userPassword: hashedPassword,
             isAdmin: user.isAdmin,
-            isFirstLogin: false
+            isFirstLogin: true
         })  
 
         await user.save()

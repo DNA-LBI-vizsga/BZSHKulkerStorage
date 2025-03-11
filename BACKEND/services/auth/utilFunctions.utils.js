@@ -115,11 +115,13 @@ async function genPassword(){
     return randomString
 }
 
-async function isFirstLogin(req, res, next) {
+async function firstLoginFalse(req) {
     const user = await User.findOne({where:{
         id: req.user.id,
-        isFirstLogin: true
     }})
+    
+    user.set({isFirstLogin: false})
+    user.save()
     return user
 }
 
@@ -130,5 +132,5 @@ export{
     authMiddle,
     sendEmail,
     genPassword,
-    isFirstLogin
+    firstLoginFalse
 }
