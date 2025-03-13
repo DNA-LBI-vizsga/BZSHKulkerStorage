@@ -1,35 +1,45 @@
   <div class="d-flex align-items-center justify-content-center vh-100">
     <div class="card p-4 shadow-sm" style="width: 350px">
       <div class="text-center">
-        <h3 class="mt-2">Please sign in</h3>
+        <h3 class="mt-2">Bejelentkezés</h3>
       </div>
   
-      <form (ngSubmit)="loginUser()">
+      <form (ngSubmit)="loginUser()" #loginForm="ngForm">
         <div class="form-group mt-3">
-          <label for="name">Username</label>
+          <label for="userEmail">Email</label>
           <input
-            type="text"
+            type="email"
             class="form-control"
-            id="name"
+            id="userEmail"
             [(ngModel)]="userEmail"
-            name="name"
+            name="userEmail"
             required
+            #userEmailInput="ngModel"
+            placeholder="Email"
           />
+          <div *ngIf="userEmailInput.invalid && userEmailInput.touched" class="text-danger mt-1">
+            Email megadása kötelező.  
+          </div>
         </div>
   
         <div class="form-group mt-3">
-          <label for="password">Password</label>
+          <label for="userPassword">Jelszó</label>
           <input
             type="password"
             class="form-control"
-            id="password"
+            id="userPassword"
             [(ngModel)]="userPassword"
-            name="password"
+            name="userPassword"
             required
+            #userPasswordInput="ngModel"
+            placeholder="Jelszó"
           />
+          <div *ngIf="userPasswordInput.invalid && userPasswordInput.touched" class="text-danger mt-1">
+            Jelszó megadása kötelező.
+          </div>
         </div>
   
-        <button type="submit" class="btn btn-primary w-100 mt-3">Sign in</button>
+        <button type="submit" [disabled]="loginForm.invalid" class="btn btn-primary w-100 mt-3">Bejelentkezés</button>
         <button type="button" class="btn btn-link w-100 mt-3" data-bs-toggle="modal" data-bs-target="#passwordChangeModal">Elfelejtett Jelszó</button>
       </form>
     </div>
@@ -41,11 +51,11 @@
             <h5 class="modal-title" id="exampleModalLongTitle">Írja be email címét!</h5>
           </div>
           <div class="modal-body">
-            <input [(ngModel)]="userEmail" type="email" placeholder="Email">
+            <input type="email" [(ngModel)]="userEmail" placeholder="Email">
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Mégse</button>
-            <button type="button" class="btn btn-danger" data-bs-dismiss="modal" (click)="passwordChange(userEmail)">Küldés</button>
+            <button type="button" class="btn btn-primary" data-bs-dismiss="modal" (click)="passwordChange(userEmail)">Küldés</button>
           </div>
         </div>
       </div>

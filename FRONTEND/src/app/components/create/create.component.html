@@ -1,51 +1,52 @@
 <div class="container mt-5 dashboard-container">
-  <h2 class="mb-4">Termék Hozzáadása</h2>
 
   <h3>Válasszon Leltárhelyet!</h3>
-  <div class="form-group">
-      <label for="storagePlace">Leltárhely</label>
-      <select [(ngModel)]="selectedStoragePlace" class="form-control">
-          <option *ngFor="let place of storagePlaces" [value]="place.id">{{ place.storage }}</option>
-      </select>
-  </div>
+    <select [(ngModel)]="selectedStoragePlace" class="form-control w-auto custom-select">
+      <option *ngFor="let place of storagePlaces" [value]="place.id">{{ place.storage }}</option>
+    </select>
 
-  <div *ngIf="selectedStoragePlace" class="crud-section mt-4">
-      <div class="form-group">
-          <label for="itemName">Termék</label>
-          <select [(ngModel)]="newItem.itemNameId" class="form-control">
-              <option *ngFor="let item of itemNames" [value]="item.id">{{ item.item }}</option>
-          </select>
-      </div>
-      <div class="form-group">
-          <label for="quantity">Mennyiség</label>
-          <input [(ngModel)]="newItem.quantity" type="number" placeholder="Quantity" class="form-control">
-      </div>
-      <div class="form-group">
-          <label for="description">Leírás</label>
-          <input [(ngModel)]="newItem.description" placeholder="Description" class="form-control">
-      </div>
+  <div *ngIf="selectedStoragePlace" class="crud-section mt-2">
+        <div class="form-group">
+            <label for="newItem.itemNameId"><strong>Termék</strong></label>
+            <select [(ngModel)]="newItem.itemNameId" class="form-control w-auto custom-select">
+                <option *ngFor="let item of itemNames" [value]="item.id">{{ item.item }}</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="newItem.quantity"><strong>Mennyiség</strong></label>
+            <input [(ngModel)]="newItem.quantity" type="number" class="form-control w-auto custom-input">
+        </div>
+        <div class="form-group">
+            <label for="newItem.description"><strong>Leírás</strong></label>
+            <input [(ngModel)]="newItem.description" class="form-control w-auto custom-input">
+        </div>
       <button (click)="createItem()" class="btn btn-primary">Hozzáadás</button>
   </div>
 
   <div class="mt-4">
+    <div class="row">
       <ng-container *ngFor="let item of items">
-          <ng-container *ngIf="item.storagePlaceId == selectedStoragePlace">
-              <ng-container *ngIf="item.quantity != 0">
-                  <ng-container *ngIf="item.description == ''; else displayDescription">
-                      <p>Item Name: {{getItemNameById(item.itemNameId)}} Quantity: {{item.quantity}}
-                        <button type="button" class="btn btn-danger ml-2" data-bs-toggle="modal" data-bs-target="#deleteModal" (click)="loadDeleteItemModal(item.itemNameId,item.storagePlaceId,item.description,item.quantity)">Törlés</button>
-                        <button type="button" class="btn btn-primary ml-2" data-bs-toggle="modal" data-bs-target="#moveModal" (click)="loadUpdatedItemModal(item.itemNameId,item.storagePlaceId,item.description,item.quantity)">Áthelyezés</button>
-                      </p>
-
+        <ng-container *ngIf="item.storagePlaceId == selectedStoragePlace">
+          <ng-container *ngIf="item.quantity != 0">
+            <div class="col-md-4 mb-4">
+              <div class="card">
+                <div class="card-body">
+                  <h5 class="card-title">Termék: {{getItemNameById(item.itemNameId)}}</h5>
+                  <p class="card-text">Darabszám: {{item.quantity}}</p>
+                  <ng-container *ngIf="item.description != ''">
+                    <p class="card-text">Leírás: {{item.description}}</p>
                   </ng-container>
-                  <ng-template #displayDescription>
-                      <p>Item Name: {{getItemNameById(item.itemNameId)}} Quantity: {{item.quantity}} Description: {{item.description}}
-                        <button type="button" class="btn btn-danger ml-2" data-bs-toggle="modal" data-bs-target="#deleteModal" (click)="loadDeleteItemModal(item.itemNameId,item.storagePlaceId,item.description,item.quantity)">Törlés</button>
-                        <button type="button" class="btn btn-primary ml-2" data-bs-toggle="modal" data-bs-target="#moveModal" (click)="loadUpdatedItemModal(item.itemNameId,item.storagePlaceId,item.description,item.quantity)">Áthelyezés</button></p>
-                  </ng-template>
-              </ng-container>
+                  <ng-container *ngIf="isAdmin()">
+                    <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal" (click)="loadDeleteItemModal(item.itemNameId,item.storagePlaceId,item.description,item.quantity)">Törlés</button>
+                    <button type="button" class="btn btn-primary ml-2" data-bs-toggle="modal" data-bs-target="#moveModal" (click)="loadUpdatedItemModal(item.itemNameId,item.storagePlaceId,item.description,item.quantity)">Áthelyezés</button>
+                  </ng-container>
+                </div>
+              </div>
+            </div>
           </ng-container>
+        </ng-container>
       </ng-container>
+    </div>
   </div>
 </div>
 
@@ -57,10 +58,21 @@
         <h5 class="modal-title" id="exampleModalLongTitle">Hány darabot szeretne törölni?</h5>
       </div>
       <div class="modal-body">
-        <p>Item Name: {{getItemNameById(deleteItemModal.deleteItemNameId)}} 
-          Quantity:{{deleteItemModal.deleteQuantity}}
-        </p>
-        <input [(ngModel)]="deleteQuantity" type="number" placeholder="Darabszám">
+        <div class="mb-3">
+          <p><strong>Termék neve:</strong> {{getItemNameById(deleteItemModal.deleteItemNameId)}}</p>
+          <p><strong>Darabszám:</strong> {{deleteItemModal.deleteQuantity}}</p>
+        </div>
+        <div class="form-group">
+          <label for="deleteQuantity"><strong>Adja meg a törlendő darabszámot:</strong></label>
+          <input
+            [(ngModel)]="deleteQuantity"
+            type="number"
+            id="deleteQuantity"
+            class="form-control"
+            placeholder="Darabszám"
+            min="1"
+          />
+        </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Mégse</button>
@@ -77,13 +89,28 @@
         <h5 class="modal-title" id="exampleModalLongTitle">Válasszon leltár helyet és mennyiséget!</h5>
       </div>
       <div class="modal-body">
-        <p>Item Name: {{getItemNameById(updatedItemModal.itemNameId)}} 
-          Quantity:{{updatedItemModal.quantity}}
-        </p>
-        <input [(ngModel)]="moveQuantity" type="number" placeholder="Darabszám">
-        <select [(ngModel)]="newStoragePlaceId">
-          <option *ngFor="let place of storagePlaces" [value]="place.id">{{ place.storage }}</option>
-        </select>
+        <div class="mb-3">
+          <p><strong>Termék neve:</strong> {{getItemNameById(updatedItemModal.itemNameId)}}</p>
+          <p><strong>Elérhető darabszám:</strong> {{updatedItemModal.quantity}}</p>
+          <p><strong>Jelenlegi leltárhely:</strong> {{getStoragePlaceById(updatedItemModal.storagePlaceId)}}</p>
+        </div>
+        <div class="form-group mb-3">
+          <label for="moveQuantity"><strong>Adja meg az áthelyezendő darabszámot:</strong></label>
+          <input
+            [(ngModel)]="moveQuantity"
+            type="number"
+            id="moveQuantity"
+            class="form-control"
+            placeholder="Darabszám"
+            min="1"
+          />
+        </div>
+        <div class="form-group">
+          <label for="newStoragePlaceId"><strong>Válasszon új leltárhelyet:</strong></label>
+          <select [(ngModel)]="newStoragePlaceId" id="newStoragePlaceId" class="form-control">
+            <option *ngFor="let place of storagePlaces" [value]="place.id" [hidden]="place.id == selectedStoragePlace">{{ place.storage }}</option>
+          </select>
+        </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Mégse</button>
@@ -92,42 +119,3 @@
     </div>
   </div>
 </div>
-
-<!-- <div class="dashboard-container">
-    <h2>Termék Hozzáadása</h2>
-  
-    <h3>Válasszon Leltárhelyet!</h3>
-    <select [(ngModel)]="selectedStoragePlace">
-      <option *ngFor="let place of storagePlaces" [value]="place.id">{{ place.storage }}</option>
-    </select>
-  
-    
-    <div *ngIf="selectedStoragePlace" class="crud-section">
-      <select [(ngModel)]="newItem.itemNameId">
-        <option *ngFor="let item of itemNames" [value]="item.id">{{ item.item }}</option>
-      </select>
-      <input [(ngModel)]="newItem.quantity" type="number" placeholder="Quantity">
-      <input [(ngModel)]="newItem.description" placeholder="Description">
-      <button (click)="createItem()">Hozzáadás</button>
-    </div>
-  
-  <ng-container *ngFor="let item of items">
-      <ng-container *ngIf="item.storagePlaceId == selectedStoragePlace">
-        <ng-container *ngIf="item.quantity != 0"> 
-  
-          <ng-container *ngIf="item.description == ''; else displayDescription">
-            <p>Item Name: {{getItemNameById(item.itemNameId)}} 
-              Quantity:{{item.quantity}}</p>
-          </ng-container>
-  
-          <ng-template #displayDescription>
-            <p>Item Name: {{getItemNameById(item.itemNameId)}} 
-              Quantity:{{item.quantity}}
-              Description: {{item.description}}</p>
-          </ng-template>
-        </ng-container> 
-    </ng-container>
-  </ng-container>
-  </div>
-  
-   -->

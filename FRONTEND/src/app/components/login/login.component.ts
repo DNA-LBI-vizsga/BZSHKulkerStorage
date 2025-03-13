@@ -23,12 +23,12 @@ export class LoginComponent {
       response => {
         if (response.token) {
           localStorage.setItem('authToken',response.token);
-          this.router.navigate(['/navbar/create']); // Navigate to the home page or another page after login
+          this.router.navigate(['/navbar/create']);
           console.log('Logged in:', response);
         }
       },
       error => {
-        this.errorMessage = 'Invalid credentials. Please try again.';
+        alert('Helytelen Email vagy Jelszó!');
         console.error('Error logging in:', error);
       }
     );
@@ -40,6 +40,7 @@ export class LoginComponent {
         console.log('Password change:', response);
       },
       error => {
+        alert('Nem található ilyen email címmel felhasználó!');
         console.error('Error changing password:', error);
       }
     );

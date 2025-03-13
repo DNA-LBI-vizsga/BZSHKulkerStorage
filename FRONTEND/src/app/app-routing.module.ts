@@ -14,14 +14,14 @@ import { firstLoginGuard } from './guards/first-login.guard';
 
 const routes: Routes = [
   {path: 'login', component: LoginComponent},
-  {path: 'passwordChange', component: PasswordChangeComponent},
+  {path: 'passwordchange', component: PasswordChangeComponent, canActivate: [authGuard]},
   {path:'navbar', component: NavbarComponent, canActivate: [authGuard, firstLoginGuard], 
     children: [
       {path: 'register', component: RegisterComponent, canActivate: [authGuard,adminGuard]},
       {path: 'admin', component: AdminComponent, canActivate: [authGuard,adminGuard]},
       {path: 'create' , component: CreateComponent, canActivate: [authGuard]},
-      {path: 'update', component: UpdateComponent, canActivate: [authGuard,adminGuard]},
-      {path: 'delete', component: DeleteComponent, canActivate: [authGuard,adminGuard]}
+      //{path: 'update', component: UpdateComponent, canActivate: [authGuard,adminGuard]},
+      //{path: 'delete', component: DeleteComponent, canActivate: [authGuard,adminGuard]}
     ]
   },
   {path: '', redirectTo: 'login', pathMatch: 'full'}
