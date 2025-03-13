@@ -13,7 +13,6 @@ export class BaseService {
   private getAuthHeaders(): HttpHeaders {
     const token = localStorage.getItem('authToken');
     return new HttpHeaders({
-      'Content-Type': 'application/json',
       'Authorization': `Bearer ${token}`
     });
   }
@@ -88,7 +87,7 @@ export class BaseService {
 
   //Log write to file
 
-  logToFile(): Observable<any> {
-    return this.http.post(`${this.apiUrl}/log`, { headers: this.getAuthHeaders()});
+  downloadLogs(): Observable<any> {
+    return this.http.post(`${this.apiUrl}/log`, {} ,{ headers: this.getAuthHeaders(),responseType: 'blob'});
   }
 }

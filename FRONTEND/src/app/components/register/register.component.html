@@ -1,4 +1,37 @@
-<div class="register-container">
+<div class="container mt-5">
+  <div class="row justify-content-center">
+      <div class="col-md-6">
+          <div class="card">
+              <div class="card-header">
+                  <h2 class="text-center">Felhasználó regisztrálása</h2>
+              </div>
+              <div class="card-body">
+                  <form (ngSubmit)="registerUser()">
+                      <div class="form-group">
+                          <label for="name">Email:</label>
+                          <input type="text" id="name" [(ngModel)]="name" name="name" class="form-control" required>
+                      </div>
+                      <div class="form-group form-check">
+                          <input type="checkbox" id="isAdmin" [(ngModel)]="isAdmin" name="isAdmin" class="form-check-input">
+                          <label for="isAdmin" class="form-check-label">Admin felhasználó?</label>
+                      </div>
+                      <div class="text-center">
+                        <button type="submit" class="btn btn-primary mt-3">Email kiküldése</button>
+                      </div>
+                  </form>
+                  <div *ngIf="errorMessage" class="alert alert-danger mt-3">
+                      {{ errorMessage }}
+                  </div>
+                  <div *ngIf="successMessage" class="alert alert-success mt-3">
+                      {{ successMessage }}
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+</div>
+
+<!-- <div class="register-container">
     <h2>Register</h2>
     <form (ngSubmit)="registerUser()">
       <div>
@@ -17,4 +50,4 @@
     <div *ngIf="successMessage" class="success-message">
       {{ successMessage }}
     </div>
-  </div>
+  </div> -->

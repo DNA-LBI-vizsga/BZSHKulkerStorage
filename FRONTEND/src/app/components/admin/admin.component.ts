@@ -94,4 +94,17 @@ export class AdminComponent {
     });
   }
 
+  downloadLogs(): void {
+    this.baseService.downloadLogs().subscribe(response => {
+      const url = window.URL.createObjectURL(response);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'logs.xlsx';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+    });
+  }
+
 }

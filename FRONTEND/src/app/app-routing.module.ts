@@ -2,7 +2,6 @@ import { createComponent, NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { LoginComponent } from './components/login/login.component';
 import { RegisterComponent } from './components/register/register.component';
-import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { authGuard } from './guards/auth.guard';
 import { NavbarComponent } from './components/navbar/navbar.component';
 import { CreateComponent } from './components/create/create.component';
@@ -19,7 +18,6 @@ const routes: Routes = [
   {path:'navbar', component: NavbarComponent, canActivate: [authGuard, firstLoginGuard], 
     children: [
       {path: 'register', component: RegisterComponent, canActivate: [authGuard,adminGuard]},
-      {path: 'dashboard', component: DashboardComponent, canActivate: [authGuard]},
       {path: 'admin', component: AdminComponent, canActivate: [authGuard,adminGuard]},
       {path: 'create' , component: CreateComponent, canActivate: [authGuard]},
       {path: 'update', component: UpdateComponent, canActivate: [authGuard,adminGuard]},

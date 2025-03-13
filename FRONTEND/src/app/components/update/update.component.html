@@ -6,66 +6,51 @@
     <option *ngFor="let place of storagePlaces" [value]="place.id">{{ place.storage }}</option>
   </select>
 
-  
-  <div *ngIf="selectedStoragePlace" class="crud-section">
-    <h3>Create Item</h3>
-    <select [(ngModel)]="newItem.itemNameId">
-      <option *ngFor="let item of itemNames" [value]="item.id">{{ item.item }}</option>
-    </select>
-    <!-- <select [(ngModel)]="newItem.storagePlaceId">
-      <option *ngFor="let place of storagePlaces" [value]="place.id">{{ place.storage }}</option>
-    </select> -->
-    <input [(ngModel)]="newItem.quantity" type="number" placeholder="Quantity">
-    <input [(ngModel)]="newItem.description" placeholder="Description">
-    <button (click)="createItem()">Add Item</button>
-  </div>
-
-<ng-container *ngFor="let item of items">
-    <ng-container *ngIf="item.storagePlaceId == selectedStoragePlace">
-    <ng-container *ngIf="item.quantity != 0"> 
-      <ng-container *ngIf="item.description == ''; else displayDescription">
-        <p>Item Name: {{getItemNameById(item.itemNameId)}} 
-          Quantity: {{item.quantity}}
-        <!-- <button (click)="deleteItem(item.itemNameId,item.storagePlaceId,item.description,item.quantity)">Delete</button> -->
-        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#moveModal" (click)="loadUpdatedItemModal(item.itemNameId,item.storagePlaceId,item.description,item.quantity)">Áthelyezés</button>
-      </p> 
-      </ng-container>
-      <ng-template #displayDescription>
-        <p>Item Name: {{getItemNameById(item.itemNameId)}} 
-          Quantity: {{item.quantity}}
-          Description: {{item.description}}
-        <!-- <button (click)="deleteItem(item.itemNameId,item.storagePlaceId,item.description,item.quantity)">Delete</button> -->
-        <!-- <button (click)="updateItem(item.storagePlaceId,item.itemNameId,newStoragePlaceId,item.description,item.quantity)">Update</button> -->
-        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#moveModal" (click)="loadUpdatedItemModal(item.itemNameId,item.storagePlaceId,item.description,item.quantity)">Áthelyezés</button>
-        </p>
-      </ng-template> 
-    </ng-container>  
+  <ng-container *ngFor="let item of items">
+      <ng-container *ngIf="item.storagePlaceId == selectedStoragePlace">
+      <ng-container *ngIf="item.quantity != 0"> 
+        <ng-container *ngIf="item.description == ''; else displayDescription">
+          <p>Item Name: {{getItemNameById(item.itemNameId)}} 
+            Quantity: {{item.quantity}}
+          <!-- <button (click)="deleteItem(item.itemNameId,item.storagePlaceId,item.description,item.quantity)">Delete</button> -->
+          <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#moveModal" (click)="loadUpdatedItemModal(item.itemNameId,item.storagePlaceId,item.description,item.quantity)">Áthelyezés</button>
+        </p> 
+        </ng-container>
+        <ng-template #displayDescription>
+          <p>Item Name: {{getItemNameById(item.itemNameId)}} 
+            Quantity: {{item.quantity}}
+            Description: {{item.description}}
+          <!-- <button (click)="deleteItem(item.itemNameId,item.storagePlaceId,item.description,item.quantity)">Delete</button> -->
+          <!-- <button (click)="updateItem(item.storagePlaceId,item.itemNameId,newStoragePlaceId,item.description,item.quantity)">Update</button> -->
+          <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#moveModal" (click)="loadUpdatedItemModal(item.itemNameId,item.storagePlaceId,item.description,item.quantity)">Áthelyezés</button>
+          </p>
+        </ng-template> 
+      </ng-container>  
+    </ng-container>
   </ng-container>
-</ng-container>
 
-<div class="modal fade" id="moveModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLongTitle">Válasszon leltár helyet és mennyiséget!</h5>
-      </div>
-      <div class="modal-body">
-        <p>Item Name: {{getItemNameById(updatedItemModal.itemNameId)}} 
-          Quantity:{{updatedItemModal.quantity}}
-        </p>
-        <input [(ngModel)]="moveQuantity" type="number" placeholder="Darabszám">
-        <select [(ngModel)]="newStoragePlaceId">
-          <option *ngFor="let place of storagePlaces" [value]="place.id">{{ place.storage }}</option>
-        </select>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Mégse</button>
-        <button type="button" class="btn btn-danger" data-bs-dismiss="modal" (click)="updateItem(updatedItemModal.storagePlaceId,updatedItemModal.itemNameId,newStoragePlaceId,updatedItemModal.description,moveQuantity)">Áthelyezés</button>
+  <div class="modal fade" id="moveModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLongTitle">Válasszon leltár helyet és mennyiséget!</h5>
+        </div>
+        <div class="modal-body">
+          <p>Item Name: {{getItemNameById(updatedItemModal.itemNameId)}} 
+            Quantity:{{updatedItemModal.quantity}}
+          </p>
+          <input [(ngModel)]="moveQuantity" type="number" placeholder="Darabszám">
+          <select [(ngModel)]="newStoragePlaceId">
+            <option *ngFor="let place of storagePlaces" [value]="place.id">{{ place.storage }}</option>
+          </select>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Mégse</button>
+          <button type="button" class="btn btn-danger" data-bs-dismiss="modal" (click)="updateItem(updatedItemModal.storagePlaceId,updatedItemModal.itemNameId,newStoragePlaceId,updatedItemModal.description,moveQuantity)">Áthelyezés</button>
+        </div>
       </div>
     </div>
   </div>
-</div>
-
 </div>
 
 

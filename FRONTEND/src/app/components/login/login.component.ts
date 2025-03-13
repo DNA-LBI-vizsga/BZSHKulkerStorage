@@ -14,12 +14,16 @@ export class LoginComponent {
 
   constructor(private baseService: BaseService, private router: Router) { }
 
+  ngOnInit(): void {
+    localStorage.removeItem('authToken');
+  }
+
   loginUser(): void {
     this.baseService.loginUser(this.userEmail, this.userPassword).subscribe(
       response => {
         if (response.token) {
           localStorage.setItem('authToken',response.token);
-          this.router.navigate(['/navbar/dashboard']); // Navigate to the home page or another page after login
+          this.router.navigate(['/navbar/create']); // Navigate to the home page or another page after login
           console.log('Logged in:', response);
         }
       },

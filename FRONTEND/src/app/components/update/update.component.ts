@@ -85,28 +85,6 @@ export class UpdateComponent implements OnInit {
     });
   }
 
-  createItem(){
-    this.baseService.createItem(
-      this.newItem.itemNameId,
-      this.selectedStoragePlace,
-      this.newItem.quantity,
-      this.newItem.description
-    ).subscribe(() => {
-      this.loadItems();
-      this.newItem = {
-        itemNameId: null,
-        quantity: 0,
-        description: '',
-      };
-    });
-  }
-
-  deleteItem(itemNameId: number, storagePlaceId: number, description:string, quantity:number): void {
-    this.baseService.deleteItem(itemNameId,storagePlaceId,description,quantity).subscribe(() => {
-      this.loadItems();
-    });
-  }
-
   updateItem(storagePlaceId: number, itemNameId: number, newStoragePlaceId: number,description:string, quantity: number): void {
     this.baseService.updateItem(storagePlaceId, itemNameId, newStoragePlaceId, description, quantity).subscribe(() => {
       this.loadItems();
