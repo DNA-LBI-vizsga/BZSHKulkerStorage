@@ -3,16 +3,17 @@ import pkg from 'jsonwebtoken';
 const { sign } = pkg;
 const router = Router()
 
-import { Items } from "../models/ItemsModel.js"
+import { Item } from "../models/ItemModel.js"
 
 import { authMiddle, checkPassword, checkRequiredFields, genPassword, sendEmail, firstLoginFalse } from "../services/auth/utilFunctions.utils.js"
 import { updateUser, createUser } from "../services/auth/User.service.js"
 
-import { getItems, createItem, updateItem, deleteItem } from "../services/storage/Item.service.js"
+import { getItem, createItem, updateItem, deleteItem } from "../services/storage/Item.service.js"
 import { getItemNames, createItemName, updateItemName, deleteItemName } from "../services/storage/ItemName.service.js"
 import { getPlaces, createPlace, deletePlace } from "../services/storage/Storage.service.js"
 import { createLogs } from "../services/log/Logs.service.js"
 import { getLogs, createExcel } from "../services/log/ExcelLog.service.js"
+import { storeItem } from "../services/storage/StorageConn.service.js";
 
 
 
@@ -66,7 +67,7 @@ router.get("/itemName",
 router.get("/item", 
     async function(req, res, next){
         try{
-            res.json(await getItems())
+            res.json(await getItem())
         }
         catch(err){
             next(err)
@@ -114,23 +115,30 @@ router.post("/item",
 
             const createdBy = req.user.id
 
-            const {itemNameId, storagePlaceId, quantity, description} = req.body
+            const {itemNameId, storagePlaceId, quantity} = req.body
 
             if (!itemNameId || !storagePlaceId  || !quantity) {
                 return res.status(400).json({ message: 'Missing required fields' });
             }
 
             
-            const item = await Items.findOne({ where: { itemNameId: itemNameId, storagePlaceId: storagePlaceId }});
             
-            let previousQuantity
-            if (item) {
-                previousQuantity = item.quantity
-            }
+            
             
             let  quantityChange = `+${String(quantity)}`
-            await createLogs(itemNameId, storagePlaceId, quantityChange, previousQuantity,  createdBy, httpMethod)
-            res.json(await createItem(itemNameId, storagePlaceId, description,  quantity ))
+            const createdItems = await createItem(itemNameId, quantity);
+            
+            let itemId = 0
+            
+            for (let i = 0; i < createdItems.length; i++) {
+                itemId = createdItems[i].id;
+                console.log(itemId)
+                await storeItem(itemId, storagePlaceId, quantity);
+                await createLogs(itemId, storagePlaceId, quantityChange, createdBy, httpMethod)
+            }
+
+
+            res.status(201).json({ message: `Item created` });
         }
         catch(err){
             next(err)
@@ -165,14 +173,14 @@ router.put("/item",
             
             const {storagePlaceId, itemNameId, newStoragePlaceId, description, quantity} = req.body
             
-            const item = await Items.findOne({ where: { itemNameId: itemNameId, storagePlaceId: storagePlaceId }});
+            const item = await Item.findOne({ where: { itemNameId: itemNameId, storagePlaceId: storagePlaceId }});
             
             let previousQuantityFrom
             if (item) {
                 previousQuantityFrom = item.quantity
             }
 
-            const newItem = await Items.findOne({ where: { itemNameId: itemNameId, storagePlaceId: newStoragePlaceId }});
+            const newItem = await Item.findOne({ where: { itemNameId: itemNameId, storagePlaceId: newStoragePlaceId }});
             let previousQuantityTo
             if (newItem) {
                 previousQuantityTo = newItem.quantity
@@ -227,7 +235,7 @@ router.patch("/item",
             const createdBy = req.user.id
             const {itemNameId, storagePlaceId, description, quantity} = req.body
             
-            const item = await Items.findOne({where: {itemNameId: itemNameId, storagePlaceId: storagePlaceId}})
+            const item = await Item.findOne({where: {itemNameId: itemNameId, storagePlaceId: storagePlaceId}})
             let previousQuantity
             if (item) {
                 previousQuantity = item.quantity
@@ -274,14 +282,14 @@ router.post('/register',  async (req, res) => {
     try {
         
         //const userPassword = await genPassword() 
-        const { userEmail, userPassword, isAdmin } = req.body;
+        const { userEmail, userPassword,  isAdmin } = req.body;
 
         
         if (!userEmail || userEmail==""|| isAdmin==null) {
             return res.status(400).json({ message: 'Missing required fields' });
         }
         const user = await createUser(userEmail, userPassword, isAdmin);
-        //const email = await sendEmail(userEmail, 'Jelszó', `Jelszó: ${String(userPassword)}`, `Jelszó: ${String(userPassword)}`)
+        // await sendEmail(userEmail, 'Jelszó', `Jelszó: ${String(userPassword)}`, `Jelszó: ${String(userPassword)}`)
         return res.status(201).json({ message: `User created` });
     } catch (error) {
         return res.status(500).json({ message: error.message });

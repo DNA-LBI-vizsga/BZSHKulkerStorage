@@ -1,7 +1,7 @@
 import { Logs } from "../../models/LogModel.js";
 
 
-async function createLogs(itemNameId, storagePlaceId, quantityChange, previousQuantity, createdBy, httpMethod) {
+async function createLogs(itemId, storagePlaceId, quantityChange, createdBy, httpMethod) {
     try {
         
         let actionType
@@ -20,10 +20,9 @@ async function createLogs(itemNameId, storagePlaceId, quantityChange, previousQu
         const logs = []
 
         logs.push({
-            itemNameId: itemNameId,
+            itemId: itemId,
             storagePlaceId: storagePlaceId,
             quantityChange: quantityChange,
-            previousQuantity: previousQuantity,
             actionType: actionType,
             createdBy: createdBy
     })

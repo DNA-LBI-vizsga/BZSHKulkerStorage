@@ -2,7 +2,7 @@ import { ItemName } from "../../models/ItemNameModel.js";
 
 async function getItemNames() {
 try {
-    const item = await ItemName.findAll(); // Sequelize ORM method to get all items
+    const item = await ItemName.findAll(); 
     return item 
 } catch (error) {
     throw new Error("Error fetching item names");

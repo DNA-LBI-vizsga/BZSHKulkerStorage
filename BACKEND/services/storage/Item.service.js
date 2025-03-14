@@ -1,60 +1,40 @@
-import e from "express";
-import { ItemName } from "../../models/ItemNameModel.js";
-import { Items } from "../../models/ItemsModel.js";
-import { StoragePlace } from "../../models/StoragePlaceModel.js";
+import { Item } from "../../models/ItemModel.js";
 import Sequelize from 'sequelize';
 const { Op } = Sequelize;
 
-async function getItems() {
+async function getItem() {
     try {
-    const items = await Items.findAll();
+    const Item = await Item.findAll();
    
         
         
-    const result = items.map(item => ({
-        itemNameId: item.itemNameId,
-        storagePlaceId: item.storagePlaceId,
-        quantity: item.quantity,
-        description: item.description
+    const result = Item.map(item => ({
+        id: item.id,
+        itemNameId: item.itemNameId
     }));
 
 
             return result
         
     } catch (error) {
-        throw new Error("Error fetching items");
+        throw new Error("Error fetching Item");
     }
 }
 
 
 
-async function createItem(itemNameId, storagePlaceId, description, quantity){
-    
-    let newItems
-    const item = await Items.findOne({ where: { itemNameId: itemNameId, storagePlaceId: storagePlaceId }});
-    if (item) {
-        
-        item.set({
-            quantity: item.quantity + quantity
-        })
-        await item.save();
-        return item;
-    } else{
-        newItems = {
-            itemNameId: itemNameId,
-            storagePlaceId: storagePlaceId,
-            description: description,
-            quantity: quantity
-        }
-    }
-    
-    
-    
-    console.log(newItems)
+async function createItem(itemNameId, quantity){
 
+    let newItem = [];
+
+    for (let i = 0; i < quantity; i++) {
+        newItem.push({
+            itemNameId: itemNameId
+        });
+    }
     try{
-        const items = await Items.create(newItems);
-        return items;
+        const item = await Item.bulkCreate(newItem);
+        return item;
     }catch (error) {
         throw new Error("Failed to create item(s)" + error);
     }
@@ -64,7 +44,7 @@ async function createItem(itemNameId, storagePlaceId, description, quantity){
 
 async function deleteItem(itemNameId, storagePlaceId, description, quantity){
     try{
-        const item = await Items.findOne({where:{
+        const item = await Item.findOne({where:{
             itemNameId:itemNameId,
             storagePlaceId: storagePlaceId
         }}); 
@@ -87,7 +67,7 @@ async function deleteItem(itemNameId, storagePlaceId, description, quantity){
 async function updateItem(storagePlaceId, itemNameId, newStoragePlaceId, description, quantity) {
 
     try{
-        const items = await Items.findOne(
+        const Item = await Item.findOne(
             {where: {
                 storagePlaceId: storagePlaceId,
                 itemNameId: itemNameId
@@ -95,16 +75,16 @@ async function updateItem(storagePlaceId, itemNameId, newStoragePlaceId, descrip
             
         })
         
-        items.set({
+        Item.set({
             storagePlaceId: storagePlaceId,
             description: description,
-            quantity: items.quantity-quantity
+            quantity: Item.quantity-quantity
         });
         
-        await items.save()
-        let newItem = await Items.findOne({where:{itemNameId: itemNameId, storagePlaceId: newStoragePlaceId}});
+        await Item.save()
+        let newItem = await Item.findOne({where:{itemNameId: itemNameId, storagePlaceId: newStoragePlaceId}});
             if (!newItem) {
-                newItem = await Items.create({
+                newItem = await Item.create({
                     itemNameId: itemNameId,
                     storagePlaceId: newStoragePlaceId,
                     description: description,
@@ -132,7 +112,7 @@ async function updateItem(storagePlaceId, itemNameId, newStoragePlaceId, descrip
 
 
 export{
-    getItems,
+    getItem,
     createItem, 
     deleteItem,
     updateItem

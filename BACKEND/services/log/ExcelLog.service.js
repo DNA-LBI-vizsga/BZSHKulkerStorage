@@ -35,7 +35,7 @@ async function getLogs(req) {
                 id: log.id,
                 itemName: itemName ? itemName.item : 'Unknown',
                 storagePlace: storagePlace ? storagePlace.storage : 'Unknown',
-                previousQuantity: log.previousQuantity,
+                actionType: log.actionType,
                 quantityChange: log.quantityChange,
                 createdAt: new Date(log.createdAt).toLocaleString(), 
                 createdBy: user ? user.userEmail : 'Unknown',
@@ -56,7 +56,7 @@ async function createExcel(data) {
         { header: 'Azonosító', key: 'id', width: 10 },
         { header: 'Tárgy', key: 'itemName', width: 20 },
         { header: 'Tároló', key: 'storagePlace', width: 20 },
-        { header: 'Előzetes mennyiség', key: 'previousQuantity', width: 20 },
+        { header: 'Cselekvés', key: 'actionType', width: 20 },
         { header: 'Mennyiségi változás', key: 'quantityChange', width: 20 },
         { header: 'Felvitel ideje', key: 'createdAt', width: 25 },
         { header: 'Felvitelt végző felhasználó', key: 'createdBy', width: 30 }

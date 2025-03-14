@@ -2,16 +2,14 @@ import pkg from 'sequelize';
 const { DataTypes } = pkg;
 import { sequelize } from "../config.js";
 
-
-
-const Items = sequelize.define('Item', {
+const StorageConn = sequelize.define('StorageConn', {
     id: {
         type: DataTypes.INTEGER, 
         allowNull: false,
         autoIncrement: true, 
         primaryKey: true
     },
-    itemNameId: {
+    itemId: {
         type: DataTypes.INTEGER,
         allowNull: false
     },
@@ -19,25 +17,13 @@ const Items = sequelize.define('Item', {
         type: DataTypes.INTEGER,
         allowNull: false
     },
-    quantity: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        validate: {
-            min: 0
-        }
-    },
-    description: {
-        type: DataTypes.STRING(255),
-        allowNull: false
-    }
-    },  
+},
     {
-        tableName: 'ITEMS',
-        timestamps: false
+        tableName: 'STORAGE_CONN',
+        timestamps: false 
     }
 );
 
-export{  
-    Items 
-};
-    
+export{ 
+    StorageConn
+}
