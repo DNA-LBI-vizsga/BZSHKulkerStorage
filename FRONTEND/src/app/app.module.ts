@@ -10,12 +10,11 @@ import { FormsModule } from '@angular/forms';
 import { provideHttpClient } from '@angular/common/http';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { CommonModule } from '@angular/common';
-import { CreateComponent } from './components/create/create.component';
-import { UpdateComponent } from './components/update/update.component';
-import { DeleteComponent } from './components/delete/delete.component';
 import { AdminComponent } from './components/admin/admin.component';
 import { PasswordChangeComponent } from './components/password-change/password-change.component';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { DashboardComponent } from './components/create/dashboard.component';
+import { ListComponent } from './components/list/list.component';
 
 @NgModule({
   declarations: [
@@ -23,11 +22,10 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
     NavbarComponent,
     LoginComponent,
     RegisterComponent,
-    CreateComponent,
-    UpdateComponent,
-    DeleteComponent,
     AdminComponent,
-    PasswordChangeComponent
+    PasswordChangeComponent,
+    DashboardComponent,
+    ListComponent
   ],
   imports: [
     BrowserModule,

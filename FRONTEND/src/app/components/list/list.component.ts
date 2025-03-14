@@ -13,10 +13,12 @@ interface StoragePlace {
 
 @Component({
   selector: 'app-create',
-  templateUrl: './create.component.html',
-  styleUrl: './create.component.css'
+  templateUrl: './list.component.html',
+  styleUrl: './list.component.css'
 })
-export class CreateComponent implements OnInit {
+
+export class ListComponent implements OnInit {
+
   items: any[] = [];
   newItem: any = {
     itemNameId: null,
@@ -49,24 +51,6 @@ export class CreateComponent implements OnInit {
  
   constructor(private baseService: BaseService) { }
 
-  loadDeleteItemModal(itemNameId: number, storagePlaceId: number, description: string, quantity:number): void {
-    this.deleteItemModal = {
-      deleteItemNameId: itemNameId,
-      deleteStoragePlaceId: storagePlaceId,
-      deleteDescription: description,
-      deleteQuantity: quantity
-
-    };
-  }
-
-  loadUpdatedItemModal(itemNameId: number, storagePlaceId: number, description: string, quantity:number): void {
-    this.updatedItemModal = {
-      itemNameId: itemNameId,
-      storagePlaceId: storagePlaceId,
-      description: description,
-      quantity: quantity
-    };
-  }
   ngOnInit(): void {
     this.loadItems();
     this.loadStoragePlaces();
@@ -114,39 +98,6 @@ export class CreateComponent implements OnInit {
     this.baseService.getItems().subscribe(data => {
       this.items = data;
       // console.log(this.items);
-    });
-  }
-
-  createItem(){
-    if(this.newItem.quantity === 0 || this.newItem.itemNameId === null) {
-      alert("A termék típus és a mennyiségi mező nem lehet üres! Kérjük, adjon meg egy érvényes értékeket.");
-      return;
-    }
-
-    this.baseService.createItem(
-      this.newItem.itemNameId,
-      this.selectedStoragePlace,
-      this.newItem.quantity,
-      this.newItem.description
-    ).subscribe(() => {
-      this.loadItems();
-      this.newItem = {
-        itemNameId: null,
-        quantity: 0,
-        description: '',
-      };
-    });
-  }
-
-  deleteItem(itemNameId: number, storagePlaceId: number, description:string, quantity:number): void {
-    this.baseService.deleteItem(itemNameId,storagePlaceId,description,quantity).subscribe(() => {
-      this.loadItems();
-    });
-  }
-
-  updateItem(storagePlaceId: number, itemNameId: number, newStoragePlaceId: number,description:string, quantity: number): void {
-    this.baseService.updateItem(storagePlaceId, itemNameId, newStoragePlaceId, description, quantity).subscribe(() => {
-      this.loadItems();
     });
   }
 }

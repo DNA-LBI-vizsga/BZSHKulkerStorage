@@ -14,7 +14,7 @@ export class firstLoginGuard implements CanActivate {
     if (token) {
       const payload = JSON.parse(atob(token.split('.')[1]));
       if(payload.isFirstLogin==true){
-        this.router.navigate(['/passwordChange']);
+        this.router.navigate(['/passwordchange']);
         return false;
       }
       else{

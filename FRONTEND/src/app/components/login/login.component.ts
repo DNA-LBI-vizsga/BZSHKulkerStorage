@@ -23,7 +23,7 @@ export class LoginComponent {
       response => {
         if (response.token) {
           localStorage.setItem('authToken',response.token);
-          this.router.navigate(['/navbar/create']);
+          this.router.navigate(['/navbar/dashboard']);
           console.log('Logged in:', response);
         }
       },
