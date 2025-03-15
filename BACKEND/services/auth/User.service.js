@@ -2,6 +2,7 @@ import { User } from "../../models/UserModel.js"
 import { hash } from "bcrypt"
 
 
+//User getter
 async function getUser(){
     try {
         const user = await User.findOne()
@@ -11,6 +12,8 @@ async function getUser(){
     }
 }
 
+
+//User creation
 async function createUser(email, password, isAdmin){
     
     
@@ -32,6 +35,7 @@ async function createUser(email, password, isAdmin){
 }
 
 
+//Password change for user
 async function updateUser(userEmail, newPassword) {
 
 
@@ -62,6 +66,7 @@ async function updateUser(userEmail, newPassword) {
         throw new Error('Error changing password'); 
     }
 }
+
 
 export{
     getUser,

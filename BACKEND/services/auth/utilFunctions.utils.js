@@ -1,17 +1,20 @@
+import { User } from "../../models/UserModel.js";
+
 import { compare } from "bcrypt";
 import gkp from 'jsonwebtoken';
-const { verify } = gkp;
-import { User } from "../../models/UserModel.js";
 import dotenv from 'dotenv';
-dotenv.config();
-
 import crypto from 'crypto'
 import sgMail from '@sendgrid/mail';
 
+dotenv.config();
+
+const { verify } = gkp;
+
+
+//Mailing, setup and sending
 const mailing = {
     apiKey: process.env.SENDGRID_API_KEY
 };
-
 sgMail.setApiKey(mailing.apiKey)
 
 async function sendEmail(to, subject, text, html) {
@@ -31,6 +34,8 @@ async function sendEmail(to, subject, text, html) {
     }
 }
 
+
+//Password checking
 async function checkPassword(userEmail, password){
     try {
         const user = await User.findOne({where:{userEmail:userEmail}})
@@ -49,33 +54,7 @@ async function checkPassword(userEmail, password){
 }
 
 
-async function validateAdmin(req, res, next) {
-    try {
-        const user = await User.findOne({ where: { id: req.user.id } });
-
-        if (!user || !user.isAdmin) {
-            return res.status(403).json({ message: 'Access denied' });
-        }
-
-        next();
-    } catch (err) {
-        return res.status(500).json({ message: err.message });
-    }
-}
-
-
-async function validateToken(token) {
-    if (token.split('.').length !== 3) {
-        throw new Error('Invalid token format');
-    }
-
-    try {
-        return verify(token, process.env.SECRET_KEY);
-    } catch (err) {
-        throw new Error('Invalid token: ' + err.message);
-    }
-}
-
+//Token checker
 async function tokenChecker(authHead, res) {
     if (!authHead) {
         return res.status(401).json({ message: 'Authorization header missing' });
@@ -94,6 +73,38 @@ async function tokenChecker(authHead, res) {
     }
 }
 
+
+//Token validation
+async function validateToken(token) {
+    if (token.split('.').length !== 3) {
+        throw new Error('Invalid token format');
+    }
+
+    try {
+        return verify(token, process.env.SECRET_KEY);
+    } catch (err) {
+        throw new Error('Invalid token: ' + err.message);
+    }
+}
+
+
+//Admin validation
+async function validateAdmin(req, res, next) {
+    try {
+        const user = await User.findOne({ where: { id: req.user.id } });
+
+        if (!user || !user.isAdmin) {
+            return res.status(403).json({ message: 'Access denied' });
+        }
+
+        next();
+    } catch (err) {
+        return res.status(500).json({ message: err.message });
+    }
+}
+
+
+//Authentication middleware
 async function authMiddle(req, res, next) {
     const authHead = req.headers['authorization'];
     const payload = await tokenChecker(authHead, res);
@@ -104,17 +115,23 @@ async function authMiddle(req, res, next) {
     next();
 }
 
+
+//Required field checker - only for ItemName and StoragePlace
 async function checkRequiredFields(requiredField, res) {
     if (!requiredField || requiredField == "") {
         return res.status(400).json({ message: `Missing ${requiredField} field` });
     }
 }
 
+
+//Password generator for user registration
 async function genPassword(){
     const randomString = crypto.randomBytes(8).toString('hex'); 
     return randomString
 }
 
+
+//First login checker for password change
 async function firstLoginFalse(req) {
     const user = await User.findOne({where:{
         id: req.user.id,
@@ -124,6 +141,7 @@ async function firstLoginFalse(req) {
     user.save()
     return user
 }
+
 
 export{    
     checkPassword,

@@ -1,4 +1,4 @@
-import { sequelize } from "../config.js";
+import { sequelize } from "../config.js"; 
 import pkg from 'sequelize';
 const { DataTypes } = pkg;
 

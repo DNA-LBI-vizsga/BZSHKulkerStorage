@@ -9,15 +9,6 @@ import { User } from "../models/UserModel.js";
 ItemName.hasMany(Item, { foreignKey: 'itemNameId', onDelete: 'NO ACTION', onUpdate: 'NO ACTION' });
 Item.belongsTo(ItemName, { foreignKey: 'itemNameId', onDelete: 'NO ACTION', onUpdate: 'NO ACTION' });
 
-User.hasMany(Logs, { foreignKey: 'createdBy', onDelete: 'NO ACTION', onUpdate: 'NO ACTION' });
-Logs.belongsTo(User, { foreignKey: 'createdBy', onDelete: 'NO ACTION', onUpdate: 'NO ACTION' });
-
-Item.hasMany(Logs, { foreignKey: 'itemId', onDelete: 'NO ACTION', onUpdate: 'NO ACTION' });
-Logs.belongsTo(Item, { foreignKey: 'itemId', onDelete: 'NO ACTION', onUpdate: 'NO ACTION' });
-
-StoragePlace.hasMany(Logs, { foreignKey: 'storagePlaceId', onDelete: 'NO ACTION', onUpdate: 'NO ACTION' });
-Logs.belongsTo(StoragePlace, { foreignKey: 'storagePlaceId', onDelete: 'NO ACTION', onUpdate: 'NO ACTION' });
-
 StoragePlace.hasMany(StorageConn, { foreignKey: 'storagePlaceId', onDelete: 'NO ACTION', onUpdate: 'NO ACTION' });
 StorageConn.belongsTo(StoragePlace, { foreignKey: 'storagePlaceId', onDelete: 'NO ACTION', onUpdate: 'NO ACTION' });
 

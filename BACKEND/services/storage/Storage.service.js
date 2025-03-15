@@ -1,7 +1,7 @@
 import { StoragePlace } from "../../models/StoragePlaceModel.js";
 
 
-//storage_place endpoints
+//StoragePlace CRUD - allowing the admin to create a storage list which a user can choose from
 async function getPlaces() {
     try {
         const storage = await StoragePlace.findAll(); // Sequelize ORM method to get all items

@@ -1,7 +1,7 @@
 import { Logs } from "../../models/LogModel.js";
 
 
-async function createLogs(itemId, storagePlaceId, quantityChange, createdBy, httpMethod) {
+async function createLogs(itemId, itemNameId, storagePlaceId, createdBy, httpMethod) {
     try {
         
         let actionType
@@ -10,7 +10,7 @@ async function createLogs(itemId, storagePlaceId, quantityChange, createdBy, htt
             actionType = 'ADD';
         } else if (httpMethod === "PUT") {
             actionType = 'UPDATE';
-        } else if (httpMethod === "PATCH") {
+        } else if (httpMethod === "DELETE") {
             actionType = 'DELETE';
         }
         else{ 
@@ -22,7 +22,7 @@ async function createLogs(itemId, storagePlaceId, quantityChange, createdBy, htt
         logs.push({
             itemId: itemId,
             storagePlaceId: storagePlaceId,
-            quantityChange: quantityChange,
+            itemNameId: itemNameId,
             actionType: actionType,
             createdBy: createdBy
     })

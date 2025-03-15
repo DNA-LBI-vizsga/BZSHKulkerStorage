@@ -1,11 +1,11 @@
 import { Item } from "../../models/ItemModel.js";
 import Sequelize from 'sequelize';
-const { Op } = Sequelize;
 
+//item CRUD
 async function getItem() {
     try {
     const Item = await Item.findAll();
-   
+
         
         
     const result = Item.map(item => ({
@@ -42,65 +42,38 @@ async function createItem(itemNameId, quantity){
 
 }
 
-async function deleteItem(itemNameId, storagePlaceId, description, quantity){
+async function deleteItem(itemId){
     try{
         const item = await Item.findOne({where:{
-            itemNameId:itemNameId,
-            storagePlaceId: storagePlaceId
+            id:itemId,
         }}); 
-        item.set({
-            description: description,
-            quantity: item.quantity-quantity
-        })
             
-        item.save()
+        item.destroy()
         
         return {message: "Item deleted"}
     }
     catch(err){
-        throw new Error("Failed to delete item");
+        throw new Error("Failed to delete itemssss " + err);
     }
     
 }
 
 
-async function updateItem(storagePlaceId, itemNameId, newStoragePlaceId, description, quantity) {
+async function updateItem(itemId, storagePlaceId, newStoragePlaceId) {
 
     try{
-        const Item = await Item.findOne(
+        const item = await Item.findOne(
             {where: {
-                storagePlaceId: storagePlaceId,
-                itemNameId: itemNameId
+                id: itemId,
             }
             
         })
         
-        Item.set({
-            storagePlaceId: storagePlaceId,
-            description: description,
-            quantity: Item.quantity-quantity
+        item.set({
+            storagePlaceId: newStoragePlaceId,
         });
         
-        await Item.save()
-        let newItem = await Item.findOne({where:{itemNameId: itemNameId, storagePlaceId: newStoragePlaceId}});
-            if (!newItem) {
-                newItem = await Item.create({
-                    itemNameId: itemNameId,
-                    storagePlaceId: newStoragePlaceId,
-                    description: description,
-                    quantity: quantity
-                });
-            } else {
-                newItem.set({   
-                    storagePlaceId: newStoragePlaceId,
-                    description: description,
-                    quantity: newItem.quantity+quantity
-                });
-            }
-        
-        
-        await newItem.save()
-        
+        await item.save()
         return {message: "Item updated"}
     }
     catch(err){
