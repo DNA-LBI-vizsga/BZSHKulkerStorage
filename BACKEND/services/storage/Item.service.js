@@ -1,23 +1,30 @@
 import { Item } from "../../models/ItemModel.js";
-import Sequelize from 'sequelize';
+
+import { StorageConn } from "../../models/StorageConnModel.js";
 
 //item CRUD
 async function getItem() {
     try {
-    const Item = await Item.findAll();
-
-        
-        
-    const result = Item.map(item => ({
-        id: item.id,
-        itemNameId: item.itemNameId
-    }));
-
-
-            return result
+        const items = await Item.findAll({
+            include: [
+                {
+                  model: StorageConn,
+                  as: 'StorageConns',
+                  attributes: ['storagePlaceId']
+                }
+              ],
+              attributes: ['id', 'itemNameId']
+            });
+      
+          const result = items.map(item => ({
+              id: item.id,
+              itemNameId: item.itemNameId,
+              storagePlaceId: item.StorageConns[0].storagePlaceId
+          }));
+          return result
         
     } catch (error) {
-        throw new Error("Error fetching Item");
+        throw new Error("Error fetching Item" + error);
     }
 }
 

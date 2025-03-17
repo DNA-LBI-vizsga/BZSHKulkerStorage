@@ -52,6 +52,6 @@ async function deleteItemName(id){
 export{
     getItemNames,
     createItemName,
-    updateItemName,
+    //updateItemName,
     deleteItemName
 }
