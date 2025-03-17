@@ -7,7 +7,7 @@ import { getLogs, createExcel } from "../services/log/ExcelLog.service.js"
 import { createLogs } from "../services/log/Logs.service.js"
 
 import { getItem, createItem, updateItem, deleteItem } from "../services/storage/Item.service.js"
-import { getItemNames, createItemName,  deleteItemName } from "../services/storage/ItemName.service.js"
+import { getItemNames, createItemName, deleteItemName } from "../services/storage/ItemName.service.js"
 import { getPlaces, createPlace, deletePlace } from "../services/storage/Storage.service.js"
 import { storeItem , deleteStoredItem } from "../services/storage/StorageConn.service.js";
 
@@ -27,9 +27,9 @@ router.use((req, res, next) => {
 //STORAGE_PLACE endpoints 
 //GET
 router.get("/storagePlace", 
-    async function(res, next){
+    async function(req, res, next){
         try{
-            res.status(200).json(await getPlaces())
+            res.json(await getPlaces())
         }
         catch(err){
             next(err)
@@ -41,7 +41,7 @@ router.post("/storagePlace",
         try{
             const {storage} = req.body
             await checkRequiredFields(storage, res)
-            res.status(201).json(await createPlace(storage))
+            res.json(await createPlace(storage))
         }
         catch(err){
             next(err)
@@ -52,7 +52,7 @@ router.delete("/storagePlace/:id",
     async function(req, res, next){
         try{
             const {id} = req.params
-            res.status(200).json(await deletePlace(id))
+            res.json(await deletePlace(id))
         }
         catch(err){
             next(err)

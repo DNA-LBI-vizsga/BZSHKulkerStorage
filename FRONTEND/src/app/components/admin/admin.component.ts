@@ -81,12 +81,12 @@ export class AdminComponent {
     });
   }
 
-  updateItemName(id: number, newName: string){
-    this.baseService.updateItemName(id, newName ).subscribe(() => {
-      this.loadItemNames();
-      this.updatedItemName = '';
-    });
-  }
+  // updateItemName(id: number, newName: string){
+  //   this.baseService.updateItemName(id, newName ).subscribe(() => {
+  //     this.loadItemNames();
+  //     this.updatedItemName = '';
+  //   });
+  // }
   
   deleteItemName(id: number): void {
     this.baseService.deleteItemName(id).subscribe(() => {
