@@ -9,7 +9,7 @@ import { createLogs } from "../services/log/Logs.service.js"
 import { getItem, createItem, updateItem, deleteItem } from "../services/storage/Item.service.js"
 import { getItemNames, createItemName, deleteItemName } from "../services/storage/ItemName.service.js"
 import { getPlaces, createPlace, deletePlace } from "../services/storage/Storage.service.js"
-import { storeItem , deleteStoredItem } from "../services/storage/StorageConn.service.js";
+import { storeItem , deleteStoredItem, updateStoredItem } from "../services/storage/StorageConn.service.js";
 
 import { Router } from "express"
 import pkg from 'jsonwebtoken';
@@ -164,7 +164,7 @@ router.put("/item",
 
                 await createLogs(itemId, item.itemNameId, storagePlaceId, createdBy, httpMethod)
                 await createLogs(itemId, item.itemNameId, newStoragePlaceId, createdBy, httpMethod)
-                await updateItem(itemId, storagePlaceId,  newStoragePlaceId)
+                await updateStoredItem(itemId, newStoragePlaceId)
             }
 
             res.status(200).json({ message: 'Item placed into another storage place' });

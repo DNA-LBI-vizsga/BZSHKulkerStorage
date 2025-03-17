@@ -1,16 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { BaseService } from '../../services/base.service';
 
-interface ItemName {
-  id: number;
-  item: string;
-}
-
-interface StoragePlace {
-  id: number;
-  storage: string;
-}
-
 @Component({
   selector: 'app-create',
   templateUrl: './dashboard.component.html',
@@ -27,9 +17,9 @@ export class DashboardComponent implements OnInit {
 
   newStoragePlaceId: any;
   selectedStoragePlace: number = 0;
-  storagePlaces: StoragePlace[] = [];
+  storagePlaces: any [] = [];
 
-  itemNames: ItemName[] = [];
+  itemNames: any [] = [];
 
   updatedItemModal: any = {
     storagePlaceId: null,
@@ -38,13 +28,18 @@ export class DashboardComponent implements OnInit {
 
   constructor(private baseService: BaseService) { }
 
-  loadUpdatedItemModal(itemIdList: number[], storagePlaceId: number, newStoragePlaceId: number): void {
-    this.updatedItemModal = {
-      itemIdList: itemIdList,
-      storagePlaceId: storagePlaceId,
-      newStoragePlaceId: newStoragePlaceId
-    };
+  getItemName(itemNameId: number): string {
+    const item = this.itemNames.find(i => i.id === itemNameId);
+    return item ? item.item : 'Unknown';
   }
+
+  // loadUpdatedItemModal(itemIdList: number[], storagePlaceId: number, newStoragePlaceId: number): void {
+  //   this.updatedItemModal = {
+  //     itemIdList: itemIdList,
+  //     storagePlaceId: storagePlaceId,
+  //     newStoragePlaceId: newStoragePlaceId
+  //   };
+  // }
 
   ngOnInit(): void {
     this.loadItems();
@@ -61,16 +56,6 @@ export class DashboardComponent implements OnInit {
       return payload.isAdmin;
     }
     return false;
-  }
-
-  getItemNameById(itemNameId: number): string {
-    const item = this.itemNames.find((i: ItemName) => i.id === itemNameId);
-    return item ? item.item : 'Unknown';
-  }
-
-  getStoragePlaceById(storagePlaceId: number): string {
-    const storagePlace = this.storagePlaces.find((s: StoragePlace) => s.id === storagePlaceId);
-    return storagePlace ? storagePlace.storage : 'Unknown';
   }
 
   loadStoragePlaces(): void {
@@ -112,26 +97,31 @@ export class DashboardComponent implements OnInit {
 
   deleteItem(itemIdList: number[], storagePlaceId: number): void {
     this.baseService.deleteItem(itemIdList, storagePlaceId).subscribe(() => {
-      this.loadItems();
+      this.loadItems(),
+      this.selectedItemIds = [];
     });
+
   }
+
 
   updateItem(itemIdList: number[], storagePlaceId: number, newStoragePlaceId: number): void {
     this.baseService.updateItem(itemIdList, storagePlaceId, newStoragePlaceId).subscribe(() => {
-      this.loadItems();
+      this.loadItems(),
+      this.selectedItemIds = [];
     });
   }
 
   selectedItemIds: number[] = [];
-  isItemChecked = document.getElementById('itemCheckbox');
 
-  // toggleItemSelection(itemId: number, isChecked: boolean): void {
-  //   if (isChecked) {
-  //     this.selectedItemIds.push(itemId);
-  //   } else {
-  //     this.selectedItemIds = this.selectedItemIds.filter(id => id !== itemId);
-  //   }
-  // }
+  toggleItemSelection(event: Event, itemId:number) {
+    const checkbox = event.target as HTMLInputElement;
+    if (checkbox.checked) {
+      this.selectedItemIds.push(itemId);
+    } else {
+      this.selectedItemIds = this.selectedItemIds.filter(id => id !== itemId);
+    }
+    console.log(this.selectedItemIds);
+  }
 
 // import { Component, OnInit } from '@angular/core';
 // import { BaseService } from '../../services/base.service';

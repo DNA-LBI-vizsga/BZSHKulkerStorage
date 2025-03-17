@@ -24,31 +24,44 @@
     <div class="row">
       <ng-container *ngIf="isAdmin()">
         <button type="button" class="btn btn-danger mt-2" (click)="deleteItem(selectedItemIds, selectedStoragePlace)">Törlés</button>
-        <button type="button" class="btn btn-primary mt-2 ml-2" (click)="updateItem(selectedItemIds, selectedStoragePlace, newStoragePlaceId)">Áthelyezés</button>
-        <select [(ngModel)]="newStoragePlaceId">
+        <button type="button" class="btn btn-primary mt-2" (click)="updateItem(selectedItemIds, selectedStoragePlace, newStoragePlaceId)">Áthelyezés</button>
+        <select [(ngModel)]="newStoragePlaceId" class="form-control w-auto custom-select mt-2">
           <option *ngFor="let place of storagePlaces" [value]="place.id">{{ place.storage }}</option>
         </select>
       </ng-container>
       <ng-container *ngFor="let item of items">
         <ng-container *ngIf="item.storagePlaceId == selectedStoragePlace">
-          <div class="col-md-4 mb-4">
-                <h5>Termék: {{item.item}}</h5>
+          <div class="col-12 mb-3">
+            <div class="card">
+              <div class="card-body">
+                <h5 class="card-title">
+                  Id: {{item.id}}
+                  Termék: {{getItemName(item.itemNameId)}}</h5>
                 <div class="form-check">
                   <input
-                    id="itemCheckbox" 
-                    type="checkbox" 
-                    class="form-check-input" 
-                    [value]="item.id">
+                    type="checkbox"
+                    class="form-check-input"
+                    [value]="item.id"
+                    (change) ="toggleItemSelection($event,item.id)">
                   <label class="form-check-label">Kiválasztás</label>
                 </div>
+              </div>
             </div>
+          </div>
         </ng-container>
       </ng-container>
     </div>
   </div>
 </div>
 
-<!-- <div class="modal fade" id="moveModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+<!-- 
+
+"
+
+
+
+
+<div class="modal fade" id="moveModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">

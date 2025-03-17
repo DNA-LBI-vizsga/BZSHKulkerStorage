@@ -73,7 +73,7 @@ export class BaseService {
     return this.http.post(`${this.apiUrl}/item`, { itemNameId, storagePlaceId, quantity }, { headers: this.getAuthHeaders() });
   }
 
-  updateItem(itemIdList: number[], storagePlaceId: number, newStoragePlaceId: number): Observable<any> {
+  updateItem(itemIdList: number[], storagePlaceId:  number, newStoragePlaceId: number): Observable<any> {
     return this.http.put(`${this.apiUrl}/item`, { itemIdList, storagePlaceId, newStoragePlaceId }, { headers: this.getAuthHeaders() });
   }
 

@@ -66,7 +66,7 @@ async function deleteItem(itemId){
 }
 
 
-async function updateItem(itemId, storagePlaceId, newStoragePlaceId) {
+async function updateItem(itemId, newStoragePlaceId) {
 
     try{
         const item = await Item.findOne(
