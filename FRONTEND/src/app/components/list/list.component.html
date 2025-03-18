@@ -1,28 +1,32 @@
-<div class="container">
-    <h3>Válasszon Leltárhelyet!</h3>
-    <select [(ngModel)]="selectedStoragePlace" class="form-control w-auto custom-select">
+<div class="container mt-5">
+    <h3 class="text-center mb-4">Válasszon Leltárhelyet!</h3>
+    <div class="form-group">
+      <select [(ngModel)]="selectedStoragePlace" class="form-control custom-select">
         <option *ngFor="let place of storagePlaces" [value]="place.id">{{ place.storage }}</option>
-    </select>
+      </select>
+    </div>
     
-    <div class="mt-4">
-        <div class="row">
+    <div class="table-responsive">
+      <table class="table table-bordered table-hover" *ngIf="selectedStoragePlace">
+        <thead class="thead-light">
+          <tr>
+            <th>Id</th>
+            <th>Termék</th>
+          </tr>
+        </thead>
+        <tbody>
           <ng-container *ngFor="let item of items">
             <ng-container *ngIf="item.storagePlaceId == selectedStoragePlace">
-              <ng-container *ngIf="item.quantity != 0">
-                <div class="col-md-4 mb-4">
-                  <div class="card">
-                    <div class="card-body">
-                      <h5 class="card-title">Termék: {{getItemNameById(item.itemNameId)}}</h5>
-                      <p class="card-text">Darabszám: {{item.quantity}}</p>
-                      <ng-container *ngIf="item.description != ''">
-                        <p class="card-text">Leírás: {{item.description}}</p>
-                      </ng-container>
-                    </div>
-                  </div>
-                </div>
-              </ng-container>
+              <tr>
+                <td>{{ item.id }}</td>
+                <td>{{ getItemName(item.itemNameId) }}</td>
+              </tr>
             </ng-container>
           </ng-container>
-        </div>
-      </div>
+        </tbody>
+      </table>
+      <ng-template #noItems>
+        <p class="text-center mt-4">Nincs termék a kiválasztott leltárhelyen!</p>
+      </ng-template>
+    </div>
 </div>

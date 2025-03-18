@@ -1,4 +1,73 @@
-<div class="container mt-5 dashboard-container">
+<div class="container mt-5">
+  <h3 class="text-center mb-4">Válasszon Leltárhelyet!</h3>
+  <div class="form-group">
+    <select [(ngModel)]="selectedStoragePlace" class="form-control custom-select">
+      <option *ngFor="let place of storagePlaces" [value]="place.id">{{ place.storage }}</option>
+    </select>
+  </div>
+
+  <div *ngIf="selectedStoragePlace" class="crud-section mt-4 p-4 shadow-sm rounded">
+    <h4 class="mb-3">Új Termék Hozzáadása</h4>
+    <div class="form-group">
+      <label for="newItem.itemNameId"><strong>Termék</strong></label>
+      <select [(ngModel)]="newItem.itemNameId" class="form-control custom-select">
+        <option *ngFor="let item of itemNames" [value]="item.id">{{ item.item }}</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="newItem.quantity"><strong>Mennyiség</strong></label>
+      <input [(ngModel)]="newItem.quantity" type="number" class="form-control custom-input" min="0">
+    </div>
+    <button (click)="createItem()" class="btn btn-primary w-100">Hozzáadás</button>
+  </div>
+
+  <div class="mt-5">
+    <div class="row">
+      <ng-container *ngIf="isAdmin() && selectedStoragePlace">
+        <div class="col-12 mb-3 d-flex  align-items-center">
+          <button type="button" class="btn btn-danger" (click)="deleteItem(selectedItemIds, selectedStoragePlace)">Törlés</button>
+          <button type="button" class="btn btn-primary" (click)="updateItem(selectedItemIds, selectedStoragePlace, newStoragePlaceId)">Áthelyezés</button>
+          <select [(ngModel)]="newStoragePlaceId" class="form-control custom-select w-auto">
+            <option *ngFor="let place of storagePlaces" [value]="place.id">{{ place.storage }}</option>
+          </select>
+        </div>
+      </ng-container>
+      <div class="table-responsive" *ngIf="selectedStoragePlace">
+        <table class="table table-bordered table-hover">
+          <thead class="thead-light">
+            <tr>
+              <th>Id</th>
+              <th>Termék</th>
+              <th>Kiválasztás</th>
+            </tr>
+          </thead>
+          <tbody>
+            <ng-container *ngFor="let item of items">
+              <ng-container *ngIf="item.storagePlaceId == selectedStoragePlace">
+                <tr>
+                  <td>{{ item.id }}</td>
+                  <td>{{ getItemName(item.itemNameId) }}</td>
+                  <td>
+                    <div class="form-check">
+                      <input
+                        type="checkbox"
+                        class="form-check-input"
+                        [value]="item.id"
+                        (change)="toggleItemSelection($event, item.id)">
+                      <label class="form-check-label"></label>
+                    </div>
+                  </td>
+                </tr>
+              </ng-container>
+            </ng-container>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- <div class="container mt-5 dashboard-container">
 
   <h3>Válasszon Leltárhelyet!</h3>
   <select [(ngModel)]="selectedStoragePlace" class="form-control w-auto custom-select">
@@ -22,7 +91,7 @@
 
   <div class="mt-4">
     <div class="row">
-      <ng-container *ngIf="isAdmin()">
+      <ng-container *ngIf="isAdmin() && selectedStoragePlace">
         <button type="button" class="btn btn-danger mt-2" (click)="deleteItem(selectedItemIds, selectedStoragePlace)">Törlés</button>
         <button type="button" class="btn btn-primary mt-2" (click)="updateItem(selectedItemIds, selectedStoragePlace, newStoragePlaceId)">Áthelyezés</button>
         <select [(ngModel)]="newStoragePlaceId" class="form-control w-auto custom-select mt-2">
@@ -50,37 +119,6 @@
           </div>
         </ng-container>
       </ng-container>
-    </div>
-  </div>
-</div>
-
-<!-- 
-
-"
-
-
-
-
-<div class="modal fade" id="moveModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLongTitle">Válasszon új leltárhelyet!</h5>
-      </div>
-      <div class="modal-body">
-        <p><strong>Termék neve:</strong> {{getItemNameById(updatedItemModal.itemIdList[0])}}</p>
-        <p><strong>Jelenlegi leltárhely:</strong> {{getStoragePlaceById(updatedItemModal.storagePlaceId)}}</p>
-        <div class="form-group">
-          <label for="newStoragePlaceId"><strong>Új leltárhely:</strong></label>
-          <select [(ngModel)]="newStoragePlaceId" id="newStoragePlaceId" class="form-control">
-            <option *ngFor="let place of storagePlaces" [value]="place.id" [hidden]="place.id == updatedItemModal.storagePlaceId">{{ place.storage }}</option>
-          </select>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Mégse</button>
-        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" (click)="updateItem(updatedItemModal.itemIdList, updatedItemModal.storagePlaceId, newStoragePlaceId)">Áthelyezés</button>
-      </div>
     </div>
   </div>
 </div> -->

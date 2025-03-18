@@ -1,0 +1,62 @@
+.container{
+    max-width: 900px;
+    margin: 0 auto;
+    font-family: 'Arial', sans-serif;
+}
+
+h3, h4 {
+    color: #333;
+    font-weight: bold;
+}
+.form-control {
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    padding: 10px;
+  }
+  
+  .custom-select {
+    background-color: #f8f9fa;
+  }
+
+.crud-section {
+    background-color: #f8f9fa;
+    border: 1px solid #ddd;
+  }
+  
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  
+  .col-md-6, .col-lg-4 {
+    padding: 15px;
+  }
+  
+  .table {
+    width: 100%;
+    margin-top: 20px;
+    border-collapse: collapse;
+  }
+  
+  .table th, .table td {
+    text-align: center;
+    vertical-align: middle;
+    padding: 10px;
+  }
+  
+  .table thead th {
+    background-color: #f8f9fa;
+    font-weight: bold;
+  }
+  
+  .table tbody tr:hover {
+    background-color: #f1f1f1;
+  }
+  
+  .table-bordered {
+    border: 1px solid #dee2e6;
+  }
+  
+  .table-bordered th, .table-bordered td {
+    border: 1px solid #dee2e6;
+  }

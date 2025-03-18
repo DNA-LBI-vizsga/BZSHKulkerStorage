@@ -57,6 +57,11 @@ export class ListComponent implements OnInit {
     this.loadItemNames();
   }
 
+  getItemName(itemNameId: number): string {
+    const item = this.itemNames.find(i => i.id === itemNameId);
+    return item ? item.item : 'Unknown';
+  }
+
   //Admin status check
 
   isAdmin(): boolean {
