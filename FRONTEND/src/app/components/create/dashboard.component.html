@@ -36,89 +36,46 @@
         <table class="table table-bordered table-hover">
           <thead class="thead-light">
             <tr>
-              <th>Id</th>
+              <th>Termék Kód</th>
               <th>Termék</th>
-              <th>Kiválasztás</th>
-            </tr>
-          </thead>
-          <tbody>
-            <ng-container *ngFor="let item of items">
-              <ng-container *ngIf="item.storagePlaceId == selectedStoragePlace">
-                <tr>
-                  <td>{{ item.id }}</td>
-                  <td>{{ getItemName(item.itemNameId) }}</td>
-                  <td>
-                    <div class="form-check">
-                      <input
-                        type="checkbox"
-                        class="form-check-input"
-                        [value]="item.id"
-                        (change)="toggleItemSelection($event, item.id)">
-                      <label class="form-check-label"></label>
-                    </div>
-                  </td>
-                </tr>
-              </ng-container>
-            </ng-container>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- <div class="container mt-5 dashboard-container">
-
-  <h3>Válasszon Leltárhelyet!</h3>
-  <select [(ngModel)]="selectedStoragePlace" class="form-control w-auto custom-select">
-    <option *ngFor="let place of storagePlaces" [value]="place.id">{{ place.storage }}</option>
-  </select>
-
-  <div *ngIf="selectedStoragePlace" class="crud-section mt-2">
-    <div class="form-group">
-      <label for="newItem.itemNameId"><strong>Termék</strong></label>
-      <select [(ngModel)]="newItem.itemNameId" class="form-control w-auto custom-select">
-        <option *ngFor="let item of itemNames" [value]="item.id">{{ item.item }}</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label for="newItem.quantity"><strong>Mennyiség</strong></label>
-      <input [(ngModel)]="newItem.quantity" type="number" class="form-control w-auto custom-input">
-    </div>
-    <button (click)="createItem()" class="btn btn-primary">Hozzáadás</button>
-  </div>
-
-
-  <div class="mt-4">
-    <div class="row">
-      <ng-container *ngIf="isAdmin() && selectedStoragePlace">
-        <button type="button" class="btn btn-danger mt-2" (click)="deleteItem(selectedItemIds, selectedStoragePlace)">Törlés</button>
-        <button type="button" class="btn btn-primary mt-2" (click)="updateItem(selectedItemIds, selectedStoragePlace, newStoragePlaceId)">Áthelyezés</button>
-        <select [(ngModel)]="newStoragePlaceId" class="form-control w-auto custom-select mt-2">
-          <option *ngFor="let place of storagePlaces" [value]="place.id">{{ place.storage }}</option>
-        </select>
-      </ng-container>
-      <ng-container *ngFor="let item of items">
-        <ng-container *ngIf="item.storagePlaceId == selectedStoragePlace">
-          <div class="col-12 mb-3">
-            <div class="card">
-              <div class="card-body">
-                <h5 class="card-title">
-                  Id: {{item.id}}
-                  Termék: {{getItemName(item.itemNameId)}}</h5>
+              <th>
                 <div class="form-check">
                   <input
                     type="checkbox"
                     class="form-check-input"
-                    [value]="item.id"
-                    (change) ="toggleItemSelection($event,item.id)">
-                  <label class="form-check-label">Kiválasztás</label>
+                    (change)="toggleSelectAll($event)">
+                  <label class="form-check-label">Mindet kijelöl</label>
                 </div>
-              </div>
-            </div>
-          </div>
-        </ng-container>
-      </ng-container>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <ng-container *ngFor="let item of paginatedItems">
+              <tr>
+                <td>{{ generateProductCode(getItemName(item.itemNameId), item.id) }}</td>
+                <td>{{ getItemName(item.itemNameId) }}</td>
+                <td>
+                  <div class="form-check">
+                    <input
+                      type="checkbox"
+                      class="form-check-input"
+                      [value]="item.id"
+                      (change)="toggleItemSelection($event, item.id)">
+                    <label class="form-check-label"></label>
+                  </div>
+                </td>
+              </tr>
+            </ng-container>
+          </tbody>
+        </table>
+      
+        <!-- Pagination Controls -->
+        <div class="d-flex justify-content-between align-items-center mt-3">
+          <button class="btn btn-secondary" (click)="previousPage()" [disabled]="currentPage == 1">Előző</button>
+          <span>Oldal: {{ currentPage }} / {{ totalPages }}</span>
+          <button class="btn btn-secondary" (click)="nextPage()" [disabled]="currentPage == totalPages">Következő</button>
+        </div>
+      </div>
     </div>
   </div>
-</div> -->
+</div>
