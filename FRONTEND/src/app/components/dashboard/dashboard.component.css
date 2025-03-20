@@ -14,6 +14,24 @@ h2, h3, h4 {
 
 /* Form controls */
 
+.btn-blue-dark {
+  background-color: #004085;
+  color: white;
+  border: none;
+}
+
+.btn-blue-medium {
+  background-color: #007bff;
+  color: white;
+  border: none;
+}
+
+.btn-blue-light {
+  background-color: #cce5ff;
+  color: #004085;
+  border: none;
+}
+
 .btn-secondary {
   background-color: #000000;
   border-color: #000000;

@@ -60,9 +60,9 @@
         <ng-container *ngIf="isAdmin() && selectedStoragePlace">
           <div class="row align-items-center">
             <div class="col-lg ml-2">
-              <button type="button" class="btn btn-success btn-sm mr-2" data-bs-toggle="modal" data-bs-target="#downloadModal"  (click)="downloadLogs()">Műveleti Napló</button>
-              <button type="button" class="btn btn-danger btn-sm mr-2" (click)="deleteItem(selectedItemIds, selectedStoragePlace)">Törlés</button>
-              <button type="button" class="btn btn-primary btn-sm" (click)="updateItem(selectedItemIds, selectedStoragePlace, newStoragePlaceId)">Áthelyezés</button>
+              <button type="button" class="btn btn-primary btn-sm mr-2" data-bs-toggle="modal" data-bs-target="#downloadModal" (click)="downloadLogs()">Műveleti Napló</button>
+              <button type="button" class="btn btn-info btn-sm mr-2" [disabled]="selectedItemIds.length === 0" (click)="deleteItem(selectedItemIds, selectedStoragePlace)">Törlés</button>
+              <button type="button" class="btn btn-light btn-sm" [disabled]="selectedItemIds.length === 0" data-bs-toggle="modal" data-bs-target="#updateModal">Áthelyezés</button>
             </div>
           
             <div class="col-sm text-right">
@@ -95,5 +95,29 @@
       </div>
     </div>
   </div>
+
+  <div class="modal fade" id="updateModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLongTitle">Kijelölt termékek áthelyezése</h5>
+        </div>
+          <div class="modal-body">
+            <div class="form-group">
+              <label for="newStoragePlaceId"><strong>Új Leltárhely?</strong></label>
+              <select [(ngModel)]="newStoragePlaceId" class="form-control custom-select">
+                <option *ngFor="let place of storagePlaces" [value]="place.id">{{ place.storage }}</option>
+              </select>
+            </div>
+          </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-info" data-bs-dismiss="modal">Mégse</button>
+          <button type="button" class="btn btn-primary" data-bs-dismiss="modal" (click)="updateItem(selectedItemIds, selectedStoragePlace, newStoragePlaceId)">Áthelyezés</button>
+        </div>
+      </div>      
+    </div>
+    </div>
 </div>
+
+
 
