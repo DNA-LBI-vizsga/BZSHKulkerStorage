@@ -1,6 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { BaseService } from '../../services/base.service';
 
+interface Item {
+  id: number;
+  itemNameId: number;
+  storagePlaceId: number
+  [key:string]: any;
+}
+
 @Component({
   selector: 'app-create',
   templateUrl: './dashboard.component.html',
@@ -8,7 +15,7 @@ import { BaseService } from '../../services/base.service';
 })
 export class DashboardComponent implements OnInit {
   // Properties
-  items: any[] = [];
+  items: Item[] = [];
   storagePlaces: any[] = [];
   itemNames: any[] = [];
   selectedItemIds: number[] = [];
@@ -56,26 +63,29 @@ export class DashboardComponent implements OnInit {
   }
 
   get totalPages(): number {
-    const filteredItems = this.items.filter(item => item.storagePlaceId == this.selectedStoragePlace);
-    return Math.ceil(filteredItems.length / this.itemsPerPage);
+    const allItems = this.items.filter(item => item.storagePlaceId == this.selectedStoragePlace);
+    return Math.ceil(allItems.length / this.itemsPerPage);
   }
 
   // Lifecycle Hooks
   ngOnInit(): void {
-    this.loadItems();
-    this.loadStoragePlaces();
     this.loadItemNames();
+    this.loadStoragePlaces();
+    this.loadItems();
+  }
+
+  filteredItems: Item[] = [];
+  searchItems(searchTerm:string): void {
+    if(searchTerm){
+    this.filteredItems = this.items.filter(item => this.getItemName(item.itemNameId).includes(searchTerm)||['item.productCode'].includes(searchTerm));
+    }
   }
 
   // Utility Methods
 
-  getItemName(itemNameId: number): string {
+   getItemName(itemNameId: number): string {
     const item = this.itemNames.find(i => i.id === itemNameId);
     return item ? item.item : 'Unknown';
-  }
-
-  generateProductCode(itemName: string, id: number): string {
-    return `BZSH-${itemName}-${id}`;
   }
 
   // Data Loading Methods
@@ -92,11 +102,22 @@ export class DashboardComponent implements OnInit {
   }
 
   loadItems(): void {
-    this.baseService.getItems().subscribe(data => {
-      this.items = data;
+    this.baseService.getItems().subscribe((data: Item[]) => {
+      this.items = data.map((item: Item) => ({
+        ...item,
+        productCode: `BZSH-${this.getItemName(item.itemNameId)}-${item.id}`
+      }));
+  
       console.log(this.items);
     });
   }
+
+  // loadItems(): void {
+  //   this.baseService.getItems().subscribe(data => {
+  //     this.items = data;
+  //     console.log(this.items);
+  //   });
+  // }
 
   // Admin Check
   isAdmin(): boolean {
@@ -163,33 +184,33 @@ export class DashboardComponent implements OnInit {
   }
 
 
-    toggleSelectAll(event: Event): void {
-      const checkbox = event.target as HTMLInputElement;
-      const toggleCheckboxes = document.querySelectorAll('.form-check-input[type="checkbox"]') as NodeListOf<HTMLInputElement>;
-      if (checkbox.checked) {
-        // Add only the IDs of the currently displayed items (paginatedItems)
-        const currentPageIds = this.paginatedItems.map(item => item.id);
-        this.selectedItemIds = Array.from(new Set([...this.selectedItemIds, ...currentPageIds]));
-        toggleCheckboxes.forEach(cb => cb.checked = true);
-      } else {
-        // Remove only the IDs of the currently displayed items (paginatedItems)
-        this.selectedItemIds = [];
-        toggleCheckboxes.forEach(cb => cb.checked = false);
-      }
-    
-      console.log(this.selectedItemIds);
+  toggleSelectAll(event: Event): void {
+    const checkbox = event.target as HTMLInputElement;
+    const toggleCheckboxes = document.querySelectorAll('.form-check-input[type="checkbox"]') as NodeListOf<HTMLInputElement>;
+    if (checkbox.checked) {
+      // Add only the IDs of the currently displayed items (paginatedItems)
+      const currentPageIds = this.paginatedItems.map(item => item.id);
+      this.selectedItemIds = Array.from(new Set([...this.selectedItemIds, ...currentPageIds]));
+      toggleCheckboxes.forEach(cb => cb.checked = true);
+    } else {
+      // Remove only the IDs of the currently displayed items (paginatedItems)
+      this.selectedItemIds = [];
+      toggleCheckboxes.forEach(cb => cb.checked = false);
     }
-    // const checkbox = event.target as HTMLInputElement;
-    // const toggleCheckboxes = document.querySelectorAll('.form-check-input[type="checkbox"]') as NodeListOf<HTMLInputElement>;
-    // if (checkbox.checked) {
-    //   this.selectedItemIds = this.items
-    //     .filter(item => item.storagePlaceId == this.selectedStoragePlace)
-    //     .map(item => item.id);
-    //   toggleCheckboxes.forEach(cb => cb.checked = true);
-    // }
-    // else {
-    //   this.selectedItemIds = [];
-    //   toggleCheckboxes.forEach(cb => cb.checked = false);
-    // }
-    // console.log(this.selectedItemIds);
+  
+    console.log(this.selectedItemIds);
+  }
+
+  downloadLogs(): void {
+    this.baseService.downloadLogs().subscribe(response => {
+      const url = window.URL.createObjectURL(response);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'logs.xlsx';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      window.URL.revokeObjectURL(url);
+    });
+  }
 }
