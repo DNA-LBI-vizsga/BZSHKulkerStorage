@@ -45,7 +45,7 @@ async function deleteItemName(id){
         return {message: "Item deleted"}
     }
     catch(err){
-        throw new Error("Failed to delete item");
+        throw new Error("Failed to delete item"+err);
     }
     
 }

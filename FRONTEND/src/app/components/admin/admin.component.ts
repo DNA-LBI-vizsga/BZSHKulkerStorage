@@ -36,9 +36,6 @@ export class AdminComponent {
     }
     return false;
   }
-
-  //Storage place management
-
   loadStoragePlaces(): void {
     this.baseService.getStoragePlaces().subscribe(data => {
       this.storagePlaces = data;
@@ -80,19 +77,18 @@ export class AdminComponent {
       this.newItemName = '';
     });
   }
-
-  // updateItemName(id: number, newName: string){
-  //   this.baseService.updateItemName(id, newName ).subscribe(() => {
-  //     this.loadItemNames();
-  //     this.updatedItemName = '';
-  //   });
-  // }
   
   deleteItemName(id: number): void {
-    this.baseService.deleteItemName(id).subscribe(() => {
-      this.loadItemNames();
+    this.baseService.deleteItemName(id).subscribe({
+      next: () => {
+        this.loadItemNames();
+      },
+      error: (err) => {
+        console.error('Error deleting item name:', err);
+        alert('A termék törlése sikertelen! Ellenőrizze, hogy nincs-e raktárban ilyen termék!');
+      }
     });
-  }
+}
 
   
 

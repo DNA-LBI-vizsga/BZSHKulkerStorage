@@ -29,6 +29,9 @@ h3, h4 {
   width: 100%;
 }
 
+.form-check-input {
+  border: 1px solid #333;
+}
 /* Spacing and layout */
 .crud-section {
   background-color: #f8f9fa;
