@@ -1,13 +1,13 @@
 import { Item } from "../models/ItemModel.js"
 import { StorageConn } from "../models/StorageConnModel.js"
 
-import { updateUser, createUser } from "../services/auth/User.service.js"
-import { authMiddle, checkPassword, checkRequiredFields, genPassword, sendEmail, firstLoginFalse } from "../services/auth/utilFunctions.utils.js"
+import { updateUser, createUser, disableUser, enableUser, deleteAdminRole, addAdminRole, getUser } from "../services/auth/User.service.js"
+import { authMiddle, checkPassword, checkRequiredFields, genPassword, sendEmail, firstLoginFalse, validateAdmin } from "../services/auth/utilFunctions.utils.js"
 
 import { getLogs, createExcel } from "../services/log/ExcelLog.service.js"
 import { createLogs } from "../services/log/Logs.service.js"
 
-import { getItem, createItem, updateItem, deleteItem } from "../services/storage/Item.service.js"
+import { getItem, createItem, deleteItem } from "../services/storage/Item.service.js"
 import { getItemNames, createItemName, deleteItemName } from "../services/storage/ItemName.service.js"
 import { getPlaces, createPlace, deletePlace } from "../services/storage/Storage.service.js"
 import { storeItem , deleteStoredItem, updateStoredItem } from "../services/storage/StorageConn.service.js";
@@ -19,7 +19,7 @@ const router = Router()
 
 //Middleware skipping login and for development purposes register and password change 
 router.use((req, res, next) => {
-    if (req.path === '/login' || req.path ==='/register' || req.path ==='/passwordChange') {
+    if (req.path === '/login' || req.path ==='/passwordChange') {
         return next(); 
     }
     return authMiddle(req, res, next);
@@ -27,7 +27,7 @@ router.use((req, res, next) => {
 
 /**
  * @swagger
- * /leltar/storagePlace:
+ * /storagePlace:
  *  get:
  *     tags:
  *      - Storage Place Management
@@ -64,7 +64,7 @@ router.get("/storagePlace",
 //POST
 /**
  * @swagger
- * /leltar/storagePlace:
+ * /storagePlace:
  *  post:
  *     tags:
  *      - Storage Place Management
@@ -87,7 +87,7 @@ router.get("/storagePlace",
  *         description: Storage place created successfully.
  *    
  */
-router.post("/storagePlace", 
+router.post("/storagePlace", validateAdmin,
     async function(req, res, next){
         try{
             const {storage} = req.body
@@ -101,7 +101,7 @@ router.post("/storagePlace",
 //DELETE
 /**
  * @swagger
- * /leltar/storagePlace/{id}:
+ * /storagePlace/{id}:
  *  delete:
  *     tags:
  *      - Storage Place Management
@@ -120,7 +120,7 @@ router.post("/storagePlace",
  *       200:
  *         description: Storage place deleted successfully.
  */
-router.delete("/storagePlace/:id",
+router.delete("/storagePlace/:id", validateAdmin,
     async function(req, res, next){
         try{
             const {id} = req.params
@@ -135,7 +135,7 @@ router.delete("/storagePlace/:id",
 //GET
 /**
  * @swagger
- * /leltar/itemName:
+ * /itemName:
  *   get:
  *     tags:
  *      - Item Name Management
@@ -170,7 +170,7 @@ router.get("/itemName",
 //POST
 /**
  * @swagger
- * /leltar/itemName:
+ * /itemName:
  *   post:
  *     tags:
  *      - Item Name Management
@@ -191,7 +191,7 @@ router.get("/itemName",
  *       201:
  *         description: Item name created successfully.
  */
-router.post("/itemName", 
+router.post("/itemName", validateAdmin, 
     async function(req, res, next){
         try{
             const {item} = req.body
@@ -205,7 +205,7 @@ router.post("/itemName",
 //DELETE
 /**
  * @swagger
- * /leltar/itemName/{id}:
+ * /itemName/{id}:
  *   delete:
  *     tags:
  *      - Item Name Management
@@ -223,7 +223,7 @@ router.post("/itemName",
  *         description: Item name deleted successfully.
  * 
  */
-router.delete("/itemName/:id",
+router.delete("/itemName/:id", validateAdmin,
     async function(req, res, next){
         try{
             const {id} = req.params
@@ -238,7 +238,7 @@ router.delete("/itemName/:id",
 //GET
 /**
  * @swagger
- * /leltar/item:
+ * /item:
  *   get:
  *     tags:
  *      - Item Management
@@ -277,7 +277,7 @@ router.get("/item",
 //POST
 /**
  * @swagger
- * /leltar/item:
+ * /item:
  *   post:
  *     tags:
  *      - Item Management
@@ -335,7 +335,7 @@ router.post("/item",
 //PUT
 /**
  * @swagger
- * /leltar/item:    
+ * /item:    
  *   put:    
  *     tags:
  *      - Item Management
@@ -361,7 +361,7 @@ router.post("/item",
  *       200:
  *         description: Items moved successfully.
  */
-router.put("/item",
+router.put("/item", validateAdmin,
     async function (req, res, next) {
 
         try{
@@ -389,7 +389,7 @@ router.put("/item",
 //DELETE 
 /**
  * @swagger
- * /leltar/item:
+ * /item:
  *   delete:
  *     tags:
  *      - Item Management
@@ -410,7 +410,7 @@ router.put("/item",
  *       200:
  *         description: Items deleted successfully.
  */
-router.delete("/item",
+router.delete("/item", validateAdmin,
     async function(req, res, next){
         try{
             const httpMethod = req.method
@@ -436,6 +436,64 @@ router.delete("/item",
 
 
 //FUNCTIONALITY
+
+router.get('/users', validateAdmin, async (req, res) => {
+    try {
+        return res.status(200).json(await getUser());
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+});
+
+router.patch('/disable', validateAdmin, async (req, res) => {
+    try {
+        const { userEmail } = req.body;
+
+        await checkRequiredFields(userEmail, res);
+       
+
+        return res.status(200).json(disableUser(userEmail));
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+});
+
+router.patch('/enable', validateAdmin, async (req, res) => {
+    try {
+        const { userEmail } = req.body;
+
+        await checkRequiredFields(userEmail, res);
+
+        return res.status(200).json(enableUser(userEmail));
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+});
+
+router.patch('/demote', validateAdmin, async (req, res) => {
+    try {
+        const { userEmail } = req.body;
+
+        await checkRequiredFields(userEmail, res);
+
+        return res.status(200).json(deleteAdminRole(userEmail));
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+});
+
+router.patch('/promote', validateAdmin, async (req, res) => {
+    try {
+        const { userEmail } = req.body;
+
+        await checkRequiredFields(userEmail, res);
+
+        return res.status(200).json(addAdminRole(userEmail));
+    } catch (error) {
+        return res.status(500).json({ message: error.message });
+    }
+});
+
 router.post('/login', async (req, res) => {
     try {
         const { userEmail, userPassword } = req.body;
@@ -449,7 +507,7 @@ router.post('/login', async (req, res) => {
         if (!user) {
             return res.status(401).json({ message: "Invalid credentials" });
         }else{
-            const token = sign({ id: user.id, isAdmin: user.isAdmin, isFirstLogin: user.isFirstLogin }, process.env.SECRET_KEY, { expiresIn: "4h" });
+            const token = sign({ id: user.id, isAdmin: user.isAdmin, isDisabled: user.isDisabled, isFirstLogin: user.isFirstLogin }, process.env.SECRET_KEY, { expiresIn: "4h" });
 
             return res.status(200).json({token, message: "Login successful" });
         }
@@ -458,17 +516,17 @@ router.post('/login', async (req, res) => {
     }
 });
 
-router.post('/register',  async (req, res) => {
+router.post('/register',   async (req, res) => {
     try {
-        //const userPassword = await genPassword() 
-        const { userEmail, userPassword,  isAdmin } = req.body
+        const userPassword = await genPassword() 
+        const { userEmail,   isAdmin } = req.body
         
         if (!userEmail || userEmail==""|| isAdmin==null) {
             return res.status(400).json({ message: 'Missing required fields' })
         }
         const user = await createUser(userEmail, userPassword, isAdmin)
 
-        // await sendEmail(userEmail, 'Jelszó', `Jelszó: ${String(userPassword)}`, `Jelszó: ${String(userPassword)}`)
+        await sendEmail(userEmail, 'Jelszó', `Jelszó: ${String(userPassword)}`, `Jelszó: ${String(userPassword)}`)
         return res.status(201).json({ message: `User created` })
     } catch (error) {
         return res.status(500).json({ message: error.message })
@@ -505,7 +563,7 @@ router.put("/passwordChange",
 
 /**
  * @swagger
- * /leltar/log:
+ * /log:
  *   post:
  *     tags:
  *       - Log Management
@@ -538,7 +596,7 @@ router.put("/passwordChange",
  *         description: Logs fetched successfully
  */
 
-router.post('/log', async (req, res) => {
+router.post('/log', validateAdmin, async (req, res) => {
     try {
 
         const data = await getLogs(req); 

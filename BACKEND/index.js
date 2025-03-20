@@ -27,7 +27,7 @@ app.get("/",(req,res)=>
 )
 
 app.use(cors())
-app.use('/leltar', leltarRouters)
+app.use('/api', leltarRouters)
 app.use(
     (err, req, res, next)=>{
     

@@ -5,7 +5,13 @@ import { hash } from "bcrypt"
 //User getter
 async function getUser(){
     try {
-        const user = await User.findOne()
+        const users = await User.findAll()
+        let user = users.map(user => ({
+            id: user.id,
+            userEmail: user.userEmail,
+            isAdmin: user.isAdmin,
+            isDisabled: user.isDisabled
+        }))
         return user
     } catch (error) {
         return null
@@ -67,9 +73,85 @@ async function updateUser(userEmail, newPassword) {
     }
 }
 
+async function deleteAdminRole(userEmail){
+
+    try{
+        const user = await User.findOne({where:{userEmail: userEmail}})
+
+        if (!user) {
+            throw new Error(`User not found`);
+        }
+
+        user.set({isAdmin: false})
+        await user.save()
+
+        return {message: "User demoted from admin role "}
+    }catch(err){
+        return {message: "Error demoting user" + err}
+    }
+}
+
+async function addAdminRole(userEmail){
+
+    try{
+        const user = await User.findOne({where:{userEmail: userEmail}})
+
+        if (!user) {
+            throw new Error(`User not found`);
+        }
+
+        user.set({isAdmin: true})
+        await user.save()
+
+        return {message: "User promoted to admin role "}
+    }catch(err){
+        return {message: "Error promoting user" + err}
+    }
+}
+
+async function disableUser(userEmail){
+
+    try{
+        const user = await User.findOne({where:{userEmail: userEmail}})
+
+        if (!user) {
+            throw new Error(`User not found`);
+        }
+
+        user.set({isDisabled: true, isAdmin: false})
+        await user.save()
+
+        return {message: "User disabled"}
+    }catch(err){
+        throw new Error('Error disabling user' + err);
+    }
+}
+
+async function enableUser(userEmail){
+
+    try{
+        const user = await User.findOne({where:{userEmail: userEmail}})
+
+        if (!user) {
+            throw new Error(`User not found`);
+        }
+
+        user.set({isDisabled: false})
+        await user.save()
+
+        return {message: "User enabled"}
+    }catch(err){
+        throw new Error('Error enabling user' + err);
+    }
+}
+
 
 export{
     getUser,
     createUser,
-    updateUser
+    updateUser,
+    deleteAdminRole,
+    addAdminRole,
+    disableUser,
+    enableUser
 }
