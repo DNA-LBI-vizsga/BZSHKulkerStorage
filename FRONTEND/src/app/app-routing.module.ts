@@ -8,7 +8,7 @@ import { AdminComponent } from './components/admin/admin.component';
 import { PasswordChangeComponent } from './components/password-change/password-change.component';
 import { adminGuard } from './guards/admin.guard';
 import { firstLoginGuard } from './guards/first-login.guard';
-import { DashboardComponent } from './components/create/dashboard.component';
+import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { ListComponent } from './components/list/list.component';
 
 const routes: Routes = [

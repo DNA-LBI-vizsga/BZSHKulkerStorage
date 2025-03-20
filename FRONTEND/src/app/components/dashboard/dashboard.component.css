@@ -7,13 +7,17 @@
 }
 
 /* Headings */
-h3, h4 {
+h2, h3, h4 {
   color: #333;
   font-weight: bold;
 }
 
 /* Form controls */
 
+.btn-secondary {
+  background-color: #000000;
+  border-color: #000000;
+}
 
 .custom-select {
   background-color: #f8f9fa;
