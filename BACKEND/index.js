@@ -2,8 +2,12 @@ import express from 'express';
 import cors from 'cors';
 const app = express();
 import leltarRouters from './routes/leltarRouter.js';
-import { sequelize as _sequelize } from './config.js';
+import { sequelize as _sequelize, swaggerDocs } from './config.js';
+import swagger  from 'swagger-ui-express';
+
 import "./associations/associations.js";
+
+const swaggerUI = swagger;
 
 app.use(express.json())
 
@@ -16,6 +20,7 @@ async function syncDatabase() {
     }
 }
 
+app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDocs));
 
 app.get("/",(req,res)=>
     { res.json({message:"Minden OK"})}

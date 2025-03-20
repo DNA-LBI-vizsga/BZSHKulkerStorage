@@ -1,4 +1,5 @@
 import { Item } from "../models/ItemModel.js"
+import { StorageConn } from "../models/StorageConnModel.js"
 
 import { updateUser, createUser } from "../services/auth/User.service.js"
 import { authMiddle, checkPassword, checkRequiredFields, genPassword, sendEmail, firstLoginFalse } from "../services/auth/utilFunctions.utils.js"
@@ -24,35 +25,106 @@ router.use((req, res, next) => {
     return authMiddle(req, res, next);
 });
 
-//STORAGE_PLACE endpoints 
-//GET
+/**
+ * @swagger
+ * /leltar/storagePlace:
+ *  get:
+ *     tags:
+ *      - Storage Place Management
+ *     summary: Retrieve all storage places
+ *     description: Fetches a list of all storage places from the database. Requires authentication.
+ *     security:
+ *       - bearerAuth: [] # Authentication requirement
+ *     responses:
+ *       200:
+ *         description: A list of storage places.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id:
+ *                     type: integer
+ *                     description: The unique identifier for the storage place.
+ *                   name:
+ *                     type: string
+ *                     description: The name of the storage place.
+ */
 router.get("/storagePlace", 
     async function(req, res, next){
         try{
-            res.json(await getPlaces())
+            res.status(200).json(await getPlaces())
         }
         catch(err){
             next(err)
         }
 })
 //POST
+/**
+ * @swagger
+ * /leltar/storagePlace:
+ *  post:
+ *     tags:
+ *      - Storage Place Management
+ *     summary: Create a new storage place
+ *     description: Adds a new storage place to the database. Requires authentication.
+ *     security:
+ *       - bearerAuth: [] # Authentication requirement
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               storage:
+ *                 type: string
+ *                 example: "Main Warehouse"
+ *     responses:
+ *       201:
+ *         description: Storage place created successfully.
+ *    
+ */
 router.post("/storagePlace", 
     async function(req, res, next){
         try{
             const {storage} = req.body
             await checkRequiredFields(storage, res)
-            res.json(await createPlace(storage))
+            res.status(201).json(await createPlace(storage))
         }
         catch(err){
             next(err)
         }
 })
 //DELETE
+/**
+ * @swagger
+ * /leltar/storagePlace/{id}:
+ *  delete:
+ *     tags:
+ *      - Storage Place Management
+ *     summary: Delete a storage place
+ *     description: Removes a storage place from the database by its unique identifier. Requires authentication.
+ *     security:
+ *       - bearerAuth: [] # Authentication requirement
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: The ID of the storage place to delete.
+ *     responses:
+ *       200:
+ *         description: Storage place deleted successfully.
+ */
 router.delete("/storagePlace/:id",
     async function(req, res, next){
         try{
             const {id} = req.params
-            res.json(await deletePlace(id))
+            res.status(200).json(await deletePlace(id))
         }
         catch(err){
             next(err)
@@ -61,40 +133,96 @@ router.delete("/storagePlace/:id",
 
 //ITEM_NAME endpoints
 //GET
+/**
+ * @swagger
+ * /leltar/itemName:
+ *   get:
+ *     tags:
+ *      - Item Name Management
+ *     summary: Retrieve all item names
+ *     description: Fetches a list of all item names from the database.
+ *     responses:
+ *       200:
+ *         description: A list of item names.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id:
+ *                     type: integer
+ *                     description: The unique identifier for the item name.
+ *                   name:
+ *                     type: string
+ *                     description: The name of the item.
+ */
 router.get("/itemName", 
     async function(req, res, next){
         try{
-            res.json(await getItemNames())
+            res.status(200).json(await getItemNames())
         }
         catch(err){
             next(err)
         }
 })
 //POST
+/**
+ * @swagger
+ * /leltar/itemName:
+ *   post:
+ *     tags:
+ *      - Item Name Management
+ *     summary: Create a new item name
+ *     description: Adds a new item name to the database.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               item:
+ *                 type: string
+ *                 description: The name of the item to create.
+ *                 example: "Sample Item Name"
+ *     responses:
+ *       201:
+ *         description: Item name created successfully.
+ */
 router.post("/itemName", 
     async function(req, res, next){
         try{
             const {item} = req.body
             await checkRequiredFields(item, res)
-            res.json(await createItemName(item))
+            res.status(201).json(await createItemName(item))
         }
         catch(err){
             next(err)
         }
 })
-// //PUT
-// router.put("/itemName/:id",
-//     async function(req, res, next){
-//         try{
-//             const {id} = req.params
-//             const {item} = req.body
-//             res.json(await updateItemName(id, item))         
-//         }
-//         catch(err){
-//             next(err)
-//         }
-// })
 //DELETE
+/**
+ * @swagger
+ * /leltar/itemName/{id}:
+ *   delete:
+ *     tags:
+ *      - Item Name Management
+ *     summary: Delete an item name
+ *     description: Removes an item name from the database by its unique identifier.
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: The ID of the item name to delete.
+ *     responses:
+ *       200:
+ *         description: Item name deleted successfully.
+ * 
+ */
 router.delete("/itemName/:id",
     async function(req, res, next){
         try{
@@ -108,16 +236,73 @@ router.delete("/itemName/:id",
 
 //ITEM endpoints
 //GET
+/**
+ * @swagger
+ * /leltar/item:
+ *   get:
+ *     tags:
+ *      - Item Management
+ *     summary: Retrieve all items
+ *     description: Fetches a list of all items from the database.
+ *     responses:
+ *       200:
+ *         description: A list of items.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id:
+ *                     type: integer
+ *                     description: The unique identifier for the item.
+ *                   itemNameId:
+ *                     type: integer
+ *                     description: The ID of the item name associated with the item.
+ *                   storagePlaceId:
+ *                     type: integer
+ *                     description: The ID of the storage place where the item is stored.
+ * 
+ */
 router.get("/item", 
     async function(req, res, next){
         try{
-            res.json(await getItem())
+            res.status(200).json(await getItem())
         }
         catch(err){
             next(err)
         }
 })
 //POST
+/**
+ * @swagger
+ * /leltar/item:
+ *   post:
+ *     tags:
+ *      - Item Management
+ *     summary: Create a new item    
+ *     description: Adds a new item to the database.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               itemNameId:
+ *                 type: integer
+ *                 description: The ID of the item name associated with the item.
+ *               storagePlaceId:
+ *                 type: integer
+ *                 description: The ID of the storage place where the item is stored.
+ *               quantity:
+ *                 type: integer
+ *                 description: The quantity of the item.
+ *     responses:
+ *       201:
+ *         description: Item created successfully.
+ */
 router.post("/item", 
     async function(req, res, next){
         try{
@@ -148,6 +333,34 @@ router.post("/item",
         }
 })
 //PUT
+/**
+ * @swagger
+ * /leltar/item:    
+ *   put:    
+ *     tags:
+ *      - Item Management
+ *     summary: Move items to another storage place
+ *     description: Moves items to another storage place.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               itemIdList:
+ *                 type: array
+ *                 description: An array of item IDs to move.
+ *               storagePlaceId:
+ *                 type: integer
+ *                 description: The ID of the storage place to move the items to.
+ *               newStoragePlaceId:
+ *                 type: integer
+ *                 description: The ID of the new storage place to move the items to.
+ *     responses:
+ *       200:
+ *         description: Items moved successfully.
+ */
 router.put("/item",
     async function (req, res, next) {
 
@@ -174,19 +387,42 @@ router.put("/item",
         }
 })
 //DELETE 
+/**
+ * @swagger
+ * /leltar/item:
+ *   delete:
+ *     tags:
+ *      - Item Management
+ *     summary: Delete items
+ *     description: Deletes items from the database.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               itemIdList:
+ *                 type: array
+ *                 description: An array of item IDs to delete.
+ *                 default: []
+ *     responses:
+ *       200:
+ *         description: Items deleted successfully.
+ */
 router.delete("/item",
     async function(req, res, next){
         try{
             const httpMethod = req.method
             const createdBy = req.user.id
-            const {itemIdList, storagePlaceId} = req.body
+            const {itemIdList} = req.body
             
             
             let itemId = 0
             for (let i = 0; i < itemIdList.length; i++) {
                 itemId = itemIdList[i];
-                let item = await Item.findOne({where: {id:itemId}})
-                await createLogs(itemId, item.itemNameId, storagePlaceId,  createdBy, httpMethod)
+                let item = await StorageConn.findOne({where: {id:itemId}})
+                await createLogs(itemId, item.itemNameId, item.storagePlaceId,  createdBy, httpMethod)
                 await deleteStoredItem(itemId);
                 await deleteItem(itemId);
             }
@@ -245,7 +481,7 @@ router.put("/firstLogin",
             const user = await firstLoginFalse(req)
             const {userPassword} = req.body
 
-            res.json(await updateUser(user.userEmail, userPassword))
+            res.status(200).json(await updateUser(user.userEmail, userPassword))
         }
         catch(err){
             next(err)
@@ -259,7 +495,7 @@ router.put("/passwordChange",
         const newPassword = await genPassword() 
 
         await sendEmail(userEmail, 'Jelszó', `Jelszó: ${String(newPassword)}`, `Jelszó: ${String(newPassword)}`)
-        res.json(await updateUser(userEmail, newPassword))  
+        res.status(200).json(await updateUser(userEmail, newPassword))  
     }
     catch(err){
         next(err)
@@ -267,31 +503,54 @@ router.put("/passwordChange",
 }
 )
 
+/**
+ * @swagger
+ * /leltar/log:
+ *   post:
+ *     tags:
+ *       - Log Management
+ *     summary: Get logs
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               itemNameId:
+ *                 type: integer
+ *                 description: An ID of the itemName
+ *               storagePlaceId:
+ *                 type: integer
+ *                 description: An ID of the storagePlace
+ *               createdBy:
+ *                 type: integer
+ *                 description: An ID of the user
+ *               fromDate:
+ *                 type: string
+ *                 description: A start date
+ *               toDate:
+ *                 type: string
+ *                 description: An end date
+ *     description: Get logs from the database
+ *     responses:
+ *       200:
+ *         description: Logs fetched successfully
+ */
+
 router.post('/log', async (req, res) => {
     try {
+
         const data = await getLogs(req); 
         const excelBuffer = await createExcel(data);
-
+        
         res.setHeader('Content-Disposition', 'attachment; filename="logs.xlsx"');
         res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        res.send(Buffer.from(excelBuffer));
+        res.status(200).send(Buffer.from(excelBuffer));
     } catch (error) {
         console.error(error);
         res.status(500).send("Error generating Excel file");
     }
 });
-
-
-router.post("/mail",
-    async function (req, res, next) {
-        const {to, subject, text, html} = req.body
-        try{
-            await sendEmail(to, subject, text, html);
-        res.status(200).json({ message: 'Email sent successfully' });
-        }catch(err){
-            next(err)
-        }
-    }
-)
 
 export default router

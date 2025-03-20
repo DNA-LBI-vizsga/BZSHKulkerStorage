@@ -1,6 +1,34 @@
 import dotenv from 'dotenv';
 dotenv.config();
 import { Sequelize } from 'sequelize';
+import swaggerJsDoc from 'swagger-jsdoc';
+
+const swaggerOptions = {
+    definition: {
+        openapi: '3.0.0',
+        info: {
+            title: 'BZSH Storage API',
+            version: '1.0.0',
+            description: 'API documentation',
+        },
+        servers: [
+            { url: 'http://localhost:3000' },
+        ],
+        components: {
+            securitySchemes: {
+              bearerAuth: {
+                type: 'http',
+                scheme: 'bearer',
+                bearerFormat: 'JWT', 
+              }
+            }
+        }
+    },
+    apis: ['./routes/*.js'],
+};
+
+
+const swaggerDocs = swaggerJsDoc(swaggerOptions);
 
 const config = {
     db: {
@@ -23,7 +51,16 @@ const sequelize = new Sequelize(config.db.database, config.db.user, config.db.pa
     timezone: '+01:00'
 });
 
+
+
+
 export{
     sequelize,
-    mailing
+    mailing,
+    swaggerDocs
 };
+
+
+
+
+
