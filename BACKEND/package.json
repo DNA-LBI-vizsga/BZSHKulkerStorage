@@ -19,6 +19,7 @@
     "express": "^4.21.2",
     "fast-levenshtein": "^3.0.0",
     "jsonwebtoken": "^9.0.2",
+    "moment": "^2.30.1",
     "mysql2": "^3.12.0",
     "sequelize": "^6.1.0",
     "swagger-jsdoc": "^6.2.8",

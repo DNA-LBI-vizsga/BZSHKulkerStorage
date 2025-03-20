@@ -6,14 +6,14 @@ import swaggerJsDoc from 'swagger-jsdoc';
 const swaggerOptions = {
     definition: {
         openapi: '3.0.0',
-        basePath: '/api',
+        
         info: {
             title: 'BZSH Storage API',
             version: '1.0.0',
             description: 'API documentation',
         },
         servers: [
-            { url: 'http://localhost:3000' },
+            { url: 'http://localhost:3000/api' },
         ],
         components: {
             securitySchemes: {

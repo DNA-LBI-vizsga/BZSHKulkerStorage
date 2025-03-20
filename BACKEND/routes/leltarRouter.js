@@ -19,7 +19,7 @@ const router = Router()
 
 //Middleware skipping login and for development purposes register and password change 
 router.use((req, res, next) => {
-    if (req.path === '/login' || req.path ==='/passwordChange') {
+    if (req.path === '/login' || req.path ==='/register' || req.path ==='/passwordChange') {
         return next(); 
     }
     return authMiddle(req, res, next);
@@ -141,6 +141,8 @@ router.delete("/storagePlace/:id", validateAdmin,
  *      - Item Name Management
  *     summary: Retrieve all item names
  *     description: Fetches a list of all item names from the database.
+ *     security:
+ *       - bearerAuth: [] # Authentication requirement
  *     responses:
  *       200:
  *         description: A list of item names.
@@ -176,6 +178,8 @@ router.get("/itemName",
  *      - Item Name Management
  *     summary: Create a new item name
  *     description: Adds a new item name to the database.
+ *     security:
+ *      - bearerAuth: [] # Authentication requirement
  *     requestBody:
  *       required: true
  *       content:
@@ -211,6 +215,8 @@ router.post("/itemName", validateAdmin,
  *      - Item Name Management
  *     summary: Delete an item name
  *     description: Removes an item name from the database by its unique identifier.
+ *     security:
+ *      - bearerAuth: [] # Authentication requirement
  *     parameters:
  *       - in: path
  *         name: id
@@ -450,7 +456,6 @@ router.patch('/disable', validateAdmin, async (req, res) => {
         const { userEmail } = req.body;
 
         await checkRequiredFields(userEmail, res);
-       
 
         return res.status(200).json(disableUser(userEmail));
     } catch (error) {
@@ -518,15 +523,15 @@ router.post('/login', async (req, res) => {
 
 router.post('/register',   async (req, res) => {
     try {
-        const userPassword = await genPassword() 
-        const { userEmail,   isAdmin } = req.body
+        //const userPassword = await genPassword() 
+        const { userEmail, userPassword,  isAdmin } = req.body
         
         if (!userEmail || userEmail==""|| isAdmin==null) {
             return res.status(400).json({ message: 'Missing required fields' })
         }
         const user = await createUser(userEmail, userPassword, isAdmin)
 
-        await sendEmail(userEmail, 'Jelszó', `Jelszó: ${String(userPassword)}`, `Jelszó: ${String(userPassword)}`)
+        //await sendEmail(userEmail, 'Jelszó', `Jelszó: ${String(userPassword)}`, `Jelszó: ${String(userPassword)}`)
         return res.status(201).json({ message: `User created` })
     } catch (error) {
         return res.status(500).json({ message: error.message })

@@ -3,7 +3,7 @@ import { ItemName } from "../../models/ItemNameModel.js";
 import { StoragePlace } from "../../models/StoragePlaceModel.js";
 import { User } from "../../models/UserModel.js";
 import { Item } from "../../models/ItemModel.js";
-
+import moment from 'moment';
 import sequelize from "sequelize";
 import excel from 'exceljs';
 
@@ -15,20 +15,26 @@ async function getLogs(req) {
     const where = {};
     const { itemNameId, storagePlaceId, createdBy, fromDate, toDate } = req.body;
 
+
+    const fromDateTime = fromDate ? new Date(`${fromDate}T00:00:00.000Z`) : null;
+    const toDateTime = toDate ? new Date(`${toDate}T23:59:59.999Z`) : null;
+
     if (itemNameId) where.itemNameId = itemNameId;
     if (storagePlaceId) where.storagePlaceId = storagePlaceId;
     if (createdBy) where.createdBy = createdBy;
 
-    if (fromDate && toDate) {
-        where.createdAt = {
-            [Op.and]: [{ [Op.gte]: fromDate }, { [Op.lte]: toDate }]
-        };
-    } else if (fromDate) {
-        where.createdAt = { [Op.gte]: fromDate };
-    } else if (toDate) {
-        where.createdAt = { [Op.lte]: toDate };
-    }
 
+    if (fromDateTime && toDateTime) {
+        where.createdAt = {
+            [Op.between]: [fromDateTime, toDateTime]  
+        };
+    } else if (fromDateTime) {
+        where.createdAt = { [Op.gte]: fromDateTime }; 
+    } else if (toDateTime) {
+        where.createdAt = { [Op.lte]: toDateTime }; 
+    }
+    
+    console.log(where)
     try {
         const logs = await Logs.findAll({ where });
 
@@ -37,7 +43,7 @@ async function getLogs(req) {
             const itemName = await ItemName.findOne({ where: { id: log.itemNameId } });
             const storagePlace = await StoragePlace.findOne({ where: { id: log.storagePlaceId } });
             const user = await User.findOne({ where: { id: log.createdBy } });
-
+            
             return {
                 id: log.id,
                 itemId: itemId ? itemId.item : 'Unknown',
