@@ -13,7 +13,7 @@ import { CommonModule } from '@angular/common';
 import { AdminComponent } from './components/admin/admin.component';
 import { PasswordChangeComponent } from './components/password-change/password-change.component';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-import { DashboardComponent } from './components/create/dashboard.component';
+import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { ListComponent } from './components/list/list.component';
 
 @NgModule({

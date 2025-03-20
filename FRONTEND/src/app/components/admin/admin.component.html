@@ -1,38 +1,40 @@
 <div class="container mt-5 crud-admin">
-  <div class="storageControl">
-    <h3>Leltárhelyek</h3>
-    <div class="input-group mb-3">
-        <input [(ngModel)]="newStoragePlace" placeholder="Új Leltárhely Felvétele" class="form-control">
-        <div class="input-group-append">
-            <button class="btn btn-primary" (click)="createStoragePlace()">Hozzáadás</button>
-        </div>
-    </div>
-    <div *ngFor="let storagePlace of storagePlaces" class="row my-1">
-        <div *ngFor="let storagePlaceModel of storagePlaceModels" class="col-auto">
-            <input [(ngModel)]="storagePlace[storagePlaceModel.key]" [type]="storagePlaceModel.type" class="form-control">
-        </div>
-        <div class="col">
-            <button class="btn btn-danger" (click)="deleteStoragePlace(storagePlace.id)">Törlés</button>
-        </div>
-    </div>
-  </div>
+    <div class="row justify-content-center">
 
-  <div class="itemNameControl mt-5">
-    <h3>Nyilvántartandó Termékek</h3>
-    <div class="input-group mb-3">
-        <input [(ngModel)]="newItemName" placeholder="Új Termék Felvétele" class="form-control">
-        <div class="input-group-append">
+      <div class="col-md-5 storageControl mb-3">
+        <h3>Leltárhelyek</h3>
+        <div class="input-group mb-3">
+          <input [(ngModel)]="newStoragePlace" placeholder="Új Leltárhely Felvétele" class="form-control">
+          <div class="input-group-append">
+            <button class="btn btn-primary" (click)="createStoragePlace()">Hozzáadás</button>
+          </div>
+        </div>
+        <div *ngFor="let storagePlace of storagePlaces" class="row my-1">
+          <div *ngFor="let storagePlaceModel of storagePlaceModels" class="col-auto">
+            <input [(ngModel)]="storagePlace[storagePlaceModel.key]" [type]="storagePlaceModel.type" class="form-control">
+          </div>
+          <div class="col">
+            <button class="btn btn-danger" (click)="deleteStoragePlace(storagePlace.id)">Törlés</button>
+          </div>
+        </div>
+      </div>
+  
+      <div class="col-md-6 itemNameControl">
+        <h3>Nyilvántartandó Termékek</h3>
+        <div class="input-group mb-3">
+          <input [(ngModel)]="newItemName" placeholder="Új Termék Felvétele" class="form-control">
+          <div class="input-group-append">
             <button class="btn btn-primary" (click)="createItemName()">Hozzáadás</button>
+          </div>
         </div>
-    </div>
-    <div *ngFor="let itemName of itemNames" class="row my-1">
-        <div *ngFor="let itemNameModel of itemNameModels" class="col-auto ">
+        <div *ngFor="let itemName of itemNames" class="row my-1">
+          <div *ngFor="let itemNameModel of itemNameModels" class="col-auto">
             <input [(ngModel)]="itemName[itemNameModel.key]" [type]="itemNameModel.type" class="form-control">
-        </div>
-        <div class="col">
+          </div>
+          <div class="col">
             <button class="btn btn-danger" (click)="deleteItemName(itemName.id)">Törlés</button>
-            <!-- <button class="btn btn-secondary ml-2" (click)="updateItemName(itemName.id, itemName.item)">Frissítés</button> -->
+          </div>
         </div>
+      </div>
     </div>
   </div>
-</div>

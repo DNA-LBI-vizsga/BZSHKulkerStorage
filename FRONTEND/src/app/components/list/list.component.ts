@@ -11,6 +11,13 @@ interface StoragePlace {
   storage: string;
 }
 
+interface Item {
+  id: number;
+  itemNameId: number;
+  storagePlaceId: number
+  [key:string]: any;
+}
+
 @Component({
   selector: 'app-create',
   templateUrl: './list.component.html',
@@ -48,8 +55,13 @@ export class ListComponent implements OnInit {
     description: '',
     quantity: 0
   }
+
+  currentPage: number = 1;
+  itemsPerPage: number = 10;
  
   constructor(private baseService: BaseService) { }
+
+
 
   ngOnInit(): void {
     this.loadItems();
@@ -57,30 +69,35 @@ export class ListComponent implements OnInit {
     this.loadItemNames();
   }
 
+  get paginatedItems(): any[] {
+    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+    const endIndex = startIndex + this.itemsPerPage;
+    return this.items.filter(item => item.storagePlaceId == this.selectedStoragePlace).slice(startIndex, endIndex);
+  }
+
+  nextPage(): void {
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++;
+    }
+  }
+
+  previousPage(): void {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+    }
+  }
+
+  get totalPages(): number {
+    const allItems = this.items.filter(item => item.storagePlaceId == this.selectedStoragePlace);
+    return Math.ceil(allItems.length / this.itemsPerPage);
+  }
+
   getItemName(itemNameId: number): string {
     const item = this.itemNames.find(i => i.id === itemNameId);
     return item ? item.item : 'Unknown';
   }
 
-  //Admin status check
-
-  isAdmin(): boolean {
-    const token = localStorage.getItem('authToken');
-    if (token) {
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      return payload.isAdmin;
-    }
-    return false;
-  }
-
-  getItemNameById(itemNameId: number): string {
-    const item = this.itemNames.find((i:ItemName) => i.id === itemNameId);
-    return item ? item.item : 'Unknown';
-  }
-
   getStoragePlaceById(storagePlaceId: number): string {
-    // console.log('Storage Place ID:', storagePlaceId);
-    // console.log('selected id',this.selectedStoragePlace);
     const storagePlace = this.storagePlaces.find((s:StoragePlace) => s.id === storagePlaceId);
     return storagePlace ? storagePlace.storage : 'Unknown';
   }
@@ -88,21 +105,23 @@ export class ListComponent implements OnInit {
   loadStoragePlaces(): void {
     this.baseService.getStoragePlaces().subscribe(data => {
       this.storagePlaces = data;
-      // console.log(this.storagePlaces);
     });
   }
 
   loadItemNames(): void {
     this.baseService.getItemNames().subscribe(data => {
       this.itemNames = data;
-      // console.log(this.itemNames);
     });
   }
   
   loadItems(): void {
-    this.baseService.getItems().subscribe(data => {
-      this.items = data;
-      // console.log(this.items);
+    this.baseService.getItems().subscribe((data: Item[]) => {
+      this.items = data.map((item: Item) => ({
+        ...item,
+        productCode: `BZSH-${this.getItemName(item.itemNameId)}-${item.id}`
+      }));
+      console.log(this.items);
     });
   }
+
 }

@@ -1,5 +1,6 @@
 <div class="container mt-5">
-  <h3 class="text-center mb-4">Válasszon Leltárhelyet!</h3>
+  <h2 class="text-center mb-2">Termékek Kezelése</h2>
+  <h4 class="text-left mb-2 ml-1">Válasszon Leltárhelyet!</h4>
   <div class="form-group">
     <select [(ngModel)]="selectedStoragePlace" class="form-control custom-select">
       <option *ngFor="let place of storagePlaces" [value]="place.id">{{ place.storage }}</option>
@@ -57,37 +58,42 @@
         </table>
 
         <ng-container *ngIf="isAdmin() && selectedStoragePlace">
-          <div class="row">
-            <div class="col-lg">
-              <button type="button" class="btn btn-danger mr-2" (click)="deleteItem(selectedItemIds, selectedStoragePlace)">Törlése</button>
-              <button type="button" class="btn btn-primary mr-2" (click)="updateItem(selectedItemIds, selectedStoragePlace, newStoragePlaceId)">Áthelyezése</button>
-              <button type="button" class="btn btn-success" (click)="downloadLogs()">Műveleti Napló</button>
-              <!-- <div *ngIf="selectedStoragePlace" class="form-group mt-3">
-                <input
-                  type="text"
-                  class="form-control"
-                  (ngModel)="searchTerm"
-                  [value]="searchTerm"
-                  (input)="filterItems(searchTerm)"/>
-              </div> -->
+          <div class="row align-items-center">
+            <div class="col-lg ml-2">
+              <button type="button" class="btn btn-success btn-sm mr-2" data-bs-toggle="modal" data-bs-target="#downloadModal"  (click)="downloadLogs()">Műveleti Napló</button>
+              <button type="button" class="btn btn-danger btn-sm mr-2" (click)="deleteItem(selectedItemIds, selectedStoragePlace)">Törlés</button>
+              <button type="button" class="btn btn-primary btn-sm" (click)="updateItem(selectedItemIds, selectedStoragePlace, newStoragePlaceId)">Áthelyezés</button>
             </div>
-            <div class="form-check col-sm">
-              <input
-                type="checkbox"
-                class="form-check-input"
-                (change)="toggleSelectAll($event)">
-              <label class="form-check-label">Mindet kijelöl</label>
+          
+            <div class="col-sm text-right">
+              <div class="form-check d-inline-flex align-items-center">
+                <input
+                  type="checkbox"
+                  class="form-check-input"
+                  (change)="toggleSelectAll($event)">
+                <label class="form-check-label mr-2"><strong>Mindet kijelöl</strong></label>
+              </div>
             </div>
           </div>
         </ng-container>
       
-        <!-- Pagination Controls -->
-        <div class="d-flex justify-content-between align-items-center mt-3">
-          <button class="btn btn-secondary" (click)="previousPage()" [disabled]="currentPage == 1">Előző</button>
-          <span>Oldal: {{ currentPage }} / {{ totalPages }}</span>
-          <button class="btn btn-secondary" (click)="nextPage()" [disabled]="currentPage == totalPages">Következő</button>
+        <div class="d-flex justify-content-center align-items-center mt-3 mb-3">
+          <button 
+            class="btn btn-secondary btn-sm" 
+            (click)="previousPage()" 
+            [disabled]="currentPage == 1">
+            <i class="bi bi-caret-left-fill"></i>
+          </button>
+          <span class="mr-3 ml-3">Oldal: {{ currentPage }} / {{ totalPages }}</span>
+          <button 
+            class="btn btn-secondary btn-sm" 
+            (click)="nextPage()" 
+            [disabled]="currentPage == totalPages">
+            <i class="bi bi-caret-right-fill"></i>
+          </button>
         </div>
       </div>
     </div>
   </div>
 </div>
+
