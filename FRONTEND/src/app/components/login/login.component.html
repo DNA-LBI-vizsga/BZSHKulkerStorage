@@ -1,4 +1,14 @@
   <div class="d-flex align-items-center justify-content-center vh-100">
+
+    <div 
+    *ngIf="alertMessage" 
+    class="alert alert-dismissible fade show alert-message" 
+    [ngClass]="{'alert-danger': isError, 'alert-info': !isError}" 
+    role="alert"
+  >
+    {{ alertMessage }}
+  </div>
+
     <div class="card p-4 shadow-sm" style="width: 350px">
       <div class="text-center">
         <img src="../../../assets/logo.png" alt="Logo" width="100" />
@@ -44,7 +54,6 @@
         <button type="button" class="btn btn-link w-100 mt-3" data-bs-toggle="modal" data-bs-target="#passwordChangeModal">Elfelejtett Jelszó</button>
       </form>
     </div>
-
     <div class="modal fade" id="passwordChangeModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
@@ -52,11 +61,24 @@
             <h5 class="modal-title" id="exampleModalLongTitle">Írja be email címét!</h5>
           </div>
           <div class="modal-body">
-            <input type="email" [(ngModel)]="userEmail" placeholder="Email">
+            <input 
+              type="email" 
+              [(ngModel)]="userEmail" 
+              placeholder="Email" 
+              class="form-control"
+            >
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Mégse</button>
-            <button type="button" class="btn btn-primary" data-bs-dismiss="modal" (click)="passwordChange(userEmail)">Küldés</button>
+            <button 
+              type="button" 
+              class="btn btn-primary" 
+              data-bs-dismiss="modal" 
+              (click)="passwordChange(userEmail)" 
+              [disabled]="!userEmail || userEmail.trim() === ''"
+            >
+              Küldés
+            </button>
           </div>
         </div>
       </div>

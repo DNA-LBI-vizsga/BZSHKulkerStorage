@@ -1,7 +1,7 @@
 import { createComponent, NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { LoginComponent } from './components/login/login.component';
-import { RegisterComponent } from './components/register/register.component';
+import { UserControlComponent } from './components/user-control/user-control.component';
 import { authGuard } from './guards/auth.guard';
 import { NavbarComponent } from './components/navbar/navbar.component';
 import { AdminComponent } from './components/admin/admin.component';
@@ -16,7 +16,7 @@ const routes: Routes = [
   {path: 'passwordchange', component: PasswordChangeComponent, canActivate: [authGuard]},
   {path:'navbar', component: NavbarComponent, canActivate: [authGuard, firstLoginGuard], 
     children: [
-      {path: 'register', component: RegisterComponent, canActivate: [authGuard,adminGuard]},
+      {path: 'register', component: UserControlComponent, canActivate: [authGuard,adminGuard]},
       {path: 'admin', component: AdminComponent, canActivate: [authGuard,adminGuard]},
       {path: 'dashboard' , component: DashboardComponent, canActivate: [authGuard]},
       {path: 'list', component: ListComponent, canActivate: [authGuard]}

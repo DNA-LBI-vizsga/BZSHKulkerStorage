@@ -1,48 +1,56 @@
 <div class="container mt-5">
   <h2 class="text-center mb-2">Termékek</h2>
-  <h4 class="text-left mb-2 ml-1">Válasszon Leltárhelyet!</h4>
-    <div class="form-group">
-      <select [(ngModel)]="selectedStoragePlace" class="form-control custom-select">
-        <option *ngFor="let place of storagePlaces" [value]="place.id">{{ place.storage }}</option>
-      </select>
-    </div>
-    
-    <div class="mt-3">
-      <div class="row">
-        <div class="table-responsive" *ngIf="selectedStoragePlace">
-          <table class="table table-bordered table-hover">
-            <thead class="thead-light">
+  
+  <!-- Filter Input -->
+  <div class="form-group">
+    <label for="filterInput">Szűrés:</label>
+    <input 
+      type="text" 
+      id="filterInput" 
+      class="form-control" 
+      placeholder="Szűrés termék kód, név vagy raktár alapján..." 
+      [(ngModel)]="filterText" 
+      (input)="applyFilter()">
+  </div>
+  
+  <div class="mt-3">
+    <div class="row">
+      <div class="table-responsive">
+        <table class="table table-bordered table-hover">
+          <thead class="thead-light">
+            <tr>
+              <th>Termék Kód</th>
+              <th>Termék</th>
+              <th>Raktár</th>
+            </tr>
+          </thead>
+          <tbody>
+            <ng-container *ngFor="let item of paginatedItems">
               <tr>
-                <th>Termék Kód</th>
-                <th>Termék</th>
+                <td>{{ item.productCode }}</td>
+                <td>{{ getItemName(item.itemNameId) }}</td>
+                <td>{{ getStoragePlaceById(item.storagePlaceId) }}</td>
               </tr>
-            </thead>
-            <tbody>
-              <ng-container *ngFor="let item of paginatedItems">
-                <tr>
-                  <td>{{ item.productCode }}</td>
-                  <td>{{ getItemName(item.itemNameId) }}</td>
-                </tr>
-              </ng-container>
-            </tbody>
-          </table>
-        
-          <div class="d-flex justify-content-center align-items-center mt-3 mb-3">
-            <button 
-              class="btn btn-secondary btn-sm" 
-              (click)="previousPage()" 
-              [disabled]="currentPage == 1">
-              <i class="bi bi-caret-left-fill"></i>
-            </button>
-            <span class="mr-3 ml-3">Oldal: {{ currentPage }} / {{ totalPages }}</span>
-            <button 
-              class="btn btn-secondary btn-sm" 
-              (click)="nextPage()" 
-              [disabled]="currentPage == totalPages">
-              <i class="bi bi-caret-right-fill"></i>
-            </button>
-          </div>
+            </ng-container>
+          </tbody>
+        </table>
+      
+        <div class="d-flex justify-content-center align-items-center mt-3 mb-3">
+          <button 
+            class="btn btn-secondary btn-sm" 
+            (click)="previousPage()" 
+            [disabled]="currentPage == 1">
+            <i class="bi bi-caret-left-fill"></i>
+          </button>
+          <span class="mr-3 ml-3">Oldal: {{ currentPage }} / {{ totalPages }}</span>
+          <button 
+            class="btn btn-secondary btn-sm" 
+            (click)="nextPage()" 
+            [disabled]="currentPage == totalPages">
+            <i class="bi bi-caret-right-fill"></i>
+          </button>
         </div>
       </div>
     </div>
+  </div>
 </div>

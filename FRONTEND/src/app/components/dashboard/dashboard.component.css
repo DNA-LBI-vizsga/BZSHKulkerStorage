@@ -1,18 +1,16 @@
-/* General container styling */
-
 .container {
   max-width: 900px;
   margin: 0 auto;
   font-family: 'Arial', sans-serif;
 }
 
-/* Headings */
+
 h2, h3, h4 {
   color: #333;
   font-weight: bold;
 }
 
-/* Form controls */
+
 
 .btn-blue-dark {
   background-color: #004085;
@@ -41,7 +39,7 @@ h2, h3, h4 {
   background-color: #f8f9fa;
   display: flex;
   align-items: center;
-  height: 40px; /* Adjust height if necessary */
+  height: 40px;
   padding: 5px 10px;
   font-size: 16px;
   line-height: 1.5;
@@ -54,7 +52,7 @@ h2, h3, h4 {
 .form-check-input {
   border: 1px solid #333;
 }
-/* Spacing and layout */
+
 .crud-section {
   background-color: #f8f9fa;
   border: 5px solid #a2c2e2;
@@ -95,4 +93,15 @@ h2, h3, h4 {
 
 .table-bordered th, .table-bordered td {
   border: 1px solid #dee2e6;
+}
+
+.alert-message{
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1055; /* Higher than Bootstrap's modal-backdrop (z-index: 1040) */
+  width: 50%; /* Adjust width as needed */
+  text-align: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }

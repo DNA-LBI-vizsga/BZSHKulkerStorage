@@ -1,0 +1,169 @@
+<div class="container mt-5">
+
+  <div 
+    *ngIf="alertMessage" 
+    class="alert alert-dismissible fade show alert-message" 
+    [ngClass]="{'alert-danger': isError, 'alert-info': !isError}" 
+    role="alert"
+  >
+    {{ alertMessage }}
+  </div>
+
+  <!-- Page Header -->
+  <div class="row mb-4">
+    <div class="col">
+      <h1 class="text-center text-primary">Felhasználókezelő</h1>
+    </div>
+  </div>
+
+  <!-- User Management Table -->
+  <div class="row">
+    <div class="col-md-12">
+      <div class="card shadow-sm">
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-striped table-hover mb-0">
+              <thead class="thead-dark">
+                <tr>
+                  <th>Email</th>
+                  <th>Admin</th>
+                  <th>Státusz</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <ng-container *ngFor="let user of users">
+                  <tr>
+                    <td>{{ user.userEmail }}</td>
+                    <td>
+                      <i 
+                        class="bi" 
+                        [ngClass]="user.isAdmin ? 'bi-check-circle text-success' : 'bi-x-circle text-danger'"
+                        aria-label="Admin Status"
+                      ></i>
+                    </td>
+                    <td>
+                      <span
+                        class="badge"
+                        [ngClass]="{
+                          'bg-success': !user.isDisabled,
+                          'bg-danger': user.isDisabled
+                        }"
+                      >
+                        {{ user.isDisabled ? 'Disabled' : 'Active' }}
+                      </span>
+                    </td>
+                    <td>
+                      <ng-container *ngIf="user.userEmail != currentUser; else currentUserDisplay">
+                        <ng-container *ngIf="!user.isDisabled; else disabledUserDisplay">
+                          <button
+                            class="btn btn-sm btn-outline-success me-1"
+                            (click)="promoteUser(user.userEmail)"
+                            *ngIf="!user.isAdmin"
+                          >
+                            <i class="bi bi-arrow-up-circle"></i>
+                          </button>
+                          <button
+                            class="btn btn-sm btn-outline-warning me-1"
+                            (click)="demoteUser(user.userEmail)"
+                            *ngIf="user.isAdmin"
+                          >
+                            <i class="bi bi-arrow-down-circle"></i>
+                          </button>
+                          <button
+                            class="btn btn-sm btn-outline-danger"
+                            (click)="disableUser(user.userEmail)"
+                          >
+                            <i class="bi bi-x-circle"></i>
+                          </button>
+                        </ng-container>
+                        <ng-template #disabledUserDisplay>
+                          <button
+                            class="btn btn-sm btn-outline-primary"
+                            (click)="enableUser(user.userEmail)"
+                          >
+                            <i class="bi bi-check-circle"></i>
+                          </button>
+                        </ng-template>
+                      </ng-container>
+                      <ng-template #currentUserDisplay>
+                        <span class="text-muted">(Jelenlegi felhasználó)</span>
+                      </ng-template>
+                    </td>
+                  </tr>
+                </ng-container>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="card-footer d-flex">
+          <!-- <button class="btn btn-sm btn-secondary" >Previous</button>
+          <button class="btn btn-sm btn-secondary" >Next</button> -->
+          <button
+            type="button"
+            class="btn btn-sm btn-primary ms-auto"
+            data-bs-toggle="modal"
+            data-bs-target="#registerModal">Új felhasználó</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal for User Registration -->
+<div
+  class="modal fade"
+  id="registerModal"
+  tabindex="-1"
+  role="dialog"
+  aria-labelledby="registerModalTitle"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="registerModalTitle">Új felhasználó hozzáadás</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+          aria-label="Close"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form (ngSubmit)="registerUser()">
+          <div class="form-group">
+            <label for="email">Email:</label>
+            <input
+              type="text"
+              id="email"
+              [(ngModel)]="userEmail"
+              name="email"
+              class="form-control"
+              required
+            />
+          </div>
+          <div class="form-group form-check">
+            <input
+              type="checkbox"
+              id="isAdmin"
+              [(ngModel)]="isAdmin"
+              name="isAdmin"
+              class="form-check-input"
+            />
+            <label for="isAdmin" class="form-check-label">Admin Felhasználó?</label>
+          </div>
+          <div class="text-center">
+            <button
+              type="submit"
+              class="btn btn-primary mt-3"
+              [disabled]="!userEmail || userEmail.trim() === ''"
+            >
+              Send Email
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

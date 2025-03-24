@@ -35,7 +35,6 @@ export class ListComponent implements OnInit {
   };
 
   newStoragePlaceId: any;
-  selectedStoragePlace: number = 0;
   storagePlaces: StoragePlace[] = [];
 
   itemNames: ItemName[] = [];
@@ -58,21 +57,38 @@ export class ListComponent implements OnInit {
 
   currentPage: number = 1;
   itemsPerPage: number = 10;
+
+  filterText: string = '';
+  filteredItems: any[] = [];
  
   constructor(private baseService: BaseService) { }
 
 
 
   ngOnInit(): void {
-    this.loadItems();
     this.loadStoragePlaces();
     this.loadItemNames();
+    this.loadItems();
+  }
+
+  applyFilter(): void {
+    const lowerCaseFilter = this.filterText.toLowerCase();
+    this.filteredItems = this.items.filter(item => {
+      const itemName = this.getItemName(item.itemNameId).toLowerCase();
+      const storagePlace = this.getStoragePlaceById(item.storagePlaceId).toLowerCase();
+      return (
+        item.productCode.toLowerCase().includes(lowerCaseFilter) ||
+        itemName.includes(lowerCaseFilter) ||
+        storagePlace.includes(lowerCaseFilter)
+      );
+    });
+    this.currentPage = 1; // Reset to the first page after filtering
   }
 
   get paginatedItems(): any[] {
     const startIndex = (this.currentPage - 1) * this.itemsPerPage;
     const endIndex = startIndex + this.itemsPerPage;
-    return this.items.filter(item => item.storagePlaceId == this.selectedStoragePlace).slice(startIndex, endIndex);
+    return this.filteredItems.slice(startIndex, endIndex);
   }
 
   nextPage(): void {
@@ -88,17 +104,16 @@ export class ListComponent implements OnInit {
   }
 
   get totalPages(): number {
-    const allItems = this.items.filter(item => item.storagePlaceId == this.selectedStoragePlace);
-    return Math.ceil(allItems.length / this.itemsPerPage);
+    return Math.ceil(this.filteredItems.length / this.itemsPerPage); // Removed filtering by selectedStoragePlace
   }
 
   getItemName(itemNameId: number): string {
-    const item = this.itemNames.find(i => i.id === itemNameId);
+    const item = this.itemNames.find(i => i.id == itemNameId);
     return item ? item.item : 'Unknown';
   }
 
   getStoragePlaceById(storagePlaceId: number): string {
-    const storagePlace = this.storagePlaces.find((s:StoragePlace) => s.id === storagePlaceId);
+    const storagePlace = this.storagePlaces.find((s:StoragePlace) => s.id == storagePlaceId);
     return storagePlace ? storagePlace.storage : 'Unknown';
   }
 
@@ -120,7 +135,7 @@ export class ListComponent implements OnInit {
         ...item,
         productCode: `BZSH-${this.getItemName(item.itemNameId)}-${item.id}`
       }));
-      console.log(this.items);
+      this.filteredItems = [...this.items]; // Initialize filteredItems with all items
     });
   }
 

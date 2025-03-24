@@ -5,7 +5,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { NavbarComponent } from './components/navbar/navbar.component';
 import { LoginComponent } from './components/login/login.component';
-import { RegisterComponent } from './components/register/register.component';
+import { UserControlComponent } from './components/user-control/user-control.component';
 import { FormsModule } from '@angular/forms';
 import { provideHttpClient } from '@angular/common/http';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
@@ -21,7 +21,7 @@ import { ListComponent } from './components/list/list.component';
     AppComponent,
     NavbarComponent,
     LoginComponent,
-    RegisterComponent,
+    UserControlComponent,
     AdminComponent,
     PasswordChangeComponent,
     DashboardComponent,

@@ -23,6 +23,12 @@ export class DashboardComponent implements OnInit {
   selectedStoragePlace: number = 0;
   newStoragePlaceId: any;
 
+  // Pagination
+  currentPage: number = 1;
+  itemsPerPage: number = 10;
+  itemsPerPageOptions: number[] = [5, 10, 25, 50, 100, 250];
+
+  // Modals
   newItem: any = {
     itemNameId: null,
     storagePlaceId: null,
@@ -35,8 +41,19 @@ export class DashboardComponent implements OnInit {
     newStoragePlaceId: null
   };
 
-  currentPage: number = 1;
-  itemsPerPage: number = 10;
+  // Filters
+  filters = {
+    itemNameId: undefined,
+    storagePlaceId: undefined,
+    createdBy: undefined,
+    fromDate: undefined,
+    toDate: undefined
+  };
+  filterError: string | null = null;
+
+  // Messages
+  message: string | null = null;
+  isError: boolean = false;
 
   // Constructor
   constructor(private baseService: BaseService) {}
@@ -60,6 +77,10 @@ export class DashboardComponent implements OnInit {
     return Math.ceil(allItems.length / this.itemsPerPage);
   }
 
+  updatePagination(): void {
+    this.currentPage = 1; // Reset to the first page when itemsPerPage changes
+  }
+
   nextPage(): void {
     if (this.currentPage < this.totalPages) {
       this.currentPage++;
@@ -75,6 +96,10 @@ export class DashboardComponent implements OnInit {
   }
 
   // Data Loading Methods
+  selectStoragePlace(placeId: number): void {
+    this.selectedStoragePlace = placeId;
+  }
+
   loadStoragePlaces(): void {
     this.baseService.getStoragePlaces().subscribe(data => {
       this.storagePlaces = data;
@@ -139,6 +164,7 @@ export class DashboardComponent implements OnInit {
     this.baseService.updateItem(itemIdList, storagePlaceId, newStoragePlaceId).subscribe(() => {
       this.loadItems();
       this.clearSelection();
+      this.newStoragePlaceId = null;
     });
   }
 
@@ -189,17 +215,69 @@ export class DashboardComponent implements OnInit {
     return false;
   }
 
+  // Filter Methods
+  validateFilters(): boolean {
+    this.filterError = null; // Reset error message
+  
+    if (this.filters.fromDate && this.filters.toDate) {
+      const fromDate = new Date(this.filters.fromDate);
+      const toDate = new Date(this.filters.toDate);
+  
+      if (toDate < fromDate) {
+        this.filterError = 'Letöltés sikertelen! A záró dátum nem lehet korábbi, mint a kezdő dátum!';
+        this.showMessage(this.filterError, true, 5000); // Display the error in the alert box
+        return false;
+      }
+    }
+  
+    return true;
+  }
+
+  resetFilters(): void {
+    this.filters = {
+      itemNameId: undefined,
+      storagePlaceId: undefined,
+      createdBy: undefined,
+      fromDate: undefined,
+      toDate: undefined
+    };
+    this.filterError = null; // Clear any existing error messages
+  }
+
+  // Message Handling
+  showMessage(msg: string, isError: boolean = false, duration: number = 3000): void {
+    this.message = msg;
+    this.isError = isError;
+    setTimeout(() => {
+      this.message = null; // Clear the message after the specified duration
+      this.isError = false; // Reset the error flag
+    }, duration);
+  }
+
   // Download Logs
   downloadLogs(): void {
-    this.baseService.downloadLogs().subscribe(response => {
-      const url = window.URL.createObjectURL(response);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'logs.xlsx';
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      window.URL.revokeObjectURL(url);
-    });
+    if (!this.validateFilters()) {
+      this.resetFilters(); // Clear the filters
+      return; // Stop execution if validation fails
+    }
+  
+    this.baseService.downloadLogs(this.filters).subscribe(
+      response => {
+        const url = window.URL.createObjectURL(response);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'logs.xlsx';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+  
+        this.showMessage('A napló sikeresen letöltve!', false, 3000); // Show success message
+      },
+      error => {
+        console.error('Error downloading logs:', error);
+        this.showMessage('Hiba történt a napló letöltése közben!', true, 3000); // Show error message
+      }
+    );
   }
 }
