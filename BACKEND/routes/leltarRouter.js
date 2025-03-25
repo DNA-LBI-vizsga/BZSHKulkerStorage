@@ -373,16 +373,19 @@ router.put("/item", validateAdmin,
         try{
             const createdBy = req.user.id
             const httpMethod = req.method
-            const {itemIdList, storagePlaceId, newStoragePlaceId} = req.body
+            const {itemIdList,newStoragePlaceId} = req.body
 
             let itemId = 0
 
             for (let i = 0; i<itemIdList.length; i++){
                 itemId = itemIdList[i]
                 let item = await Item.findOne({where: {id:itemId}})
-
-                await createLogs(itemId, item.itemNameId, storagePlaceId, createdBy, httpMethod)
-                await createLogs(itemId, item.itemNameId, newStoragePlaceId, createdBy, httpMethod)
+                let storage = await StorageConn.findOne({where: {itemId:itemId}})
+                console.log(storage.storagePlaceId)
+                if(storage.storagePlaceId != newStoragePlaceId){
+                    await createLogs(itemId, item.itemNameId, storage.storagePlaceId, createdBy, httpMethod)
+                    await createLogs(itemId, item.itemNameId, newStoragePlaceId, createdBy, httpMethod)      
+                }
                 await updateStoredItem(itemId, newStoragePlaceId)
             }
 
@@ -427,8 +430,9 @@ router.delete("/item", validateAdmin,
             let itemId = 0
             for (let i = 0; i < itemIdList.length; i++) {
                 itemId = itemIdList[i];
-                let item = await StorageConn.findOne({where: {id:itemId}})
-                await createLogs(itemId, item.itemNameId, item.storagePlaceId,  createdBy, httpMethod)
+                let storage = await StorageConn.findOne({where: {itemId:itemId}});
+                let item = await Item.findOne({where: {id:itemId}});
+                await createLogs(itemId, item.itemNameId, storage.storagePlaceId,  createdBy, httpMethod)
                 await deleteStoredItem(itemId);
                 await deleteItem(itemId);
             }

@@ -93,15 +93,12 @@ export class BaseService {
     return this.http.post(`${this.apiUrl}/item`, { itemNameId, storagePlaceId, quantity }, { headers: this.getAuthHeaders() });
   }
 
-  updateItem(itemIdList: number[], storagePlaceId:  number, newStoragePlaceId: number): Observable<any> {
-    return this.http.put(`${this.apiUrl}/item`, { itemIdList, storagePlaceId, newStoragePlaceId }, { headers: this.getAuthHeaders() });
+  updateItem(itemIdList: number[], newStoragePlaceId: number): Observable<any> {
+    return this.http.put(`${this.apiUrl}/item`, { itemIdList, newStoragePlaceId }, { headers: this.getAuthHeaders() });
   }
 
-  deleteItem(itemIdList: number[], storagePlaceId: number): Observable<any> {
-    return this.http.delete(`${this.apiUrl}/item`, {
-      headers: this.getAuthHeaders(),
-      body: { itemIdList, storagePlaceId }
-    });
+  deleteItem(itemIdList: number[]): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/item`, { headers: this.getAuthHeaders(), body: { itemIdList } });
   }
 
   // Log management

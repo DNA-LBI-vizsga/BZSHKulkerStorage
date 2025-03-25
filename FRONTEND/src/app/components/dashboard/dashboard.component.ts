@@ -15,12 +15,13 @@ interface Item {
 })
 export class DashboardComponent implements OnInit {
   // Properties
-  items: Item[] = [];
-  filteredItems: Item[] = [];
+  items: any[] = [];
+  filteredItems: any[] = [];
   storagePlaces: any[] = [];
   itemNames: any[] = [];
   selectedItemIds: number[] = [];
-  selectedStoragePlace: number = 0;
+  selectedStoragePlaceIds: number[] = [];
+  // selectedStoragePlace: number = 0;
   newStoragePlaceId: any;
 
   // Pagination
@@ -55,6 +56,8 @@ export class DashboardComponent implements OnInit {
   message: string | null = null;
   isError: boolean = false;
 
+  filterText: string = ''; // Holds the filter input value
+
   // Constructor
   constructor(private baseService: BaseService) {}
 
@@ -65,16 +68,31 @@ export class DashboardComponent implements OnInit {
     this.loadItems();
   }
 
+  applyFilter(): void {
+    const lowerCaseFilter = this.filterText.toLowerCase();
+    this.filteredItems = this.items.filter(item => {
+      const itemName = this.getItemName(item.itemNameId).toLowerCase();
+      const storagePlace = this.getStoragePlaceById(item.storagePlaceId).toLowerCase();
+      return (
+        item.productCode.toLowerCase().includes(lowerCaseFilter) ||
+        itemName.includes(lowerCaseFilter) ||
+        storagePlace.includes(lowerCaseFilter)
+      );
+    });
+    this.currentPage = 1; // Reset to the first page after filtering
+  }
+
   // Pagination Methods
   get paginatedItems(): any[] {
     const startIndex = (this.currentPage - 1) * this.itemsPerPage;
     const endIndex = startIndex + this.itemsPerPage;
-    return this.items.filter(item => item.storagePlaceId == this.selectedStoragePlace).slice(startIndex, endIndex);
+    return this.filteredItems.slice(startIndex, endIndex);
+    // return this.filteredItems.filter(item => item.storagePlaceId == this.selectedStoragePlace).slice(startIndex, endIndex);
   }
 
   get totalPages(): number {
-    const allItems = this.items.filter(item => item.storagePlaceId == this.selectedStoragePlace);
-    return Math.ceil(allItems.length / this.itemsPerPage);
+    // const allItems = this.filteredItems.filter(item => item.storagePlaceId == this.selectedStoragePlace);
+    return Math.ceil(this.filteredItems.length / this.itemsPerPage);
   }
 
   updatePagination(): void {
@@ -95,10 +113,15 @@ export class DashboardComponent implements OnInit {
     }
   }
 
-  // Data Loading Methods
-  selectStoragePlace(placeId: number): void {
-    this.selectedStoragePlace = placeId;
+  getStoragePlaceById(storagePlaceId: number): string {
+    const storagePlace = this.storagePlaces.find(place => place.id == storagePlaceId);
+    return storagePlace ? storagePlace.storage : 'Unknown';
   }
+
+  // Data Loading Methods
+  // selectStoragePlace(placeId: number): void {
+  //   this.selectedStoragePlace = placeId;
+  // }
 
   loadStoragePlaces(): void {
     this.baseService.getStoragePlaces().subscribe(data => {
@@ -113,12 +136,17 @@ export class DashboardComponent implements OnInit {
   }
 
   loadItems(): void {
+    if (this.itemNames.length === 0) {
+      this.loadItemNames(); // Load item names if not already loaded
+    }
+
     this.baseService.getItems().subscribe((data: Item[]) => {
       this.items = data.map((item: Item) => ({
         ...item,
         productCode: `BZSH-${this.getItemName(item.itemNameId)}-${item.id}`
-      }));
+      })).sort((a,b)=>a.id-b.id);
       console.log(this.items);
+      this.filteredItems = [...this.items];
     });
   }
 
@@ -126,14 +154,6 @@ export class DashboardComponent implements OnInit {
   getItemName(itemNameId: number): string {
     const item = this.itemNames.find(i => i.id === itemNameId);
     return item ? item.item : 'Unknown';
-  }
-
-  searchItems(searchTerm: string): void {
-    if (searchTerm) {
-      this.filteredItems = this.items.filter(item =>
-        this.getItemName(item.itemNameId).includes(searchTerm) || ['item.productCode'].includes(searchTerm)
-      );
-    }
   }
 
   // CRUD Methods
@@ -145,32 +165,38 @@ export class DashboardComponent implements OnInit {
 
     this.baseService.createItem(
       this.newItem.itemNameId,
-      this.selectedStoragePlace,
+      this.newItem.storagePlaceId,
       this.newItem.quantity
     ).subscribe(() => {
+      this.filterText = '';
       this.loadItems();
       this.newItem = { itemNameId: null, quantity: 0 };
     });
   }
 
-  deleteItem(itemIdList: number[], storagePlaceId: number): void {
-    this.baseService.deleteItem(itemIdList, storagePlaceId).subscribe(() => {
+  deleteItem(itemIdList: number[]): void {
+    console.log(itemIdList);
+    this.baseService.deleteItem(itemIdList).subscribe(() => {
+      this.loadItemNames();
       this.loadItems();
       this.clearSelection();
+      this.filterText = '';
     });
   }
 
-  updateItem(itemIdList: number[], storagePlaceId: number, newStoragePlaceId: number): void {
-    this.baseService.updateItem(itemIdList, storagePlaceId, newStoragePlaceId).subscribe(() => {
+  updateItem(itemIdList: number[], newStoragePlaceId: number): void {
+    this.baseService.updateItem(itemIdList, newStoragePlaceId).subscribe(() => {
       this.loadItems();
       this.clearSelection();
       this.newStoragePlaceId = null;
+      this.filterText = '';
     });
   }
 
   // Selection Management
   clearSelection(): void {
     this.selectedItemIds = [];
+    this.selectedStoragePlaceIds = [];
     this.resetSelectAllCheckbox();
   }
 
