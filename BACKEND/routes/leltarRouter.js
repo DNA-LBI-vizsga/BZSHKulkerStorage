@@ -354,12 +354,10 @@ router.post("/item",
  *           schema:
  *             type: object
  *             properties:
- *               itemIdList:
+ *               itemIdList: 
  *                 type: array
  *                 description: An array of item IDs to move.
- *               storagePlaceId:
- *                 type: integer
- *                 description: The ID of the storage place to move the items to.
+ *                 default: []
  *               newStoragePlaceId:
  *                 type: integer
  *                 description: The ID of the new storage place to move the items to.
@@ -446,6 +444,18 @@ router.delete("/item", validateAdmin,
 
 
 //FUNCTIONALITY
+/**
+ * @swagger
+ * /users:
+ *   get:
+ *     tags:
+ *      - User Management
+ *     summary: Get all users
+ *     description: Retrieves a list of all users.
+ *     responses:
+ *       200:
+ *         description: A list of users.
+ */
 
 router.get('/users', validateAdmin, async (req, res) => {
     try {
@@ -454,7 +464,28 @@ router.get('/users', validateAdmin, async (req, res) => {
         return res.status(500).json({ message: error.message });
     }
 });
-
+/**
+ * @swagger
+ * /disable:
+ *   patch:
+ *     tags:
+ *      - User Management
+ *     summary: Disable a user
+ *     description: Disables a user.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               userEmail:
+ *                 type: string
+ *                 description: The email of the user to disable.
+ *     responses:
+ *       200:
+ *         description: User disabled successfully.
+ */
 router.patch('/disable', validateAdmin, async (req, res) => {
     try {
         const { userEmail } = req.body;
@@ -466,7 +497,28 @@ router.patch('/disable', validateAdmin, async (req, res) => {
         return res.status(500).json({ message: error.message });
     }
 });
-
+/**
+ * @swagger
+ * /enable:
+ *   patch:
+ *     tags:
+ *      - User Management
+ *     summary: Enable a user
+ *     description: Enables a user.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               userEmail:
+ *                 type: string
+ *                 description: The email of the user to enable.
+ *     responses:
+ *       200:
+ *         description: User enabled successfully.
+ */
 router.patch('/enable', validateAdmin, async (req, res) => {
     try {
         const { userEmail } = req.body;
@@ -478,7 +530,28 @@ router.patch('/enable', validateAdmin, async (req, res) => {
         return res.status(500).json({ message: error.message });
     }
 });
-
+/**
+ * @swagger
+ * /demote:
+ *   patch:
+ *     tags:
+ *      - User Management
+ *     summary: Demote a user from admin
+ *     description: Demotes a user from admin.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               userEmail:
+ *                 type: string
+ *                 description: The email of the user to demote.
+ *     responses:
+ *       200:
+ *         description: User demoted successfully.
+ */
 router.patch('/demote', validateAdmin, async (req, res) => {
     try {
         const { userEmail } = req.body;
@@ -491,6 +564,28 @@ router.patch('/demote', validateAdmin, async (req, res) => {
     }
 });
 
+/**
+ * @swagger
+ * /promote:
+ *   patch:
+ *     tags:
+ *      - User Management
+ *     summary: Promote a user to admin
+ *     description: Promotes a user to admin.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               userEmail:
+ *                 type: string
+ *                 description: The email of the user to promote.
+ *     responses:
+ *       200:
+ *         description: User promoted successfully.
+ */
 router.patch('/promote', validateAdmin, async (req, res) => {
     try {
         const { userEmail } = req.body;
@@ -502,7 +597,31 @@ router.patch('/promote', validateAdmin, async (req, res) => {
         return res.status(500).json({ message: error.message });
     }
 });
-
+/**
+ * @swagger
+ * /login:
+ *   post:
+ *     tags:
+ *      - User Management
+ *     summary: Login a user
+ *     description: Logs in a user and returns a JWT token.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               userEmail:
+ *                 type: string
+ *                 description: The email of the user.
+ *               userPassword:
+ *                 type: string
+ *                 description: The password of the user.
+ *     responses:
+ *       200:
+ *         description: User logged in successfully.
+ */
 router.post('/login', async (req, res) => {
     try {
         const { userEmail, userPassword } = req.body;
@@ -525,6 +644,31 @@ router.post('/login', async (req, res) => {
     }
 });
 
+/**
+ * @swagger
+ * /register:
+ *   post:
+ *     tags:
+ *      - User Management
+ *     summary: Register a new user
+ *     description: Registers a new user in the database.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               userEmail:
+ *                 type: string
+ *                 description: The email address of the user.
+ *               isAdmin:
+ *                 type: boolean
+ *                 description: Whether the user is an admin or not.
+ *     responses:
+ *       201:
+ *         description: User created successfully.
+ */
 router.post('/register',   async (req, res) => {
     try {
         //const userPassword = await genPassword() 
@@ -541,7 +685,27 @@ router.post('/register',   async (req, res) => {
         return res.status(500).json({ message: error.message })
     }
 });
-
+/**
+ * @swagger
+ * /firstLogin:
+ *   put:
+ *     tags:
+ *      - User Management
+ *     summary: Change password on first login
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               userPassword:
+ *                 type: string
+ *                 description: The password of the user.
+ *     responses:
+ *       200:
+ *         description: Password changed
+ * */
 router.put("/firstLogin", 
     async function(req, res, next){
         try{
@@ -554,6 +718,28 @@ router.put("/firstLogin",
             next(err)
         }
 })
+
+/**
+ * @swagger
+ * /passwordChange:
+ *   put:
+ *     tags:
+ *       - User Management
+ *     summary: Change password
+ *     requestBody:
+ *       required: true 
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               userEmail:
+ *                 type: string
+ *                 description: An email of the user
+ *     responses:
+ *       200:
+ *         description: Password changed
+ */
 
 router.put("/passwordChange",
     async function(req, res, next){
