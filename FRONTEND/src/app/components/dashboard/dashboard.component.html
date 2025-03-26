@@ -1,4 +1,4 @@
-<div class="container mt-5">
+<div class="container mt-4">
   <div 
   *ngIf="message" 
   class="alert alert-dismissible fade show alert-message" 
@@ -22,98 +22,138 @@
 
   <div class="mt-3">
     <div class="row">
-      <div class="form-group mb-3">
+      <div class="form-group col-sm-4">
         <label for="filterInput"><strong>Szűrés:</strong></label>
         <input 
           type="text" 
           id="filterInput" 
-          class="form-control" 
+          class="form-control form-control-sm filter-input" 
           placeholder="Szűrés termék kód, név vagy raktár alapján..." 
           [(ngModel)]="filterText" 
           (input)="applyFilter()">
       </div>
-      <div class="table-responsive" > <!--*ngIf="selectedStoragePlace"-->
-        <table class="table table-bordered table-hover">
-          <thead class="thead-light">
-            <tr>
-              <th>Termék Kód</th>
-              <th>Termék</th>
-              <th>Raktár</th>
-              <ng-container *ngIf="isAdmin()">
-                <th></th>
-              </ng-container>
-            </tr>
-          </thead>
-          <tbody>
-            <ng-container *ngFor="let item of paginatedItems">
-              <tr>
-                <td>{{ item.productCode }}</td>
-                <td>{{ getItemName(item.itemNameId) }}</td>
-                <td>{{ getStoragePlaceById(item.storagePlaceId) }}</td>
-                <ng-container *ngIf="isAdmin()">
-                  <td>
-                    <div class="form-check">
-                      <input
-                        type="checkbox"
-                        class="form-check-input"
-                        [value]="item.id"
-                        (change)="toggleItemSelection($event, item.id)">
-                      <label class="form-check-label"></label>
-                    </div>
-                  </td>
+      <div class="col-sm">
+        <label for="itemsPerPageSelect" class=""><strong>Elemek száma oldalanként:</strong></label>
+        <select
+            id="itemsPerPageSelect"
+            class="form-select form-select-sm page-select"
+            [(ngModel)]="itemsPerPage"
+            (change)="updatePagination()">
+            <option *ngFor="let option of itemsPerPageOptions" [value]="option">{{ option }}</option>
+        </select>
+      </div>
+    </div>
+      <div class="row">
+        <div class="col-lg-8">
+          <div class="table-responsive" > <!--*ngIf="selectedStoragePlace"-->
+            <table class="table table-bordered table-hover">
+              <thead class="thead-light">
+                <tr>
+                  <th>Termék Kód</th>
+                  <th>Termék</th>
+                  <th>Raktár</th>
+                  <ng-container *ngIf="isAdmin()">
+                    <th></th>
+                  </ng-container>
+                </tr>
+              </thead>
+              <tbody>
+                <ng-container *ngFor="let item of paginatedItems">
+                  <tr>
+                    <td>{{ item.productCode }}</td>
+                    <td>{{ getItemName(item.itemNameId) }}</td>
+                    <td>{{ getStoragePlaceById(item.storagePlaceId) }}</td>
+                    <ng-container *ngIf="isAdmin()">
+                      <td>
+                        <div class="form-check">
+                          <input
+                            type="checkbox"
+                            class="form-check-input"
+                            [value]="item.id"
+                            (change)="toggleItemSelection($event, item.id)">
+                          <label class="form-check-label"></label>
+                        </div>
+                      </td>
+                    </ng-container>
+                  </tr>
                 </ng-container>
-              </tr>
-            </ng-container>
-          </tbody>
-        </table>
-
-        <ng-container *ngIf="isAdmin()"> <!--&& selectedStoragePlace-->
-          <div class="row align-items-center">
-            <div class="col-lg ml-2">
-              <button type="button" class="btn btn-primary btn-sm mr-2" data-bs-toggle="modal" data-bs-target="#downloadModal">Műveleti Napló</button>
-              <button type="button" class="btn btn-success btn-sm mr-2" data-bs-toggle="modal" data-bs-target="#addItemModal">Hozzáadás</button>
-              <button type="button" class="btn btn-info btn-sm mr-2" [disabled]="selectedItemIds.length === 0" (click)="deleteItem(selectedItemIds)">Törlés</button>
-              <button type="button" class="btn btn-light btn-sm mr-2" [disabled]="selectedItemIds.length === 0" data-bs-toggle="modal" data-bs-target="#updateModal">Áthelyezés</button>
-              <label for="itemsPerPageSelect" class="mr-2 mb-0"><strong>Elemek száma oldalanként:</strong></label>
-    <select 
-      id="itemsPerPageSelect" 
-      class="form-control form-control-sm" 
-      [(ngModel)]="itemsPerPage" 
-      (change)="updatePagination()">
-      <option *ngFor="let option of itemsPerPageOptions" [value]="option">{{ option }}</option>
-    </select>
-            </div>
+              </tbody>
+            </table>
+            <ng-container *ngIf="isAdmin()"> <!--&& selectedStoragePlace-->
+              <div class="row align-items-center">
+                <div class="col-lg ml-2">
+                  <button type="button" class="btn btn-grey btn-sm mr-2" data-bs-toggle="modal" data-bs-target="#downloadModal">Műveleti Napló</button>
+                  <button type="button" class="btn btn-grey btn-sm mr-2" data-bs-toggle="modal" data-bs-target="#addItemModal">Hozzáadás</button>
+                  <button type="button" class="btn btn-grey btn-sm mr-2" [disabled]="selectedItemIds.length === 0" (click)="deleteItem(selectedItemIds)">Törlés</button>
+                  <button type="button" class="btn btn-grey btn-sm mr-2" [disabled]="selectedItemIds.length === 0" data-bs-toggle="modal" data-bs-target="#updateModal">Áthelyezés</button>
+                </div>
           
-            <div class="col-sm text-right">
-              <div class="form-check d-inline-flex align-items-center">
-                <input
-                  type="checkbox"
-                  class="form-check-input"
-                  (change)="toggleSelectAll($event)">
-                <label class="form-check-label mr-2"><strong>Mindet kijelöl</strong></label>
+                <div class="col-sm text-right">
+                  <div class="form-check d-inline-flex align-items-center">
+                    <input
+                      type="checkbox"
+                      class="form-check-input"
+                      (change)="toggleSelectAll($event)">
+                    <label class="form-check-label mr-2"><strong>Mindet kijelöl</strong></label>
+                  </div>
+                </div>
+              </div>
+            </ng-container>
+          
+            <div class="d-flex justify-content-center align-items-center mt-3 mb-3">
+              <button
+                class="btn btn-secondary btn-sm"
+                (click)="previousPage()"
+                [disabled]="currentPage == 1">
+                <i class="bi bi-caret-left-fill"></i>
+              </button>
+              <span class="mr-3 ml-3">Oldal: {{ currentPage }} / {{ totalPages }}</span>
+              <button
+                class="btn btn-secondary btn-sm"
+                (click)="nextPage()"
+                [disabled]="currentPage == totalPages">
+                <i class="bi bi-caret-right-fill"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-4 col-md-12 mt-4 mt-lg-0">
+          <div *ngIf="isAdmin()" class="admin-tasks">
+            <div class="row justify-content-center">
+              <!-- Storage Control Section -->
+              <div class="col-12 storageControl mb-3">
+                <h3 class="text-center">Leltárhelyek</h3>
+                <div class="input-group mb-3">
+                  <input [(ngModel)]="newStoragePlace" placeholder="Új Leltárhely Felvétele" class="form-control">
+                  <button class="btn btn-primary" (click)="createStoragePlace()">Hozzáadás</button>
+                </div>
+                <div *ngFor="let storagePlace of storagePlaces" class="row my-1">
+                  <div class="input-group">
+                    <input [(ngModel)]="storagePlace.storage" class="form-control" readonly>
+                    <button class="btn btn-danger btn-sm" (click)="deleteStoragePlace(storagePlace.id)">Törlés</button>
+                  </div>
+                </div>
+              </div>
+      
+              <!-- Item Name Control Section -->
+              <div class="col-12 itemNameControl mb-3">
+                <h3 class="text-center">Nyilvántartandó Termékek</h3>
+                <div class="input-group mb-3">
+                  <input [(ngModel)]="newItemName" placeholder="Új Termék Felvétele" class="form-control">
+                  <button class="btn btn-primary" (click)="createItemName()">Hozzáadás</button>
+                </div>
+                <div *ngFor="let itemName of itemNames" class="row my-1">
+                  <div class="input-group">
+                    <input [(ngModel)]="itemName.item" class="form-control" readonly>
+                    <button class="btn btn-danger btn-sm" (click)="deleteItemName(itemName.id)">Törlés</button>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-        </ng-container>
-      
-        <div class="d-flex justify-content-center align-items-center mt-3 mb-3">
-          <button 
-            class="btn btn-secondary btn-sm" 
-            (click)="previousPage()" 
-            [disabled]="currentPage == 1">
-            <i class="bi bi-caret-left-fill"></i>
-          </button>
-          <span class="mr-3 ml-3">Oldal: {{ currentPage }} / {{ totalPages }}</span>
-          <button 
-            class="btn btn-secondary btn-sm" 
-            (click)="nextPage()" 
-            [disabled]="currentPage == totalPages">
-            <i class="bi bi-caret-right-fill"></i>
-          </button>
         </div>
       </div>
     </div>
-  </div>
 
   <!-- Add Item Modal -->
   <div class="modal fade" id="addItemModal" tabindex="-1" role="dialog" aria-labelledby="addItemModalLabel" aria-hidden="true">

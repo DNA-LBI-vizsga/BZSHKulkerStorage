@@ -17,16 +17,10 @@
             <a class="dropdown-item" routerLink="list">Listázás</a>
           </div>
         </li> -->
-        <li class="nav-item dropdown" *ngIf="isAdmin()">
-          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            Admin menü
-          </a>
-          <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-            <a class="dropdown-item" routerLink="register">Új felhasználó felvétele</a>
-            <a class="dropdown-item" routerLink="admin">Új adattípus felvétele</a>
-          </div>
+        <li class="nav-item" *ngIf="isAdmin()">
+          <a class="nav-link" href="#" routerLink="users">Felhasználók</a>
         </li>
-          <button class="btn btn-danger ml-2" (click)="logoutUser()">Logout</button>
+          <button class="btn btn-danger btn-sm ml-2" (click)="logoutUser()">Logout</button>
       </ul>
     </div>
   </nav>

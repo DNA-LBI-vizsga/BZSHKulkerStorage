@@ -10,7 +10,6 @@ import { FormsModule } from '@angular/forms';
 import { provideHttpClient } from '@angular/common/http';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { CommonModule } from '@angular/common';
-import { AdminComponent } from './components/admin/admin.component';
 import { PasswordChangeComponent } from './components/password-change/password-change.component';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
@@ -22,7 +21,6 @@ import { ListComponent } from './components/list/list.component';
     NavbarComponent,
     LoginComponent,
     UserControlComponent,
-    AdminComponent,
     PasswordChangeComponent,
     DashboardComponent,
     ListComponent

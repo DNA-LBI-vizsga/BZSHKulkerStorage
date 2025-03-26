@@ -1,5 +1,5 @@
 .container {
-  max-width: 900px;
+  max-width: 1200px;
   margin: 0 auto;
   font-family: 'Arial', sans-serif;
 }
@@ -10,29 +10,10 @@ h2, h3, h4 {
   font-weight: bold;
 }
 
-
-
-.btn-blue-dark {
-  background-color: #004085;
-  color: white;
+.btn-grey {
+  background-color: #b4aead;
+  color: black;
   border: none;
-}
-
-.btn-blue-medium {
-  background-color: #007bff;
-  color: white;
-  border: none;
-}
-
-.btn-blue-light {
-  background-color: #cce5ff;
-  color: #004085;
-  border: none;
-}
-
-.btn-secondary {
-  background-color: #000000;
-  border-color: #000000;
 }
 
 .custom-select {
@@ -47,6 +28,18 @@ h2, h3, h4 {
 
 .custom-input {
   width: 100%;
+}
+
+.page-select{
+  max-width: 65px;
+}
+
+.filter-input {
+  max-width: 400px;
+}
+
+.form-contol-sm{
+  max-width: 100px;
 }
 
 .form-check-input {

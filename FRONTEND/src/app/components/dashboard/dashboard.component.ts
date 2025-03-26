@@ -57,6 +57,8 @@ export class DashboardComponent implements OnInit {
   isError: boolean = false;
 
   filterText: string = ''; // Holds the filter input value
+  newStoragePlace: any;
+  newItemName: any;
 
   // Constructor
   constructor(private baseService: BaseService) {}
@@ -129,11 +131,51 @@ export class DashboardComponent implements OnInit {
     });
   }
 
+  createStoragePlace(): void {
+    if (!this.newStoragePlace || this.newStoragePlace.trim() === '') {
+      alert('Storage place name cannot be blank');
+      return;
+    }
+    this.baseService.createStoragePlace(this.newStoragePlace).subscribe(() => {
+      this.loadStoragePlaces();
+      this.newStoragePlace = '';
+    });
+  }
+
+  deleteStoragePlace(id: number): void {
+    this.baseService.deleteStoragePlace(id).subscribe(() => {
+      this.loadStoragePlaces();
+    });
+  }
+
   loadItemNames(): void {
     this.baseService.getItemNames().subscribe(data => {
       this.itemNames = data;
     });
   }
+
+  createItemName(): void {
+    if (!this.newItemName || this.newItemName.trim() === '') {
+      alert('Item name cannot be blank');
+      return;
+    }
+    this.baseService.createItemName(this.newItemName).subscribe(() => {
+      this.loadItemNames();
+      this.newItemName = '';
+    });
+  }
+  
+  deleteItemName(id: number): void {
+    this.baseService.deleteItemName(id).subscribe({
+      next: () => {
+        this.loadItemNames();
+      },
+      error: (err) => {
+        console.error('Error deleting item name:', err);
+        alert('A termék törlése sikertelen! Ellenőrizze, hogy nincs-e raktárban ilyen termék!');
+      }
+    });
+}
 
   loadItems(): void {
     if (this.itemNames.length === 0) {
