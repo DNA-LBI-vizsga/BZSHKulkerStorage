@@ -127,11 +127,30 @@ async function checkRequiredFields(requiredField, res) {
 
 
 //Password generator for user registration
-async function genPassword(){
-    const randomString = crypto.randomBytes(8).toString('hex'); 
-    return randomString
-}
+async function genPassword(length) {
+    try {
+    const upperCase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    const lowerCase = "abcdefghijklmnopqrstuvwxyz";
+    const numbers = "0123456789";
+    const specialChars = "!@#$%^&*()_+-=[]{}|;:'\",.<>?/`~";
+    
+    const allChars = upperCase + lowerCase + numbers + specialChars;
+    
+    let password = "";
+    password += upperCase[Math.floor(Math.random() * upperCase.length)];
+    password += lowerCase[Math.floor(Math.random() * lowerCase.length)];
+    password += numbers[Math.floor(Math.random() * numbers.length)];
+    password += specialChars[Math.floor(Math.random() * specialChars.length)];
 
+    for (let i = 4; i < length; i++) {
+        password += allChars[Math.floor(Math.random() * allChars.length)];
+    }
+
+    return password.split("").sort(() => 0.5 - Math.random()).join(""); 
+    } catch (error) {
+        console.error('Error generating password:', error);
+    }
+}
 
 //First login checker for password change
 async function firstLoginFalse(req) {
@@ -144,6 +163,26 @@ async function firstLoginFalse(req) {
     return user
 }
 
+//Validation for password change
+async function validatePassword(password) {
+    try {
+        const hasUpperCase = /[A-Z]/.test(password);
+        const hasLowerCase = /[a-z]/.test(password);
+        const hasNumber = /\d/.test(password);
+        const hasSpecialChar = /[!@#$%^&*()_+\-=\[\]{}|;:'",.<>?/]/.test(password);
+        const minLength = password.length >= 8; // Adjust minimum length if needed
+
+        if (!hasUpperCase) throw new Error("Password must contain at least one uppercase letter.");
+        if (!hasLowerCase) throw new Error("Password must contain at least one lowercase letter.");
+        if (!hasNumber) throw new Error("Password must contain at least one number.");
+        if (!hasSpecialChar) throw new Error("Password must contain at least one special character.");
+        if (!minLength) throw new Error("Password must be at least 8 characters long.");
+
+        return true; // If all conditions pass, return true
+    } catch (error) {
+        throw new Error(`Password validation failed: ${error.message}`);
+    }
+}
 
 export{    
     checkPassword,
@@ -152,5 +191,6 @@ export{
     authMiddle,
     sendEmail,
     genPassword,
-    firstLoginFalse
+    firstLoginFalse,
+    validatePassword
 }

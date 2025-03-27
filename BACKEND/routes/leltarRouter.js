@@ -1,21 +1,21 @@
+import { body, validationResult } from "express-validator";
+import { Router } from "express"
+import pkg from 'jsonwebtoken';
+const { sign } = pkg;
+const router = Router()
+
 import { Item } from "../models/ItemModel.js"
 import { StorageConn } from "../models/StorageConnModel.js"
 
 import { updateUser, createUser, disableUser, enableUser, deleteAdminRole, addAdminRole, getUser } from "../services/auth/User.service.js"
-import { authMiddle, checkPassword, checkRequiredFields, genPassword, sendEmail, firstLoginFalse, validateAdmin } from "../services/auth/utilFunctions.utils.js"
-
+import { authMiddle, checkPassword, checkRequiredFields, genPassword, sendEmail, firstLoginFalse, validateAdmin, validatePassword } from "../services/auth/utilFunctions.utils.js"
 import { getLogs, createExcel } from "../services/log/ExcelLog.service.js"
 import { createLogs } from "../services/log/Logs.service.js"
-
 import { getItem, createItem, deleteItem } from "../services/storage/Item.service.js"
 import { getItemNames, createItemName, deleteItemName } from "../services/storage/ItemName.service.js"
 import { getPlaces, createPlace, deletePlace } from "../services/storage/Storage.service.js"
 import { storeItem , deleteStoredItem, updateStoredItem } from "../services/storage/StorageConn.service.js";
 
-import { Router } from "express"
-import pkg from 'jsonwebtoken';
-const { sign } = pkg;
-const router = Router()
 
 
 /**
@@ -721,11 +721,20 @@ router.post('/register', authMiddle, validateAdmin, async (req, res) => {
  *       200:
  *         description: Password changed
  * */
-router.put("/firstLogin", authMiddle, 
+router.put("/firstLogin", authMiddle,  [
+    body("userPassword")
+        .isLength({ min: 8 })
+        .withMessage("Password must be at least 8 characters long"),
+], 
     async function(req, res, next){
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
+        }
         try{
             const user = await firstLoginFalse(req)
             const {userPassword} = req.body
+            await validatePassword(userPassword)
 
             res.status(200).json(await updateUser(user.userEmail, userPassword))
         }
@@ -760,7 +769,7 @@ router.put("/passwordChange",
     async function(req, res, next){
         try{
         const {userEmail} = req.body
-        const newPassword = await genPassword() 
+        const newPassword = await genPassword(8) 
 
         await sendEmail(userEmail, 'Jelszó', `Jelszó: ${String(newPassword)}`, `Jelszó: ${String(newPassword)}`)
         res.status(200).json(await updateUser(userEmail, newPassword))  
