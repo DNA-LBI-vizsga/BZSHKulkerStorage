@@ -8,19 +8,15 @@ import { PasswordChangeComponent } from './components/password-change/password-c
 import { adminGuard } from './guards/admin.guard';
 import { firstLoginGuard } from './guards/first-login.guard';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
-import { ListComponent } from './components/list/list.component';
 
 const routes: Routes = [
   {path: 'login', component: LoginComponent},
   {path: 'passwordchange', component: PasswordChangeComponent, canActivate: [authGuard]},
-  {path:'navbar', component: NavbarComponent, canActivate: [authGuard, firstLoginGuard], 
-    children: [
-      {path: 'users', component: UserControlComponent, canActivate: [authGuard,adminGuard]},
-      {path: 'dashboard' , component: DashboardComponent, canActivate: [authGuard]},
-      {path: 'list', component: ListComponent, canActivate: [authGuard]}
-    ]
-  },
-  {path: '', redirectTo: 'login', pathMatch: 'full'}
+  //{path:'navbar', component: NavbarComponent, canActivate: [authGuard, firstLoginGuard]},
+  {path: 'users', component: UserControlComponent, canActivate: [authGuard,adminGuard, firstLoginGuard]},
+  {path: 'dashboard' , component: DashboardComponent, canActivate: [authGuard, firstLoginGuard]},
+  {path: '**', redirectTo: 'login', pathMatch: 'full'},
+  
 ];
 
 @NgModule({

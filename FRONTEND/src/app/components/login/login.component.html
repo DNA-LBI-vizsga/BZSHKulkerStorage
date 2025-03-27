@@ -35,16 +35,26 @@
   
         <div class="form-group mt-3">
           <label for="userPassword">Jelszó</label>
-          <input
-            type="password"
-            class="form-control"
-            id="userPassword"
-            [(ngModel)]="userPassword"
-            name="userPassword"
-            required
-            #userPasswordInput="ngModel"
-            placeholder="Jelszó"
-          />
+          <div class="input-group">
+            <input
+              [type]="showPassword ? 'text' : 'password'"
+              class="form-control"
+              id="userPassword"
+              [(ngModel)]="userPassword"
+              name="userPassword"
+              required
+              #userPasswordInput="ngModel"
+              placeholder="Jelszó"
+            />
+            <button
+              type="button"
+              class="btn btn-outline-secondary"
+              (click)="togglePasswordVisibility()"
+              tabindex="-1"
+            >
+              <i [ngClass]="showPassword ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
+            </button>
+          </div>
           <div *ngIf="userPasswordInput.invalid && userPasswordInput.touched" class="text-danger mt-1">
             Jelszó megadása kötelező.
           </div>
@@ -74,7 +84,7 @@
               type="button" 
               class="btn btn-primary" 
               data-bs-dismiss="modal" 
-              (click)="passwordChange(userEmail)" 
+              (click)="passwordChange()" 
               [disabled]="!userEmail || userEmail.trim() === ''"
             >
               Küldés

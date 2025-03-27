@@ -1,21 +1,27 @@
-import { Injectable } from '@angular/core';
-import { CanActivate, Router } from '@angular/router';
-import { BaseService } from '../services/base.service';
+import { inject} from '@angular/core';
+import { CanActivateFn, Router } from '@angular/router';
 
-@Injectable({
-  providedIn: 'root'
-})
-export class authGuard implements CanActivate {
+export const authGuard: CanActivateFn = (route, state) => {
+  const router = inject(Router);
 
-  constructor(private baseService: BaseService, private router: Router) { }
-
-  canActivate(): boolean {
-    const token = localStorage.getItem('authToken')
+    const token = localStorage.getItem('authToken');
     if (token) {
-      return true;
-    } else {
-      this.router.navigate(['/login']);
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      if (payload.isDisabled==false) {
+        return true;
+      }
+      else {
+        router.navigate(['/login']);
+        return false;
+      }
+    } catch (e) {
+      console.error('Invalid token format', e);
+      router.navigate(['/login']);
       return false;
     }
+  } else {
+    router.navigate(['/login']);
+    return false;
   }
-}
+};

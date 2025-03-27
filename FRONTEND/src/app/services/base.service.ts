@@ -52,7 +52,7 @@ export class BaseService {
   }
 
   registerUser(userEmail: string, isAdmin: boolean): Observable<any> {
-    return this.http.post(`${this.apiUrl}/register`, { userEmail,  isAdmin });
+    return this.http.post(`${this.apiUrl}/register`, { userEmail,  isAdmin }, { headers: this.getAuthHeaders() });
   }
 
   // Storage place management

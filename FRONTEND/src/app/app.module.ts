@@ -13,7 +13,6 @@ import { CommonModule } from '@angular/common';
 import { PasswordChangeComponent } from './components/password-change/password-change.component';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
-import { ListComponent } from './components/list/list.component';
 
 @NgModule({
   declarations: [
@@ -22,8 +21,7 @@ import { ListComponent } from './components/list/list.component';
     LoginComponent,
     UserControlComponent,
     PasswordChangeComponent,
-    DashboardComponent,
-    ListComponent
+    DashboardComponent
   ],
   imports: [
     BrowserModule,

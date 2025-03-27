@@ -12,11 +12,18 @@ export class LoginComponent {
   userPassword: string = '';
   alertMessage: string = '';
   isError: boolean = false;
+  showPassword: boolean = false;
+  
 
   constructor(private baseService: BaseService, private router: Router) { }
 
   ngOnInit(): void {
     localStorage.removeItem('authToken');
+    localStorage.removeItem('userEmail');
+  }
+
+  togglePasswordVisibility(): void {
+    this.showPassword = !this.showPassword;
   }
 
   showMessage(msg: string, isError: boolean = false, duration: number = 3000): void {
@@ -34,7 +41,7 @@ export class LoginComponent {
         if (response.token) {
           localStorage.setItem('userEmail',this.userEmail);
           localStorage.setItem('authToken',response.token);
-          this.router.navigate(['/navbar/dashboard']);
+          this.router.navigate(['/dashboard']);
           console.log('Logged in:', response);
           
         }
@@ -46,13 +53,13 @@ export class LoginComponent {
     );
   }
 
-  passwordChange(userEmail: string): void {
+  passwordChange(): void {
     this.baseService.passwordChange(this.userEmail).subscribe(
-      response => {
-        this.showMessage('Jelszó visszaállítási link elküldve az email címre!', false, 5000); // Success message
+      (response) => {
+        this.showMessage('Jelszó elküldve az email címre!', false, 5000); // Success message
         console.log('Password change:', response);
       },
-      error => {
+      (error) => {
         if (error.status == 500) {
           this.showMessage('Nem található felhasználó ilyen email címmel!', true, 5000); // Error message for no match
         } else {
@@ -62,6 +69,5 @@ export class LoginComponent {
       }
     );
   }
-
 
 }

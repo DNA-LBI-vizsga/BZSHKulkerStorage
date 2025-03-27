@@ -1,28 +1,19 @@
-  <nav class="navbar navbar-expand-lg">
-    <a class="navbar-brand ml-2">BZSH</a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNavDropdown">
-      <ul class="navbar-nav">
-        <li class="nav-item">
-          <a class="nav-link" href="#" routerLink="dashboard">CRUD</a>
-        </li>
-        <!-- <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            Termék kezelés
-          </a>
-          <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-            <a class="dropdown-item" routerLink="dashboard">CRUD</a>
-            <a class="dropdown-item" routerLink="list">Listázás</a>
-          </div>
-        </li> -->
-        <li class="nav-item" *ngIf="isAdmin()">
-          <a class="nav-link" href="#" routerLink="users">Felhasználók</a>
-        </li>
-          <button class="btn btn-danger btn-sm ml-2" (click)="logoutUser()">Logout</button>
-      </ul>
-    </div>
-  </nav>
-
-  <router-outlet></router-outlet>
+  <ng-container *ngIf="checkAuth()">
+    <nav class="navbar navbar-expand-lg">
+      <a class="navbar-brand ml-2">BZSH</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNavDropdown">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link" href="#" routerLink="dashboard">Termékek</a>
+          </li>
+          <li class="nav-item" *ngIf="isAdmin()">
+            <a class="nav-link" href="#" routerLink="users">Felhasználók</a>
+          </li>
+            <button class="btn btn-danger ml-2" (click)="logoutUser()"><i class="bi bi-box-arrow-right"></i></button>
+        </ul>
+      </div>
+    </nav>
+  </ng-container>

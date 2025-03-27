@@ -60,6 +60,9 @@ export class DashboardComponent implements OnInit {
   newStoragePlace: any;
   newItemName: any;
 
+  selectedItemNames: number[] = [];
+  selectedStoragePlaces: number[] = [];
+
   // Constructor
   constructor(private baseService: BaseService) {}
 
@@ -70,19 +73,85 @@ export class DashboardComponent implements OnInit {
     this.loadItems();
   }
 
+  deselectAllFilters(): void {
+    this.selectedItemNames = [];
+    this.selectedStoragePlaces = [];
+  }
+
+  // Deselect all item names
+deselectItemNames(): void {
+  this.selectedItemNames = [];
+}
+
+// Deselect all storage places
+deselectStoragePlaces(): void {
+  this.selectedStoragePlaces = [];
+}
+  
+  // Toggle "Select All" for item names
+  toggleSelectAllItems(event: Event): void {
+    const checkbox = event.target as HTMLInputElement;
+    if (checkbox.checked) {
+      this.selectedItemNames = this.itemNames.map(item => item.id); // Select all item IDs
+    } else {
+      this.selectedItemNames = []; // Deselect all
+    }
+  }
+  
+  // Toggle "Select All" for storage places
+  toggleSelectAllStoragePlaces(event: Event): void {
+    const checkbox = event.target as HTMLInputElement;
+    if (checkbox.checked) {
+      this.selectedStoragePlaces = this.storagePlaces.map(place => place.id); // Select all storage place IDs
+    } else {
+      this.selectedStoragePlaces = []; // Deselect all
+    }
+  }
+
   applyFilter(): void {
+    this.applyCombinedFilters();
+  }
+
+  applyTableFilters(): void {
+    this.applyCombinedFilters();
+  }
+
+  applyCombinedFilters(): void {
     const lowerCaseFilter = this.filterText.toLowerCase();
+  
     this.filteredItems = this.items.filter(item => {
-      const itemName = this.getItemName(item.itemNameId).toLowerCase();
-      const storagePlace = this.getStoragePlaceById(item.storagePlaceId).toLowerCase();
-      return (
+      // Search bar filter
+      const matchesSearchBar =
         item.productCode.toLowerCase().includes(lowerCaseFilter) ||
-        itemName.includes(lowerCaseFilter) ||
-        storagePlace.includes(lowerCaseFilter)
-      );
+        this.getItemName(item.itemNameId).toLowerCase().includes(lowerCaseFilter) ||
+        this.getStoragePlaceById(item.storagePlaceId).toLowerCase().includes(lowerCaseFilter);
+  
+      // Modal filters
+      const matchesItemName =
+        this.selectedItemNames.length === 0 || this.selectedItemNames.includes(item.itemNameId);
+      const matchesStoragePlace =
+        this.selectedStoragePlaces.length === 0 || this.selectedStoragePlaces.includes(item.storagePlaceId);
+  
+      // Combine all filters
+      return matchesSearchBar && matchesItemName && matchesStoragePlace;
     });
+  
     this.currentPage = 1; // Reset to the first page after filtering
   }
+
+  // applyFilter(): void {
+  //   const lowerCaseFilter = this.filterText.toLowerCase();
+  //   this.filteredItems = this.items.filter(item => {
+  //     const itemName = this.getItemName(item.itemNameId).toLowerCase();
+  //     const storagePlace = this.getStoragePlaceById(item.storagePlaceId).toLowerCase();
+  //     return (
+  //       item.productCode.toLowerCase().includes(lowerCaseFilter) ||
+  //       itemName.includes(lowerCaseFilter) ||
+  //       storagePlace.includes(lowerCaseFilter)
+  //     );
+  //   });
+  //   this.currentPage = 1; // Reset to the first page after filtering
+  // }
 
   // Pagination Methods
   get paginatedItems(): any[] {
@@ -125,9 +194,10 @@ export class DashboardComponent implements OnInit {
   //   this.selectedStoragePlace = placeId;
   // }
 
-  loadStoragePlaces(): void {
+  loadStoragePlaces() : void{
     this.baseService.getStoragePlaces().subscribe(data => {
       this.storagePlaces = data;
+      console.log("Storage Places: ", this.storagePlaces);
     });
   }
 
@@ -151,6 +221,7 @@ export class DashboardComponent implements OnInit {
   loadItemNames(): void {
     this.baseService.getItemNames().subscribe(data => {
       this.itemNames = data;
+      console.log("Item Names: ", this.itemNames);
     });
   }
 
@@ -177,20 +248,20 @@ export class DashboardComponent implements OnInit {
     });
 }
 
-  loadItems(): void {
-    if (this.itemNames.length === 0) {
-      this.loadItemNames(); // Load item names if not already loaded
-    }
-
-    this.baseService.getItems().subscribe((data: Item[]) => {
-      this.items = data.map((item: Item) => ({
-        ...item,
-        productCode: `BZSH-${this.getItemName(item.itemNameId)}-${item.id}`
-      })).sort((a,b)=>a.id-b.id);
-      console.log(this.items);
-      this.filteredItems = [...this.items];
-    });
+loadItems(): void {
+  if (this.itemNames.length === 0) {
+    this.loadItemNames(); // Load item names if not already loaded
   }
+
+  this.baseService.getItems().subscribe((data: Item[]) => {
+    this.items = data.map((item: Item) => ({
+      ...item,
+      productCode: `BZSH-${this.getItemName(item.itemNameId)}-${item.id}`
+    })).sort((a,b)=>a.id-b.id);
+    console.log(this.items);
+    this.filteredItems = [...this.items];
+  });
+}
 
   // Utility Methods
   getItemName(itemNameId: number): string {
@@ -239,6 +310,7 @@ export class DashboardComponent implements OnInit {
   clearSelection(): void {
     this.selectedItemIds = [];
     this.selectedStoragePlaceIds = [];
+    this.isChecked = false;
     this.resetSelectAllCheckbox();
   }
 
@@ -259,10 +331,17 @@ export class DashboardComponent implements OnInit {
     console.log(this.selectedItemIds);
   }
 
-  toggleSelectAll(event: Event): void {
-    const checkbox = event.target as HTMLInputElement;
+  isChecked : boolean = false;
+
+  toggleSelectAll()
+  {
+    this.isChecked = !this.isChecked;
+    this.selectAll();
+  }
+
+  selectAll(): void {
     const toggleCheckboxes = document.querySelectorAll('.form-check-input[type="checkbox"]') as NodeListOf<HTMLInputElement>;
-    if (checkbox.checked) {
+    if (this.isChecked == true) {
       const currentPageIds = this.paginatedItems.map(item => item.id);
       this.selectedItemIds = Array.from(new Set([...this.selectedItemIds, ...currentPageIds]));
       toggleCheckboxes.forEach(cb => cb.checked = true);

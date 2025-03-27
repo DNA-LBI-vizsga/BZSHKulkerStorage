@@ -15,6 +15,8 @@ export class UserControlComponent implements OnInit{
   successMessage: string = '';
 
   users: any[] = [];
+  filteredUsers: any[] = [];
+  filterText: string = '';
   currentUser: string = '';
 
   alertMessage: string | null = null;
@@ -23,8 +25,14 @@ export class UserControlComponent implements OnInit{
   constructor(private baseService: BaseService, private router: Router){ }
 
   ngOnInit(): void {
-    this.loadUsers();
     this.currentUser = localStorage.getItem('userEmail') || '';
+    this.loadUsers();
+  }
+
+  applyFilter(): void{
+    this.filteredUsers = this.users.filter(user =>
+      user.userEmail.toLowerCase().includes(this.filterText.toLowerCase())
+    );
   }
 
   showMessage(msg: string, isError: boolean = false, duration: number = 3000): void {
@@ -56,7 +64,15 @@ export class UserControlComponent implements OnInit{
   loadUsers(): void {
     this.baseService.getUsers().subscribe( data => {
       this.users = data;
-      console.log('Users:', data);
+      this.filteredUsers = this.users;
+
+      this.filteredUsers.sort((a, b) => {
+        if (a.userEmail == this.currentUser) return -1; // Current user comes first
+        if (b.userEmail == this.currentUser) return 1;
+        if (a.isAdmin && !b.isAdmin) return -1; // Admins come next
+        if (!a.isAdmin && b.isAdmin) return 1;
+        return a.userEmail.localeCompare(b.userEmail); // Sort alphabetically for others
+      });
     });
   }
 

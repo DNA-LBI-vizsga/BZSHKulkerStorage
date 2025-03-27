@@ -8,7 +8,23 @@ import { Router } from '@angular/router';
   styleUrl: './navbar.component.css'
 })
 export class NavbarComponent {
+
+  isAuthenticated: boolean = false;
+
   constructor(private baseService: BaseService, private router: Router) { }
+
+  ngOnInit(): void {
+    this.checkAuth();
+  }
+
+  checkAuth(): boolean {
+    const token = localStorage.getItem('authToken');
+    const payload = token ? JSON.parse(atob(token.split('.')[1])) : null;
+    if (token && payload && payload.isDisabled == false && payload.isFirstLogin == false) {
+      return true;
+    }
+    return false;
+  }
 
   isAdmin(): boolean {
     const token = localStorage.getItem('authToken');
@@ -20,8 +36,9 @@ export class NavbarComponent {
   }
 
   logoutUser(): void {
-    localStorage.removeItem('authToken'); // Remove the token from local storage
-    this.router.navigate(['/login']); // Redirect to the login page
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('userEmail');
+    this.router.navigate(['/login']);
     console.log('Logged out');
   }
 }
