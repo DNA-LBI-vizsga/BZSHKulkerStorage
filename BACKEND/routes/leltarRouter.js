@@ -6,6 +6,7 @@ const router = Router()
 
 import { Item } from "../models/ItemModel.js"
 import { StorageConn } from "../models/StorageConnModel.js"
+import { User } from "../models/UserModel.js"
 
 import { updateUser, createUser, disableUser, enableUser, deleteAdminRole, addAdminRole, getUser } from "../services/auth/User.service.js"
 import { authMiddle, checkPassword, checkRequiredFields, genPassword, sendEmail, firstLoginFalse, validateAdmin, validatePassword } from "../services/auth/utilFunctions.utils.js"
@@ -528,7 +529,9 @@ router.patch('/disable', authMiddle, validateAdmin, async (req, res) => {
 router.patch('/enable', authMiddle, validateAdmin, async (req, res) => {
     try {
         const { userEmail } = req.body;
-
+        const user = await User.findOne({ where: { userEmail: userEmail } });
+        user.set({ failedLoginAttempts: 0}) 
+        user.save()
         await checkRequiredFields(userEmail, res);
 
         return res.status(200).json(enableUser(userEmail));
@@ -640,16 +643,39 @@ router.post('/login', async (req, res) => {
             return res.status(400).json({ message: "Missing name or password" });
         }
         
-        const user = await checkPassword(userEmail, userPassword);
-
+        const user = await User.findOne({ where : { userEmail: userEmail } });
+        
         if (!user) {
             return res.status(401).json({ message: "Invalid credentials" });
-        }else{
-            const token = sign({ id: user.id, isAdmin: user.isAdmin, isDisabled: user.isDisabled, isFirstLogin: user.isFirstLogin }, process.env.SECRET_KEY, { expiresIn: "4h" });
-
-            return res.status(200).json({token, message: "Login successful" });
         }
-    } catch (error) {
+        if (user.isDisabled) {
+            return res.status(403).json({ message: "Account is disabled due to multiple failed login attempts." });
+        }
+
+        const isValidPassword = await checkPassword(userEmail, userPassword);
+        if (!isValidPassword) {
+            user.failedLoginAttempts += 1;
+
+            if (user.failedLoginAttempts >= 3) {
+                user.isDisabled = true;
+                await user.save();
+                return res.status(403).json({ message: "Account is disabled due to multiple failed login attempts." });
+            }
+
+            await user.save();
+            return res.status(401).json({ message: "Invalid credentials" });
+        }
+        user.failedLoginAttempts = 0;
+        await user.save();
+        
+        const token = sign(
+            { id: user.id, isAdmin: user.isAdmin, isDisabled: user.isDisabled, isFirstLogin: user.isFirstLogin },
+            process.env.SECRET_KEY,
+            { expiresIn: "4h" }
+
+        );return res.status(200).json({token, message: "Login successful" });
+        
+    }catch (error) {
         return res.status(500).json({ message: error.message });
     }
 });
@@ -683,7 +709,7 @@ router.post('/login', async (req, res) => {
  */
 router.post('/register', authMiddle, validateAdmin, async (req, res) => {
     try {
-        const userPassword = await genPassword() 
+        const userPassword = await genPassword(8) 
         const { userEmail, isAdmin } = req.body
         
         if (!userEmail || userEmail==""|| isAdmin==null) {
