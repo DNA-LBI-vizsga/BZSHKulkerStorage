@@ -109,7 +109,9 @@ async function authMiddle(req, res, next) {
     const authHead = req.headers['authorization'];
     const payload = await tokenChecker(authHead, res);
 
-    if (!payload) return;
+    if (!payload) {
+        return res.status(401).json({ message: "Auth header missing or invalid" });
+    }
 
     req.user = payload; 
     next();

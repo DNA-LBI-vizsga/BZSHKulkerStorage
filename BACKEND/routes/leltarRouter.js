@@ -17,13 +17,6 @@ import pkg from 'jsonwebtoken';
 const { sign } = pkg;
 const router = Router()
 
-//Middleware skipping login and for development purposes register and password change 
-router.use((req, res, next) => {
-    if (req.path === '/login' || req.path ==='/register' || req.path ==='/passwordChange') {
-        return next(); 
-    }
-    return authMiddle(req, res, next);
-});
 
 /**
  * @swagger
@@ -52,7 +45,7 @@ router.use((req, res, next) => {
  *                     type: string
  *                     description: The name of the storage place.
  */
-router.get("/storagePlace", 
+router.get("/storagePlace", authMiddle,
     async function(req, res, next){
         try{
             res.status(200).json(await getPlaces())
@@ -87,7 +80,7 @@ router.get("/storagePlace",
  *         description: Storage place created successfully.
  *    
  */
-router.post("/storagePlace", validateAdmin,
+router.post("/storagePlace", authMiddle, validateAdmin,
     async function(req, res, next){
         try{
             const {storage} = req.body
@@ -120,7 +113,7 @@ router.post("/storagePlace", validateAdmin,
  *       200:
  *         description: Storage place deleted successfully.
  */
-router.delete("/storagePlace/:id", validateAdmin,
+router.delete("/storagePlace/:id", authMiddle, validateAdmin,
     async function(req, res, next){
         try{
             const {id} = req.params
@@ -160,7 +153,7 @@ router.delete("/storagePlace/:id", validateAdmin,
  *                     type: string
  *                     description: The name of the item.
  */
-router.get("/itemName", 
+router.get("/itemName", authMiddle, 
     async function(req, res, next){
         try{
             res.status(200).json(await getItemNames())
@@ -195,7 +188,7 @@ router.get("/itemName",
  *       201:
  *         description: Item name created successfully.
  */
-router.post("/itemName", validateAdmin, 
+router.post("/itemName", authMiddle, validateAdmin, 
     async function(req, res, next){
         try{
             const {item} = req.body
@@ -229,7 +222,7 @@ router.post("/itemName", validateAdmin,
  *         description: Item name deleted successfully.
  * 
  */
-router.delete("/itemName/:id", validateAdmin,
+router.delete("/itemName/:id", authMiddle, validateAdmin,
     async function(req, res, next){
         try{
             const {id} = req.params
@@ -250,6 +243,8 @@ router.delete("/itemName/:id", validateAdmin,
  *      - Item Management
  *     summary: Retrieve all items
  *     description: Fetches a list of all items from the database.
+ *     security:
+ *      - bearerAuth: [] # Authentication requirement
  *     responses:
  *       200:
  *         description: A list of items.
@@ -271,7 +266,7 @@ router.delete("/itemName/:id", validateAdmin,
  *                     description: The ID of the storage place where the item is stored.
  * 
  */
-router.get("/item", 
+router.get("/item", authMiddle,
     async function(req, res, next){
         try{
             res.status(200).json(await getItem())
@@ -289,6 +284,8 @@ router.get("/item",
  *      - Item Management
  *     summary: Create a new item    
  *     description: Adds a new item to the database.
+ *     security:
+ *      - bearerAuth: [] # Authentication requirement
  *     requestBody:
  *       required: true
  *       content:
@@ -309,7 +306,7 @@ router.get("/item",
  *       201:
  *         description: Item created successfully.
  */
-router.post("/item", 
+router.post("/item", authMiddle,
     async function(req, res, next){
         try{
             const httpMethod = req.method
@@ -347,6 +344,8 @@ router.post("/item",
  *      - Item Management
  *     summary: Move items to another storage place
  *     description: Moves items to another storage place.
+ *     security:
+ *      - bearerAuth: [] # Authentication requirement
  *     requestBody:
  *       required: true
  *       content:
@@ -365,7 +364,7 @@ router.post("/item",
  *       200:
  *         description: Items moved successfully.
  */
-router.put("/item", validateAdmin,
+router.put("/item", authMiddle, validateAdmin,
     async function (req, res, next) {
 
         try{
@@ -379,7 +378,6 @@ router.put("/item", validateAdmin,
                 itemId = itemIdList[i]
                 let item = await Item.findOne({where: {id:itemId}})
                 let storage = await StorageConn.findOne({where: {itemId:itemId}})
-                console.log(storage.storagePlaceId)
                 if(storage.storagePlaceId != newStoragePlaceId){
                     await createLogs(itemId, item.itemNameId, storage.storagePlaceId, createdBy, httpMethod)
                     await createLogs(itemId, item.itemNameId, newStoragePlaceId, createdBy, httpMethod)      
@@ -402,6 +400,8 @@ router.put("/item", validateAdmin,
  *      - Item Management
  *     summary: Delete items
  *     description: Deletes items from the database.
+ *     security:
+ *      - bearerAuth: [] # Authentication requirement
  *     requestBody:
  *       required: true
  *       content:
@@ -417,7 +417,7 @@ router.put("/item", validateAdmin,
  *       200:
  *         description: Items deleted successfully.
  */
-router.delete("/item", validateAdmin,
+router.delete("/item", authMiddle, validateAdmin,
     async function(req, res, next){
         try{
             const httpMethod = req.method
@@ -452,12 +452,14 @@ router.delete("/item", validateAdmin,
  *      - User Management
  *     summary: Get all users
  *     description: Retrieves a list of all users.
+ *     security:
+ *       - bearerAuth: [] # Authentication requirement
  *     responses:
  *       200:
  *         description: A list of users.
  */
 
-router.get('/users', validateAdmin, async (req, res) => {
+router.get('/users', authMiddle, validateAdmin, async (req, res) => {
     try {
         return res.status(200).json(await getUser());
     } catch (error) {
@@ -472,6 +474,8 @@ router.get('/users', validateAdmin, async (req, res) => {
  *      - User Management
  *     summary: Disable a user
  *     description: Disables a user.
+ *     security:
+ *       - bearerAuth: [] # Authentication requirement
  *     requestBody:
  *       required: true
  *       content:
@@ -486,7 +490,7 @@ router.get('/users', validateAdmin, async (req, res) => {
  *       200:
  *         description: User disabled successfully.
  */
-router.patch('/disable', validateAdmin, async (req, res) => {
+router.patch('/disable', authMiddle, validateAdmin, async (req, res) => {
     try {
         const { userEmail } = req.body;
 
@@ -505,6 +509,8 @@ router.patch('/disable', validateAdmin, async (req, res) => {
  *      - User Management
  *     summary: Enable a user
  *     description: Enables a user.
+ *     security:
+ *       - bearerAuth: [] # Authentication requirement
  *     requestBody:
  *       required: true
  *       content:
@@ -519,7 +525,7 @@ router.patch('/disable', validateAdmin, async (req, res) => {
  *       200:
  *         description: User enabled successfully.
  */
-router.patch('/enable', validateAdmin, async (req, res) => {
+router.patch('/enable', authMiddle, validateAdmin, async (req, res) => {
     try {
         const { userEmail } = req.body;
 
@@ -538,6 +544,8 @@ router.patch('/enable', validateAdmin, async (req, res) => {
  *      - User Management
  *     summary: Demote a user from admin
  *     description: Demotes a user from admin.
+ *     security:
+ *       - bearerAuth: [] # Authentication requirement
  *     requestBody:
  *       required: true
  *       content:
@@ -552,7 +560,7 @@ router.patch('/enable', validateAdmin, async (req, res) => {
  *       200:
  *         description: User demoted successfully.
  */
-router.patch('/demote', validateAdmin, async (req, res) => {
+router.patch('/demote', authMiddle, validateAdmin, async (req, res) => {
     try {
         const { userEmail } = req.body;
 
@@ -572,6 +580,8 @@ router.patch('/demote', validateAdmin, async (req, res) => {
  *      - User Management
  *     summary: Promote a user to admin
  *     description: Promotes a user to admin.
+ *     security:
+ *       - bearerAuth: [] # Authentication requirement
  *     requestBody:
  *       required: true
  *       content:
@@ -586,7 +596,7 @@ router.patch('/demote', validateAdmin, async (req, res) => {
  *       200:
  *         description: User promoted successfully.
  */
-router.patch('/promote', validateAdmin, async (req, res) => {
+router.patch('/promote', authMiddle, validateAdmin, async (req, res) => {
     try {
         const { userEmail } = req.body;
 
@@ -652,6 +662,8 @@ router.post('/login', async (req, res) => {
  *      - User Management
  *     summary: Register a new user
  *     description: Registers a new user in the database.
+ *     security:
+ *       - bearerAuth: [] # Authentication requirement
  *     requestBody:
  *       required: true
  *       content:
@@ -669,17 +681,17 @@ router.post('/login', async (req, res) => {
  *       201:
  *         description: User created successfully.
  */
-router.post('/register',   async (req, res) => {
+router.post('/register', authMiddle, validateAdmin, async (req, res) => {
     try {
-        //const userPassword = await genPassword() 
-        const { userEmail, userPassword,  isAdmin } = req.body
+        const userPassword = await genPassword() 
+        const { userEmail, isAdmin } = req.body
         
         if (!userEmail || userEmail==""|| isAdmin==null) {
             return res.status(400).json({ message: 'Missing required fields' })
         }
         const user = await createUser(userEmail, userPassword, isAdmin)
 
-        //await sendEmail(userEmail, 'Jelszó', `Jelszó: ${String(userPassword)}`, `Jelszó: ${String(userPassword)}`)
+        await sendEmail(userEmail, 'Jelszó', `Jelszó: ${String(userPassword)}`, `Jelszó: ${String(userPassword)}`)
         return res.status(201).json({ message: `User created` })
     } catch (error) {
         return res.status(500).json({ message: error.message })
@@ -692,6 +704,9 @@ router.post('/register',   async (req, res) => {
  *     tags:
  *      - User Management
  *     summary: Change password on first login
+ *     description: Changes the password of a user on their first login.
+ *     security:
+ *       - bearerAuth: [] # Authentication requirement
  *     requestBody:
  *       required: true
  *       content:
@@ -706,7 +721,7 @@ router.post('/register',   async (req, res) => {
  *       200:
  *         description: Password changed
  * */
-router.put("/firstLogin", 
+router.put("/firstLogin", authMiddle, 
     async function(req, res, next){
         try{
             const user = await firstLoginFalse(req)
@@ -763,6 +778,8 @@ router.put("/passwordChange",
  *     tags:
  *       - Log Management
  *     summary: Get logs
+ *     security:
+ *       - bearerAuth: [] # Authentication requirement
  *     requestBody:
  *       required: true
  *       content:
@@ -791,7 +808,7 @@ router.put("/passwordChange",
  *         description: Logs fetched successfully
  */
 
-router.post('/log', validateAdmin, async (req, res) => {
+router.post('/log', authMiddle, validateAdmin, async (req, res) => {
     try {
 
         const data = await getLogs(req); 
