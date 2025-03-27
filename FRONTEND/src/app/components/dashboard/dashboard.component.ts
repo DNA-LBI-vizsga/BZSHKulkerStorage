@@ -156,7 +156,8 @@ deselectStoragePlaces(): void {
   // Pagination Methods
   get paginatedItems(): any[] {
     const startIndex = (this.currentPage - 1) * this.itemsPerPage;
-    const endIndex = startIndex + this.itemsPerPage;
+    const endIndex = startIndex + Number(this.itemsPerPage);
+    console.log(startIndex, endIndex, this.itemsPerPage);
     return this.filteredItems.slice(startIndex, endIndex);
     // return this.filteredItems.filter(item => item.storagePlaceId == this.selectedStoragePlace).slice(startIndex, endIndex);
   }

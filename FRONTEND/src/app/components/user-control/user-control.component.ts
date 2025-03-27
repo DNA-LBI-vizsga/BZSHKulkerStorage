@@ -51,6 +51,7 @@ export class UserControlComponent implements OnInit{
         response => {
           this.showMessage('Email kiküldve!', false, 5000);
           console.log('User registered:', response);
+          this.userEmail = '';
           this.loadUsers();
         },
         error => {
