@@ -96,7 +96,7 @@
                   <button type="button" class="btn btn-grey btn-sm mr-2" data-bs-toggle="modal" data-bs-target="#addItemModal">Hozzáadás</button>
                   <ng-container *ngIf="isAdmin()">
                   <button type="button" class="btn btn-grey btn-sm mr-2" data-bs-toggle="modal" data-bs-target="#filterModal">Szűrés</button>
-                  <button type="button" class="btn btn-grey btn-sm mr-2" [disabled]="selectedItemIds.length === 0" (click)="deleteItem(selectedItemIds)">Törlés</button>
+                  <button type="button" class="btn btn-grey btn-sm mr-2" [disabled]="selectedItemIds.length === 0" data-bs-toggle="modal" data-bs-target="#deleteConfirmationModal">Törlés</button>
                   <button type="button" class="btn btn-grey btn-sm mr-2" [disabled]="selectedItemIds.length === 0" data-bs-toggle="modal" data-bs-target="#updateModal">Áthelyezés</button>
                   <button type="button" class="btn btn-grey btn-sm mr-2" data-bs-toggle="modal" data-bs-target="#downloadLogModal">Műveleti Napló</button>
                   <button type="button" class="btn btn-grey btn-sm" data-bs-toggle="modal" data-bs-target="#downloadTagModal">Cimke Letöltés</button>
@@ -187,8 +187,27 @@
           </div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Mégse</button>
-          <button type="button" class="btn btn-primary" (click)="createItem()" data-bs-dismiss="modal">Hozzáadás</button>
+          <button type="button" class="btn btn-grey" data-bs-dismiss="modal">Mégse</button>
+          <button type="button" class="btn btn-grey" (click)="createItem()" data-bs-dismiss="modal">Hozzáadás</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div class="modal fade" id="deleteConfirmationModal" tabindex="-1" role="dialog" aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="deleteConfirmationModalLabel">Megerősítés</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          Biztosan törölni szeretné a kijelölt elemeket?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-grey" data-bs-dismiss="modal">Mégse</button>
+          <button type="button" class="btn btn-grey" (click)="deleteItem(selectedItemIds)" data-bs-dismiss="modal">Törlés</button>
         </div>
       </div>
     </div>
@@ -279,8 +298,8 @@
           </div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-info" data-bs-dismiss="modal">Mégse</button>
-          <button type="button" class="btn btn-primary" data-bs-dismiss="modal" (click)="updateItem(selectedItemIds, newStoragePlaceId)">Áthelyezés</button>
+          <button type="button" class="btn btn-grey" data-bs-dismiss="modal">Mégse</button>
+          <button type="button" class="btn btn-grey" data-bs-dismiss="modal" (click)="updateItem(selectedItemIds, newStoragePlaceId)">Áthelyezés</button>
         </div>
       </div>
     </div>
@@ -303,8 +322,8 @@
         </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Mégse</button>
-        <button type="button" class="btn btn-primary" (click)="downloadTags()" data-bs-dismiss="modal">Letöltés</button>
+        <button type="button" class="btn btn-grey" data-bs-dismiss="modal">Mégse</button>
+        <button type="button" class="btn btn-grey" (click)="downloadTags()" data-bs-dismiss="modal">Letöltés</button>
       </div>
     </div>
   </div>
@@ -348,9 +367,9 @@
         </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Mégse</button>
-        <button type="button" class="btn btn-warning" (click)="resetFilters()">Szűrők Törlése</button>
-        <button type="button" class="btn btn-primary" (click)="downloadLogs()" data-bs-dismiss="modal">Letöltés</button>
+        <button type="button" class="btn btn-grey" data-bs-dismiss="modal">Mégse</button>
+        <button type="button" class="btn btn-grey" (click)="resetFilters()">Szűrők Törlése</button>
+        <button type="button" class="btn btn-grey" (click)="downloadLogs()" data-bs-dismiss="modal">Letöltés</button>
       </div>
     </div>
   </div>

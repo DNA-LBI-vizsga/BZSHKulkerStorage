@@ -93,6 +93,8 @@ export class DashboardComponent implements OnInit {
       const workbook = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(workbook, worksheet, "Termékek");
       XLSX.writeFile(workbook, `${this.fileName}.xlsx`);
+
+      this.fileName = '';
     }
 
 
@@ -343,7 +345,6 @@ loadItems(): void {
   }
 
   deleteItem(itemIdList: number[]): void {
-    console.log(itemIdList);
     this.baseService.deleteItem(itemIdList).subscribe(() => {
       this.loadItemNames();
       this.loadItems();
