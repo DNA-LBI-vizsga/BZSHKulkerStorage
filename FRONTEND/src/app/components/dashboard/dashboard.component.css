@@ -64,16 +64,13 @@ h2, h3, h4 {
   flex-wrap: wrap;
 }
 
-.col-md-6, .col-lg-4 {
-  padding: 15px;
-}
-
 .table {
   width: 100%;
-  margin-top: 20px;
+  margin-top: 10px;
   border-collapse: separate;
   border: 5px solid #a2c2e2;
   border-radius: 8px;
+  table-layout: fixed;
 }
 
 .table th, .table td {
@@ -87,12 +84,24 @@ h2, h3, h4 {
   font-weight: bold;
 }
 
-.table tbody tr:hover {
-  background-color: #f1f1f1;
-}
-
 .table-bordered th, .table-bordered td {
   border: 1px solid #dee2e6;
+}
+
+.table th:nth-child(1), .table td:nth-child(1) {
+  width: 40%; /* Adjust width for the first column */
+}
+
+.table th:nth-child(2), .table td:nth-child(2) {
+  width: 25%; /* Adjust width for the first column */
+}
+
+.table th:nth-child(3), .table td:nth-child(3) {
+  width: 20%; /* Adjust width for the first column */
+}
+
+.table th:nth-child(4), .table td:nth-child(4) {
+  width: 15%; /* Adjust width for the first column */
 }
 
 .alert-message{

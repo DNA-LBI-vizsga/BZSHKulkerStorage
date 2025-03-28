@@ -47,7 +47,12 @@ export class LoginComponent {
         }
       },
       error => {
-        this.showMessage('Hibás email vagy jelszó!', true, 5000);
+        if(error.status == 403) {
+          this.showMessage('A felhasználó letiltva! Keressen fel egy rendszergazdát!', true, 5000);
+        }
+        else {
+          this.showMessage('Hibás email vagy jelszó!', true, 5000);
+        }
         console.error('Error logging in:', error);
       }
     );
@@ -55,11 +60,11 @@ export class LoginComponent {
 
   passwordChange(): void {
     this.baseService.passwordChange(this.userEmail).subscribe(
-      (response) => {
+      response => {
         this.showMessage('Jelszó elküldve az email címre!', false, 5000); // Success message
         console.log('Password change:', response);
       },
-      (error) => {
+      error => {
         if (error.status == 500) {
           this.showMessage('Nem található felhasználó ilyen email címmel!', true, 5000); // Error message for no match
         } else {

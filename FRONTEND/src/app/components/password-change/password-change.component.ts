@@ -38,12 +38,16 @@ export class PasswordChangeComponent {
         this.router.navigate(['/login']);
       },
       error => {
+        if(error.status == 400) {
+          this.showMessage('A jelszó formátuma nem megfelelő!', true, 5000);
+        }
+        else {
         this.showMessage('Hiba a jelszó megváltoztatásakor! Próbálja újra!', true, 5000);
+        }
         console.error('Error changing password:', error);
-      }
-    );
-  }
-  else{
+      });
+    }
+  else {
     this.showMessage('A beütött jelszavak nem egyeznek!', true, 5000);
     console.error('Passwords do not match');
   }

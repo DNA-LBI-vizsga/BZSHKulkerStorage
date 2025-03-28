@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { BaseService } from '../../services/base.service';
+import * as XLSX from 'xlsx';
 
 interface Item {
   id: number;
@@ -73,20 +74,80 @@ export class DashboardComponent implements OnInit {
     this.loadItems();
   }
 
+  fileName: string = '';
+
+  downloadTags(): void {
+    let selectedItemsData = null;
+    if (this.selectedItemIds.length > 0) {
+      selectedItemsData = this.items.filter(item => this.selectedItemIds.includes(item.id));
+    }
+    else {
+      selectedItemsData = this.filteredItems;
+    }
+    const dataForExport = selectedItemsData.map(item => ({
+      'Termék kód': `BZSH-${this.getItemName(item.itemNameId)}-${item.id}`,
+      'Termék név': this.getItemName(item.itemNameId),
+      'Raktár hely': this.getStoragePlaceById(item.storagePlaceId)}));
+
+      const worksheet = XLSX.utils.json_to_sheet(dataForExport);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, worksheet, "Termékek");
+      XLSX.writeFile(workbook, `${this.fileName}.xlsx`);
+    }
+
+
+  currentSortColumn: string | null = null;
+  isAscending: boolean = true;
+
+  orderBy(column: string): void {
+    if (this.currentSortColumn === column) {
+      this.isAscending = !this.isAscending;
+    }
+    else {
+      this.currentSortColumn = column;
+      this.isAscending = true;
+    }
+
+    this.filteredItems.sort((a,b) => {
+      let valueA: string | number = "";
+      let valueB: string | number = "";
+
+      if (column == "id") {
+        valueA = a.id;
+        valueB = b.id;
+      }
+      else if (column == "itemName") {
+        valueA = this.getItemName(a.itemNameId).toLowerCase();
+        valueB = this.getItemName(b.itemNameId).toLowerCase();
+      }
+      else if (column == "storagePlace") {
+        valueA = this.getStoragePlaceById(a.storagePlaceId).toLowerCase();
+        valueB = this.getStoragePlaceById(b.storagePlaceId).toLowerCase();
+      }
+
+      if (this.isAscending) {
+        return valueA > valueB ? 1 : -1;
+      }
+      else {
+        return valueA < valueB ? 1 : -1;
+      }
+    });
+  }
+
   deselectAllFilters(): void {
     this.selectedItemNames = [];
     this.selectedStoragePlaces = [];
   }
 
   // Deselect all item names
-deselectItemNames(): void {
-  this.selectedItemNames = [];
-}
+  deselectItemNames(): void {
+    this.selectedItemNames = [];
+  }
 
 // Deselect all storage places
-deselectStoragePlaces(): void {
-  this.selectedStoragePlaces = [];
-}
+  deselectStoragePlaces(): void {
+    this.selectedStoragePlaces = [];
+  }
   
   // Toggle "Select All" for item names
   toggleSelectAllItems(event: Event): void {
@@ -157,18 +218,16 @@ deselectStoragePlaces(): void {
   get paginatedItems(): any[] {
     const startIndex = (this.currentPage - 1) * this.itemsPerPage;
     const endIndex = startIndex + Number(this.itemsPerPage);
-    console.log(startIndex, endIndex, this.itemsPerPage);
+    // console.log(startIndex, endIndex, this.itemsPerPage);
     return this.filteredItems.slice(startIndex, endIndex);
-    // return this.filteredItems.filter(item => item.storagePlaceId == this.selectedStoragePlace).slice(startIndex, endIndex);
   }
 
   get totalPages(): number {
-    // const allItems = this.filteredItems.filter(item => item.storagePlaceId == this.selectedStoragePlace);
     return Math.ceil(this.filteredItems.length / this.itemsPerPage);
   }
 
   updatePagination(): void {
-    this.currentPage = 1; // Reset to the first page when itemsPerPage changes
+    this.currentPage = 1;
   }
 
   nextPage(): void {
@@ -189,11 +248,6 @@ deselectStoragePlaces(): void {
     const storagePlace = this.storagePlaces.find(place => place.id == storagePlaceId);
     return storagePlace ? storagePlace.storage : 'Unknown';
   }
-
-  // Data Loading Methods
-  // selectStoragePlace(placeId: number): void {
-  //   this.selectedStoragePlace = placeId;
-  // }
 
   loadStoragePlaces() : void{
     this.baseService.getStoragePlaces().subscribe(data => {

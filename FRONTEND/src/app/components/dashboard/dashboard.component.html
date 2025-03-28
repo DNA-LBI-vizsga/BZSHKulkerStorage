@@ -39,21 +39,30 @@
 
     <!-- Items Display -->
       <div class="row" [ngClass]="{'justify-content-center': isAdmin()==false}">
-        <div class="col-lg-8">
-            <table class="table table-bordered table-hover-responsive">
+        <div class="col">
+            <table class="table table-bordered table-hover">
               <thead class="thead-light">
                 <tr>
-                  <th>Termék Kód</th>
-                  <th>Termék</th>
-                  <th>Tároló</th>
+                  <th (click)="orderBy('id')">
+                    Termék Kód
+                    <i class="bi" [ngClass]="currentSortColumn == 'id' ? (isAscending ? 'bi-arrow-down' : 'bi-arrow-up') : ''"></i>
+                  </th>
+                  <th (click)="orderBy('itemName')">
+                    Termék
+                    <i class="bi" [ngClass]="currentSortColumn == 'itemName' ? (isAscending ? 'bi-arrow-down' : 'bi-arrow-up') : ''"></i>
+                  </th>
+                  <th (click)="orderBy('storagePlace')">
+                    Tároló
+                    <i class="bi" [ngClass]="currentSortColumn == 'storagePlace' ? (isAscending ? 'bi-arrow-down' : 'bi-arrow-up') : ''"></i>
+                  </th>
                   <ng-container *ngIf="isAdmin()">
                     <th>
-                      <div class="form-check">
+                      <div class="form-check d-flex justify-content-center">
                         <input
                           type="checkbox"
-                          class="form-check-input"
+                          class="form-check-input mr-2"
                           (change)="toggleSelectAll()">
-                        <label class="form-check-label"><i class="bi bi-arrow-90deg-down mirror-horizontal"></i></label>
+                        <label class="form-check-label ml-1"><i class="bi bi-arrow-90deg-down mirror-horizontal "></i></label>
                       </div>
                     </th>
                   </ng-container>
@@ -82,14 +91,15 @@
               </tbody>
             </table>
           
-              <div class="row align-items-center">
-                <div class="col-lg ml-2">
+              <div class="row">
+                <div class="col">
                   <button type="button" class="btn btn-grey btn-sm mr-2" data-bs-toggle="modal" data-bs-target="#addItemModal">Hozzáadás</button>
                   <ng-container *ngIf="isAdmin()">
                   <button type="button" class="btn btn-grey btn-sm mr-2" data-bs-toggle="modal" data-bs-target="#filterModal">Szűrés</button>
                   <button type="button" class="btn btn-grey btn-sm mr-2" [disabled]="selectedItemIds.length === 0" (click)="deleteItem(selectedItemIds)">Törlés</button>
                   <button type="button" class="btn btn-grey btn-sm mr-2" [disabled]="selectedItemIds.length === 0" data-bs-toggle="modal" data-bs-target="#updateModal">Áthelyezés</button>
-                  <button type="button" class="btn btn-grey btn-sm" data-bs-toggle="modal" data-bs-target="#downloadModal">Műveleti Napló</button>
+                  <button type="button" class="btn btn-grey btn-sm mr-2" data-bs-toggle="modal" data-bs-target="#downloadLogModal">Műveleti Napló</button>
+                  <button type="button" class="btn btn-grey btn-sm" data-bs-toggle="modal" data-bs-target="#downloadTagModal">Cimke Letöltés</button>
                 </ng-container>
                 </div>
               </div>
@@ -111,7 +121,7 @@
               </button>
             </div>
           </div>
-        <div class="col-lg-4 col-md-12 mt-4 mt-lg-0" *ngIf="isAdmin()">
+        <div class="col-lg-4" *ngIf="isAdmin()">
           <div class="admin-tasks">
             <div class="row justify-content-center">
 
@@ -119,7 +129,7 @@
               <div class="col-12 storageControl mb-3">
                 <h3 class="text-center">Tárolók</h3>
                 <div class="input-group mb-3">
-                  <input [(ngModel)]="newStoragePlace" placeholder="Új Leltárhely Felvétele" class="form-control">
+                  <input [(ngModel)]="newStoragePlace" placeholder="Új Tároló Felvétele" class="form-control">
                   <button class="btn btn-grey" (click)="createStoragePlace()">Hozzáadás</button>
                 </div>
                 <div *ngFor="let storagePlace of storagePlaces" class="row my-1">
@@ -212,7 +222,7 @@
                 Kijelölések törlése
               </button>
             </div>
-            <select [(ngModel)]="selectedItemNames" class="form-control custom-select" multiple>
+            <select [(ngModel)]="selectedItemNames" class="form-select" multiple> 
               <option *ngFor="let itemName of itemNames" [value]="itemName.id">{{ itemName.item }}</option>
             </select>
           </div>
@@ -236,15 +246,15 @@
                 Kijelölések törlése
               </button>
             </div>
-            <select [(ngModel)]="selectedStoragePlaces" class="form-control custom-select" multiple>
+            <select [(ngModel)]="selectedStoragePlaces" class="form-select" multiple>
               <option *ngFor="let storagePlace of storagePlaces" [value]="storagePlace.id">{{ storagePlace.storage }}</option>
             </select>
           </div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Mégse</button>
-          <button type="button" class="btn btn-warning" (click)="deselectAllFilters()">Összes törlése</button>
-          <button type="button" class="btn btn-primary" data-bs-dismiss="modal" (click)="applyTableFilters()">Szűrés</button>
+          <button type="button" class="btn btn-grey" data-bs-dismiss="modal">Mégse</button>
+          <button type="button" class="btn btn-grey" (click)="deselectAllFilters()">Szűrők törlése</button>
+          <button type="button" class="btn btn-grey" data-bs-dismiss="modal" (click)="applyTableFilters()">Alkalmaz</button>
         </div>
       </div>
     </div>
@@ -278,12 +288,35 @@
 </div>
 
 
-<!-- Log Download Modal -->
-<div class="modal fade" id="downloadModal" tabindex="-1" role="dialog" aria-labelledby="downloadModalLabel" aria-hidden="true">
+<!-- Tag Download Modal -->
+<div class="modal fade" id="downloadTagModal" tabindex="-1" role="dialog" aria-labelledby="downloadTagModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="downloadModalLabel">Műveleti Napló Szűrők</h5>
+        <h5 class="modal-title" id="downloadTagModalLabel">Leltárcimke Letöltése</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="fileName"><strong>Fájl Név</strong></label>
+          <input [(ngModel)]="fileName" type="text" class="form-control">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Mégse</button>
+        <button type="button" class="btn btn-primary" (click)="downloadTags()" data-bs-dismiss="modal">Letöltés</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Log Download Modal -->
+<div class="modal fade" id="downloadLogModal" tabindex="-1" role="dialog" aria-labelledby="downloadLogModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="downloadLogModalLabel">Műveleti Napló Szűrők</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
