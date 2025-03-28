@@ -1,9 +1,6 @@
 <div class="container mt-5">
-  <div 
-    *ngIf="message" 
-    class="alert alert-dismissible fade show alert-message" 
-    [ngClass]="{'alert-danger': isError, 'alert-info': !isError}" 
-    role="alert">
+  <div *ngIf="message" class="alert alert-dismissible fade show alert-message"
+    [ngClass]="{'alert-danger': isError, 'alert-info': !isError}" role="alert">
     {{ message }}
   </div>
   <h2 class="text-center">Termékek Kezelése</h2>
@@ -14,144 +11,132 @@
       <!-- Filter Input -->
       <div class="form-group col-sm-4">
         <label for="filterInput" class="ml-1"><strong>Keresés:</strong></label>
-        <input 
-          type="text" 
-          id="filterInput" 
-          class="form-control form-control-sm filter-input" 
-          placeholder="Keresés termék kód, név vagy raktár alapján..." 
-          [(ngModel)]="filterText" 
-          (input)="applyFilter()"
-          >   
+        <input type="text" id="filterInput" class="form-control form-control-sm filter-input"
+          placeholder="Keresés termék kód, név vagy raktár alapján..." [(ngModel)]="filterText" (input)="applyFilter()">
       </div>
 
       <!-- Items per Page Select -->
       <div class="col-sm-4">
         <label for="itemsPerPageSelect" class=""><strong>Elemek száma oldalanként:</strong></label>
-        <select
-            id="itemsPerPageSelect"
-            class="form-select form-select-sm page-select"
-            [(ngModel)]="itemsPerPage"
-            (change)="updatePagination()">
-            <option *ngFor="let option of itemsPerPageOptions" [value]="option">{{ option }}</option>
+        <select id="itemsPerPageSelect" class="form-select form-select-sm page-select" [(ngModel)]="itemsPerPage"
+          (change)="updatePagination()">
+          <option *ngFor="let option of itemsPerPageOptions" [value]="option">{{ option }}</option>
         </select>
       </div>
     </div>
 
     <!-- Items Display -->
-      <div class="row" [ngClass]="{'justify-content-center': isAdmin()==false}">
-        <div class="col">
-            <table class="table table-bordered table-hover">
-              <thead class="thead-light">
-                <tr>
-                  <th (click)="orderBy('id')">
-                    Termék Kód
-                    <i class="bi" [ngClass]="currentSortColumn == 'id' ? (isAscending ? 'bi-arrow-down' : 'bi-arrow-up') : ''"></i>
-                  </th>
-                  <th (click)="orderBy('itemName')">
-                    Termék
-                    <i class="bi" [ngClass]="currentSortColumn == 'itemName' ? (isAscending ? 'bi-arrow-down' : 'bi-arrow-up') : ''"></i>
-                  </th>
-                  <th (click)="orderBy('storagePlace')">
-                    Tároló
-                    <i class="bi" [ngClass]="currentSortColumn == 'storagePlace' ? (isAscending ? 'bi-arrow-down' : 'bi-arrow-up') : ''"></i>
-                  </th>
-                  <ng-container *ngIf="isAdmin()">
-                    <th>
-                      <div class="form-check d-flex justify-content-center">
-                        <input
-                          type="checkbox"
-                          class="form-check-input mr-2"
-                          (change)="toggleSelectAll()">
-                        <label class="form-check-label ml-1"><i class="bi bi-arrow-90deg-down mirror-horizontal "></i></label>
-                      </div>
-                    </th>
-                  </ng-container>
-                </tr>
-              </thead>
-              <tbody>
-                <ng-container *ngFor="let item of paginatedItems">
-                  <tr>
-                    <td>{{ item.productCode }}</td>
-                    <td>{{ getItemName(item.itemNameId) }}</td>
-                    <td>{{ getStoragePlaceById(item.storagePlaceId) }}</td>
-                    <ng-container *ngIf="isAdmin()">
-                      <td>
-                        <div class="form-check">
-                          <input
-                            type="checkbox"
-                            class="form-check-input"
-                            [value]="item.id"
-                            (change)="toggleItemSelection($event, item.id)">
-                          <label class="form-check-label"></label>
-                        </div>
-                      </td>
-                    </ng-container>
-                  </tr>
+    <div class="row" [ngClass]="{'justify-content-center': isAdmin()==false}">
+      <div class="col">
+        <table class="table table-bordered table-hover">
+          <thead class="thead-light">
+            <tr>
+              <th (click)="orderBy('id')">
+                Termék Kód
+                <i class="bi"
+                  [ngClass]="currentSortColumn == 'id' ? (isAscending ? 'bi-arrow-down' : 'bi-arrow-up') : ''"></i>
+              </th>
+              <th (click)="orderBy('itemName')">
+                Termék
+                <i class="bi"
+                  [ngClass]="currentSortColumn == 'itemName' ? (isAscending ? 'bi-arrow-down' : 'bi-arrow-up') : ''"></i>
+              </th>
+              <th (click)="orderBy('storagePlace')">
+                Tároló
+                <i class="bi"
+                  [ngClass]="currentSortColumn == 'storagePlace' ? (isAscending ? 'bi-arrow-down' : 'bi-arrow-up') : ''"></i>
+              </th>
+              <ng-container *ngIf="isAdmin()">
+                <th>
+                  <div class="form-check d-flex justify-content-center">
+                    <input type="checkbox" class="form-check-input mr-2" (change)="toggleSelectAll()">
+                    <label class="form-check-label ml-1"><i
+                        class="bi bi-arrow-90deg-down mirror-horizontal "></i></label>
+                  </div>
+                </th>
+              </ng-container>
+            </tr>
+          </thead>
+          <tbody>
+            <ng-container *ngFor="let item of paginatedItems">
+              <tr>
+                <td>{{ item.productCode }}</td>
+                <td>{{ getItemName(item.itemNameId) }}</td>
+                <td>{{ getStoragePlaceById(item.storagePlaceId) }}</td>
+                <ng-container *ngIf="isAdmin()">
+                  <td>
+                    <div class="form-check">
+                      <input type="checkbox" class="form-check-input" [value]="item.id"
+                        (change)="toggleItemSelection($event, item.id)">
+                      <label class="form-check-label"></label>
+                    </div>
+                  </td>
                 </ng-container>
-              </tbody>
-            </table>
-          
-              <div class="row">
-                <div class="col">
-                  <button type="button" class="btn btn-grey btn-sm mr-2" data-bs-toggle="modal" data-bs-target="#addItemModal">Hozzáadás</button>
-                  <ng-container *ngIf="isAdmin()">
-                  <button type="button" class="btn btn-grey btn-sm mr-2" data-bs-toggle="modal" data-bs-target="#filterModal">Szűrés</button>
-                  <button type="button" class="btn btn-grey btn-sm mr-2" [disabled]="selectedItemIds.length === 0" data-bs-toggle="modal" data-bs-target="#deleteConfirmationModal">Törlés</button>
-                  <button type="button" class="btn btn-grey btn-sm mr-2" [disabled]="selectedItemIds.length === 0" data-bs-toggle="modal" data-bs-target="#updateModal">Áthelyezés</button>
-                  <button type="button" class="btn btn-grey btn-sm mr-2" data-bs-toggle="modal" data-bs-target="#downloadLogModal">Műveleti Napló</button>
-                  <button type="button" class="btn btn-grey btn-sm" data-bs-toggle="modal" data-bs-target="#downloadTagModal">Cimke Letöltés</button>
-                </ng-container>
-                </div>
-              </div>
-            
-          
-            <div class="d-flex justify-content-center align-items-center mt-3 mb-3">
-              <button
-                class="btn btn-secondary btn-sm"
-                (click)="previousPage()"
-                [disabled]="currentPage == 1">
-                <i class="bi bi-caret-left-fill"></i>
-              </button>
-              <span class="mr-3 ml-3">Oldal: {{ currentPage }} / {{ totalPages }}</span>
-              <button
-                class="btn btn-secondary btn-sm"
-                (click)="nextPage()"
-                [disabled]="currentPage == totalPages">
-                <i class="bi bi-caret-right-fill"></i>
-              </button>
-            </div>
-          </div>
-        <div class="col-lg-4" *ngIf="isAdmin()">
-          <div class="admin-tasks">
-            <div class="row justify-content-center">
+              </tr>
+            </ng-container>
+          </tbody>
+        </table>
 
-              <!-- Storage Control Section -->
-              <div class="col-12 storageControl mb-3">
-                <h3 class="text-center">Tárolók</h3>
-                <div class="input-group mb-3">
-                  <input [(ngModel)]="newStoragePlace" placeholder="Új Tároló Felvétele" class="form-control">
-                  <button class="btn btn-grey" (click)="createStoragePlace()">Hozzáadás</button>
-                </div>
-                <div *ngFor="let storagePlace of storagePlaces" class="row my-1">
-                  <div class="input-group">
-                    <input [(ngModel)]="storagePlace.storage" class="form-control" readonly>
-                    <button class="btn btn-grey btn-sm" (click)="deleteStoragePlace(storagePlace.id)">Törlés</button>
-                  </div>
+        <div class="row">
+          <div class="col">
+            <button type="button" class="btn btn-grey btn-sm mr-2" data-bs-toggle="modal"
+              data-bs-target="#addItemModal">Hozzáadás</button>
+            <ng-container *ngIf="isAdmin()">
+              <button type="button" class="btn btn-grey btn-sm mr-2" data-bs-toggle="modal"
+                data-bs-target="#filterModal">Szűrés</button>
+              <button type="button" class="btn btn-grey btn-sm mr-2" [disabled]="selectedItemIds.length === 0"
+                data-bs-toggle="modal" data-bs-target="#deleteConfirmationModal">Törlés</button>
+              <button type="button" class="btn btn-grey btn-sm mr-2" [disabled]="selectedItemIds.length === 0"
+                data-bs-toggle="modal" data-bs-target="#updateModal">Áthelyezés</button>
+              <button type="button" class="btn btn-grey btn-sm mr-2" data-bs-toggle="modal"
+                data-bs-target="#downloadLogModal">Műveleti Napló</button>
+              <button type="button" class="btn btn-grey btn-sm" data-bs-toggle="modal"
+                data-bs-target="#downloadTagModal">Cimke Letöltés</button>
+            </ng-container>
+          </div>
+        </div>
+
+
+        <div class="d-flex justify-content-center align-items-center mt-3 mb-3">
+          <button class="btn btn-secondary btn-sm" (click)="previousPage()" [disabled]="currentPage == 1">
+            <i class="bi bi-caret-left-fill"></i>
+          </button>
+          <span class="mr-3 ml-3">Oldal: {{ currentPage }} / {{ totalPages }}</span>
+          <button class="btn btn-secondary btn-sm" (click)="nextPage()" [disabled]="currentPage == totalPages">
+            <i class="bi bi-caret-right-fill"></i>
+          </button>
+        </div>
+      </div>
+      <div class="col-lg-4" *ngIf="isAdmin()">
+        <div class="admin-tasks">
+          <div class="row justify-content-center">
+
+            <!-- Storage Control Section -->
+            <div class="col-12 storageControl mb-3">
+              <h3 class="text-center">Tárolók</h3>
+              <div class="input-group mb-3">
+                <input [(ngModel)]="newStoragePlace" placeholder="Új Tároló Felvétele" class="form-control">
+                <button class="btn btn-grey" (click)="createStoragePlace()">Hozzáadás</button>
+              </div>
+              <div *ngFor="let storagePlace of storagePlaces" class="row my-1">
+                <div class="input-group">
+                  <input [(ngModel)]="storagePlace.storage" class="form-control" readonly>
+                  <button class="btn btn-grey btn-sm" (click)="deleteStoragePlace(storagePlace.id)">Törlés</button>
                 </div>
               </div>
-      
-              <!-- Item Name Control Section -->
-              <div class="col-12 itemNameControl mb-3">
-                <h3 class="text-center">Nyilvántartandó Termékek</h3>
-                <div class="input-group mb-3">
-                  <input [(ngModel)]="newItemName" placeholder="Új Termék Felvétele" class="form-control">
-                  <button class="btn btn-grey" (click)="createItemName()">Hozzáadás</button>
-                </div>
-                <div *ngFor="let itemName of itemNames" class="row my-1">
-                  <div class="input-group">
-                    <input [(ngModel)]="itemName.item" class="form-control" readonly>
-                    <button class="btn btn-grey btn-sm" (click)="deleteItemName(itemName.id)">Törlés</button>
-                  </div>
+            </div>
+
+            <!-- Item Name Control Section -->
+            <div class="col-12 itemNameControl mb-3">
+              <h3 class="text-center">Nyilvántartandó Termékek</h3>
+              <div class="input-group mb-3">
+                <input [(ngModel)]="newItemName" placeholder="Új Termék Felvétele" class="form-control">
+                <button class="btn btn-grey" (click)="createItemName()">Hozzáadás</button>
+              </div>
+              <div *ngFor="let itemName of itemNames" class="row my-1">
+                <div class="input-group">
+                  <input [(ngModel)]="itemName.item" class="form-control" readonly>
+                  <button class="btn btn-grey btn-sm" (click)="deleteItemName(itemName.id)">Törlés</button>
                 </div>
               </div>
             </div>
@@ -159,9 +144,11 @@
         </div>
       </div>
     </div>
+  </div>
 
   <!-- Add Item Modal -->
-  <div class="modal fade" id="addItemModal" tabindex="-1" role="dialog" aria-labelledby="addItemModalLabel" aria-hidden="true">
+  <div class="modal fade" id="addItemModal" tabindex="-1" role="dialog" aria-labelledby="addItemModalLabel"
+    aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
       <div class="modal-content">
         <div class="modal-header">
@@ -195,7 +182,8 @@
   </div>
 
   <!-- Delete Confirmation Modal -->
-  <div class="modal fade" id="deleteConfirmationModal" tabindex="-1" role="dialog" aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
+  <div class="modal fade" id="deleteConfirmationModal" tabindex="-1" role="dialog"
+    aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
       <div class="modal-content">
         <div class="modal-header">
@@ -207,15 +195,17 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-grey" data-bs-dismiss="modal">Mégse</button>
-          <button type="button" class="btn btn-grey" (click)="deleteItem(selectedItemIds)" data-bs-dismiss="modal">Törlés</button>
+          <button type="button" class="btn btn-grey" (click)="deleteItem(selectedItemIds)"
+            data-bs-dismiss="modal">Törlés</button>
         </div>
       </div>
     </div>
   </div>
 
   <!-- Filter Modal -->
- 
-  <div class="modal fade" id="filterModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+
+  <div class="modal fade" id="filterModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+    aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
       <div class="modal-content">
         <div class="modal-header">
@@ -226,61 +216,48 @@
           <div class="form-group">
             <label for="filterItemName"><strong>Termék</strong></label>
             <div class="d-flex align-items-center mb-2">
-              <input
-                type="checkbox"
-                id="selectAllItems"
-                (change)="toggleSelectAllItems($event)"
-                [checked]="selectedItemNames.length === itemNames.length"
-              />
+              <input type="checkbox" id="selectAllItems" (change)="toggleSelectAllItems($event)"
+                [checked]="selectedItemNames.length === itemNames.length" />
               <label for="selectAllItems" class="ml-2 pt-2">Mindet kijelöl</label>
-              <button
-                type="button"
-                class="btn btn-sm btn-grey ml-auto"
-                (click)="deselectItemNames()"
-              >
+              <button type="button" class="btn btn-sm btn-grey ml-auto" (click)="deselectItemNames()">
                 Kijelölések törlése
               </button>
             </div>
-            <select [(ngModel)]="selectedItemNames" class="form-select" multiple> 
+            <select [(ngModel)]="selectedItemNames" class="form-select" multiple>
               <option *ngFor="let itemName of itemNames" [value]="itemName.id">{{ itemName.item }}</option>
             </select>
           </div>
-  
+
           <!-- Storage Places -->
           <div class="form-group">
             <label for="filterStoragePlace"><strong>Tároló</strong></label>
             <div class="d-flex align-items-center mb-2">
-              <input
-                type="checkbox"
-                id="selectAllStoragePlaces"
-                (change)="toggleSelectAllStoragePlaces($event)"
-                [checked]="selectedStoragePlaces.length === storagePlaces.length"
-              />
+              <input type="checkbox" id="selectAllStoragePlaces" (change)="toggleSelectAllStoragePlaces($event)"
+                [checked]="selectedStoragePlaces.length === storagePlaces.length" />
               <label for="selectAllStoragePlaces" class="ml-2 pt-2">Mindet kijelöl</label>
-              <button
-                type="button"
-                class="btn btn-sm btn-grey ml-auto"
-                (click)="deselectStoragePlaces()"
-              >
+              <button type="button" class="btn btn-sm btn-grey ml-auto" (click)="deselectStoragePlaces()">
                 Kijelölések törlése
               </button>
             </div>
             <select [(ngModel)]="selectedStoragePlaces" class="form-select" multiple>
-              <option *ngFor="let storagePlace of storagePlaces" [value]="storagePlace.id">{{ storagePlace.storage }}</option>
+              <option *ngFor="let storagePlace of storagePlaces" [value]="storagePlace.id">{{ storagePlace.storage }}
+              </option>
             </select>
           </div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-grey" data-bs-dismiss="modal">Mégse</button>
           <button type="button" class="btn btn-grey" (click)="deselectAllFilters()">Szűrők törlése</button>
-          <button type="button" class="btn btn-grey" data-bs-dismiss="modal" (click)="applyTableFilters()">Alkalmaz</button>
+          <button type="button" class="btn btn-grey" data-bs-dismiss="modal"
+            (click)="applyTableFilters()">Alkalmaz</button>
         </div>
       </div>
     </div>
   </div>
 
   <!-- Update Modal -->
-  <div class="modal fade" id="updateModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+  <div class="modal fade" id="updateModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle"
+    aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" role="document">
       <div class="modal-content">
         <div class="modal-header">
@@ -291,15 +268,15 @@
             <label for="newStoragePlaceId"><strong>Új Tároló?</strong></label>
             <select [(ngModel)]="newStoragePlaceId" class="form-control custom-select">
               <ng-container *ngFor="let place of storagePlaces">
-                <option
-                  [value]="place.id">{{ place.storage }}</option>
-              </ng-container>  <!-- *ngIf="place.id != selectedStoragePlace" -->
+                <option [value]="place.id">{{ place.storage }}</option>
+              </ng-container> <!-- *ngIf="place.id != selectedStoragePlace" -->
             </select>
           </div>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-grey" data-bs-dismiss="modal">Mégse</button>
-          <button type="button" class="btn btn-grey" data-bs-dismiss="modal" (click)="updateItem(selectedItemIds, newStoragePlaceId)">Áthelyezés</button>
+          <button type="button" class="btn btn-grey" data-bs-dismiss="modal"
+            (click)="updateItem(selectedItemIds, newStoragePlaceId)">Áthelyezés</button>
         </div>
       </div>
     </div>
@@ -308,7 +285,8 @@
 
 
 <!-- Tag Download Modal -->
-<div class="modal fade" id="downloadTagModal" tabindex="-1" role="dialog" aria-labelledby="downloadTagModalLabel" aria-hidden="true">
+<div class="modal fade" id="downloadTagModal" tabindex="-1" role="dialog" aria-labelledby="downloadTagModalLabel"
+  aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -331,7 +309,8 @@
 
 
 <!-- Log Download Modal -->
-<div class="modal fade" id="downloadLogModal" tabindex="-1" role="dialog" aria-labelledby="downloadLogModalLabel" aria-hidden="true">
+<div class="modal fade" id="downloadLogModal" tabindex="-1" role="dialog" aria-labelledby="downloadLogModalLabel"
+  aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">

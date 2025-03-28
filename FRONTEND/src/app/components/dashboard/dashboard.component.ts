@@ -315,6 +315,13 @@ loadItems(): void {
       ...item,
       productCode: `BZSH-${this.getItemName(item.itemNameId)}-${item.id}`
     })).sort((a,b)=>a.id-b.id);
+
+    const hasUnknownItemName = this.items.some(item => this.getItemName(item.itemNameId) === 'Unknown');
+    if (hasUnknownItemName) {
+      console.warn('Unknown item name detected. Refreshing the page...');
+      window.location.reload(); // Refresh the page
+    }
+    
     console.log(this.items);
     this.filteredItems = [...this.items];
   });

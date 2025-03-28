@@ -39,7 +39,7 @@ export class PasswordChangeComponent {
       },
       error => {
         if(error.status == 400) {
-          this.showMessage('A jelszó formátuma nem megfelelő!', true, 5000);
+          this.showMessage('A jelszó formátuma nem megfelelő! (Min. 8 karakter hosszú, 1 nagybetű, kisbetű, speciális karakter, szám!)', true, 5000);
         }
         else {
         this.showMessage('Hiba a jelszó megváltoztatásakor! Próbálja újra!', true, 5000);
