@@ -29,7 +29,7 @@ async function createPlace(storage_place){
 async function deletePlace(id){
     try{
         const storage = await StoragePlace.findOne({where:{id:id}}); 
-        storage.destroy()
+        await storage.destroy()
             
         
         return {message: "Storage place deleted"}

@@ -64,6 +64,11 @@ export class DashboardComponent implements OnInit {
   selectedItemNames: number[] = [];
   selectedStoragePlaces: number[] = [];
 
+  fileName: string = '';
+
+  currentSortColumn: string | null = null;
+  isAscending: boolean = true;
+
   // Constructor
   constructor(private baseService: BaseService) {}
 
@@ -74,7 +79,7 @@ export class DashboardComponent implements OnInit {
     this.loadItems();
   }
 
-  fileName: string = '';
+  
 
   downloadTags(): void {
     let selectedItemsData = null;
@@ -98,8 +103,7 @@ export class DashboardComponent implements OnInit {
     }
 
 
-  currentSortColumn: string | null = null;
-  isAscending: boolean = true;
+
 
   orderBy(column: string): void {
     if (this.currentSortColumn === column) {
@@ -202,20 +206,6 @@ export class DashboardComponent implements OnInit {
     this.currentPage = 1; // Reset to the first page after filtering
   }
 
-  // applyFilter(): void {
-  //   const lowerCaseFilter = this.filterText.toLowerCase();
-  //   this.filteredItems = this.items.filter(item => {
-  //     const itemName = this.getItemName(item.itemNameId).toLowerCase();
-  //     const storagePlace = this.getStoragePlaceById(item.storagePlaceId).toLowerCase();
-  //     return (
-  //       item.productCode.toLowerCase().includes(lowerCaseFilter) ||
-  //       itemName.includes(lowerCaseFilter) ||
-  //       storagePlace.includes(lowerCaseFilter)
-  //     );
-  //   });
-  //   this.currentPage = 1; // Reset to the first page after filtering
-  // }
-
   // Pagination Methods
   get paginatedItems(): any[] {
     const startIndex = (this.currentPage - 1) * this.itemsPerPage;
@@ -272,6 +262,7 @@ export class DashboardComponent implements OnInit {
   deleteStoragePlace(id: number): void {
     this.baseService.deleteStoragePlace(id).subscribe(() => {
       this.loadStoragePlaces();
+      
     });
   }
 
