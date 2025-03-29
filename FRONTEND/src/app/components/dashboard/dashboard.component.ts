@@ -66,7 +66,7 @@ export class DashboardComponent implements OnInit {
 
   fileName: string = '';
 
-  currentSortColumn: string | null = null;
+  currentSortColumn: string | null = "id";
   isAscending: boolean = true;
 
   // Constructor
@@ -179,6 +179,14 @@ export class DashboardComponent implements OnInit {
     this.applyCombinedFilters();
   }
 
+  applyNameFilter(): void {
+    this.applyCombinedFilters();
+  }
+
+  applyStorageFilter(): void {
+    this.applyCombinedFilters();
+  }
+
   applyTableFilters(): void {
     this.applyCombinedFilters();
   }
@@ -260,9 +268,14 @@ export class DashboardComponent implements OnInit {
   }
 
   deleteStoragePlace(id: number): void {
-    this.baseService.deleteStoragePlace(id).subscribe(() => {
-      this.loadStoragePlaces();
-      
+    this.baseService.deleteStoragePlace(id).subscribe({
+      next: () => {
+        this.loadStoragePlaces();
+      },
+      error: (err) => {
+        console.error('Error deleting item name:', err);
+        this.showMessage('A raktár törlése sikertelen! Ellenőrizze, hogy nincs-e termék a raktárban!', true, 5000); // Display the error in the alert box
+      }
     });
   }
 
@@ -291,7 +304,7 @@ export class DashboardComponent implements OnInit {
       },
       error: (err) => {
         console.error('Error deleting item name:', err);
-        alert('A termék törlése sikertelen! Ellenőrizze, hogy nincs-e raktárban ilyen termék!');
+        this.showMessage('A termék törlése sikertelen! Ellenőrizze, hogy nincs-e raktárban ilyen termék!', true, 5000); // Display the error in the alert box
       }
     });
 }
@@ -305,7 +318,7 @@ loadItems(): void {
     this.items = data.map((item: Item) => ({
       ...item,
       productCode: `BZSH-${this.getItemName(item.itemNameId)}-${item.id}`
-    })).sort((a,b)=>a.id-b.id);
+    }));
 
     const hasUnknownItemName = this.items.some(item => this.getItemName(item.itemNameId) === 'Unknown');
     if (hasUnknownItemName) {
@@ -434,7 +447,7 @@ loadItems(): void {
     return true;
   }
 
-  resetFilters(): void {
+  resetLogFilters(): void {
     this.filters = {
       itemNameId: undefined,
       storagePlaceId: undefined,
@@ -458,7 +471,7 @@ loadItems(): void {
   // Download Logs
   downloadLogs(): void {
     if (!this.validateFilters()) {
-      this.resetFilters(); // Clear the filters
+      this.resetLogFilters(); // Clear the filters
       return; // Stop execution if validation fails
     }
   
