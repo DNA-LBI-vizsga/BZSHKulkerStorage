@@ -29,7 +29,7 @@
       <div class="col">
         <button type="button" class="btn btn-grey btn-sm mr-2" data-bs-toggle="modal"
           data-bs-target="#addItemModal">Hozzáadás</button>
-          <button type="button" class="btn btn-grey btn-sm mr-2">Szűrők Törlése</button>
+          <button type="button" class="btn btn-grey btn-sm mr-2" (click)="resetFilters()">Szűrők Törlése</button>
         <ng-container *ngIf="isAdmin()">
           <button type="button" class="btn btn-grey btn-sm mr-2" [disabled]="selectedItemIds.length === 0"
             data-bs-toggle="modal" data-bs-target="#deleteConfirmationModal">Törlés</button>
@@ -410,29 +410,29 @@
       <div class="modal-body">
         <div class="form-group">
           <label for="filterItemNameId"><strong>Termék</strong></label>
-          <select [(ngModel)]="filters.itemNameId" class="form-control custom-select">
+          <select [(ngModel)]="logFilters.itemNameId" class="form-control custom-select">
             <option [value]="undefined">Összes</option>
             <option *ngFor="let item of itemNames" [value]="item.id">{{ item.item }}</option>
           </select>
         </div>
         <div class="form-group">
           <label for="filterStoragePlaceId"><strong>Tároló</strong></label>
-          <select [(ngModel)]="filters.storagePlaceId" class="form-control custom-select">
+          <select [(ngModel)]="logFilters.storagePlaceId" class="form-control custom-select">
             <option [value]="undefined">Összes</option>
             <option *ngFor="let place of storagePlaces" [value]="place.id">{{ place.storage }}</option>
           </select>
         </div>
         <div class="form-group">
           <label for="filterCreatedBy"><strong>Felhasználó</strong></label>
-          <input [(ngModel)]="filters.createdBy" type="text" class="form-control" placeholder="Felhasználó azonosító">
+          <input [(ngModel)]="logFilters.createdBy" type="text" class="form-control" placeholder="Felhasználó azonosító">
         </div>
         <div class="form-group">
           <label for="filterFromDate"><strong>Kezdő Dátum</strong></label>
-          <input [(ngModel)]="filters.fromDate" type="date" class="form-control">
+          <input [(ngModel)]="logFilters.fromDate" type="date" class="form-control">
         </div>
         <div class="form-group">
           <label for="filterToDate"><strong>Záró Dátum</strong></label>
-          <input [(ngModel)]="filters.toDate" type="date" class="form-control">
+          <input [(ngModel)]="logFilters.toDate" type="date" class="form-control">
         </div>
       </div>
       <div class="modal-footer">
