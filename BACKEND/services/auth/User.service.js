@@ -20,10 +20,10 @@ async function getUser(){
 
 
 //User creation
-async function createUser(userEmail, userPassword, isAdmin){
+async function createUser(userEmail, password, isAdmin){
     
     
-    const userPassword = userPassword;
+    const userPassword = password;
     try{
         const numSalts = 10
         const hashedPassword = await hash(String(userPassword), numSalts) 
