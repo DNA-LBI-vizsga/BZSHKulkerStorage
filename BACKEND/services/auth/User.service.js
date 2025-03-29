@@ -13,30 +13,29 @@ async function getUser(){
             isDisabled: user.isDisabled
         }))
         return user
-    } catch (error) {
-        return null
+    } catch (err) {
+        throw new Error('Failed to fetch user' + err);
     }
 }
 
 
 //User creation
-async function createUser(email, password, isAdmin){
+async function createUser(userEmail, userPassword, isAdmin){
     
     
-    const userPassword = password;
+    const userPassword = userPassword;
     try{
         const numSalts = 10
         const hashedPassword = await hash(String(userPassword), numSalts) 
         const user = await User.create(
-            { userEmail: email, userPassword: hashedPassword, isAdmin: isAdmin }
+            { userEmail: userEmail, userPassword: hashedPassword, isAdmin: isAdmin }
 
         )
         
-        return {message: `User created successfully` }
+        return {message: `User created successfully` } 
     }
     catch(err){
-        console.error(err);
-        throw new Error('Failed to create user'); 
+        throw new Error('Failed to create user' + err); 
     }
 }
 
@@ -69,7 +68,7 @@ async function updateUser(userEmail, newPassword) {
 
         return {message: "Password changed"}
     }catch(err){
-        throw new Error('Error changing password'); 
+        throw new Error('Error changing password' + err); 
     }
 }
 
@@ -85,9 +84,9 @@ async function deleteAdminRole(userEmail){
         user.set({isAdmin: false})
         await user.save()
 
-        return {message: "User demoted from admin role "}
+        return {message: "User demoted from admin role"}
     }catch(err){
-        return {message: "Error demoting user" + err}
+        throw new Error ("Error demoting user" + err)
     }
 }
 
@@ -103,9 +102,9 @@ async function addAdminRole(userEmail){
         user.set({isAdmin: true})
         await user.save()
 
-        return {message: "User promoted to admin role "}
+        return {message: "User promoted to admin role"}
     }catch(err){
-        return {message: "Error promoting user" + err}
+        throw new Error ("Error promoting user" + err)
     }
 }
 
