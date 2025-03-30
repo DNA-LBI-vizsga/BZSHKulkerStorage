@@ -15,9 +15,9 @@ interface Item {
   styleUrl: './dashboard.component.css'
 })
 export class DashboardComponent implements OnInit {
-  // ────────────────────────────────────
+  
   // Properties
-  // ────────────────────────────────────
+  
   items: any[] = [];
   filteredItems: any[] = [];
   storagePlaces: any[] = [];
@@ -39,7 +39,7 @@ export class DashboardComponent implements OnInit {
   filterText: string = '';
 
   // Messages
-  message: string | null = null;
+  alertMessage: string | null = null;
   isError: boolean = false;
 
   // Modals
@@ -73,23 +73,17 @@ export class DashboardComponent implements OnInit {
   // Selection
   isChecked: boolean = false;
 
-  // ────────────────────────────────────
-  // Constructor
-  // ────────────────────────────────────
+  
   constructor(private baseService: BaseService) {}
-
-  // ────────────────────────────────────
-  // Lifecycle Hooks
-  // ────────────────────────────────────
+  
   ngOnInit(): void {
     this.loadItemNames();
     this.loadStoragePlaces();
     this.loadItems();
   }
 
-  // ────────────────────────────────────
+  
   // CRUD Methods
-  // ────────────────────────────────────
   createItem(): void {
     if (this.newItem.quantity === 0 || this.newItem.itemNameId === null) {
       alert("A termék típus és a mennyiségi mező nem lehet üres! Kérjük, adjon meg egy érvényes értékeket.");
@@ -121,9 +115,8 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  // ────────────────────────────────────
+  
   // Loading Data
-  // ────────────────────────────────────
   loadItems(): void {
     if (this.itemNames.length === 0) {
       this.loadItemNames();
@@ -160,9 +153,8 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  // ────────────────────────────────────
+  
   // Create / Delete Item Names & Storage Places
-  // ────────────────────────────────────
   createStoragePlace(): void {
     if (!this.newStoragePlace || this.newStoragePlace.trim() === '') {
       alert('Storage place name cannot be blank');
@@ -205,9 +197,8 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  // ────────────────────────────────────
+  
   // Filtering
-  // ────────────────────────────────────
   applyFilter(): void { this.applyCombinedFilters(); }
   applyNameFilter(): void { this.applyCombinedFilters(); }
   applyStorageFilter(): void { this.applyCombinedFilters(); }
@@ -256,9 +247,8 @@ export class DashboardComponent implements OnInit {
     this.selectedStoragePlaces = checkbox.checked ? this.storagePlaces.map(place => place.id) : [];
   }
 
-  // ────────────────────────────────────
+  
   // Download Methods
-  // ────────────────────────────────────
   downloadTags(): void {
     const selectedItemsData = this.selectedItemIds.length > 0
       ? this.items.filter(item => this.selectedItemIds.includes(item.id))
@@ -302,9 +292,7 @@ export class DashboardComponent implements OnInit {
     );
   }
 
-  // ────────────────────────────────────
   // Sorting
-  // ────────────────────────────────────
   orderBy(column: string): void {
     if (this.currentSortColumn === column) {
       this.isAscending = !this.isAscending;
@@ -332,9 +320,7 @@ export class DashboardComponent implements OnInit {
     });
   }
 
-  // ────────────────────────────────────
   // Pagination
-  // ────────────────────────────────────
   get paginatedItems(): any[] {
     const startIndex = (this.currentPage - 1) * this.itemsPerPage;
     const endIndex = startIndex + Number(this.itemsPerPage);
@@ -361,9 +347,7 @@ export class DashboardComponent implements OnInit {
     }
   }
 
-  // ────────────────────────────────────
   // Selection Methods
-  // ────────────────────────────────────
   toggleItemSelection(event: Event, itemId: number): void {
     const checkbox = event.target as HTMLInputElement;
     if (checkbox.checked) {
@@ -406,9 +390,9 @@ export class DashboardComponent implements OnInit {
     }
   }
 
-  // ────────────────────────────────────
+  
   // Utility Methods
-  // ────────────────────────────────────
+  
   getItemName(itemNameId: number): string {
     const item = this.itemNames.find(i => i.id === itemNameId);
     return item ? item.item : 'Unknown';
@@ -461,10 +445,10 @@ export class DashboardComponent implements OnInit {
   }
 
   showMessage(msg: string, isError: boolean = false, duration: number = 3000): void {
-    this.message = msg;
+    this.alertMessage = msg;
     this.isError = isError;
     setTimeout(() => {
-      this.message = null;
+      this.alertMessage = null;
       this.isError = false;
     }, duration);
   }

@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class BaseService {
-  private apiUrl = 'http://localhost:3000/api'; // Adjust the base URL as needed
+  private apiUrl = 'http://localhost:3000/api';
 
   constructor(private http: HttpClient) {}
 
@@ -16,7 +16,6 @@ export class BaseService {
       'Authorization': `Bearer ${token}`
     });
   }
-
 
   getUsers(): Observable<any> {
     return this.http.get(`${this.apiUrl}/users`, { headers: this.getAuthHeaders() });

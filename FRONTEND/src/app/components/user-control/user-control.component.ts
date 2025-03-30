@@ -11,37 +11,35 @@ export class UserControlComponent implements OnInit{
 
   userEmail: string = '';
   isAdmin: boolean = false;
-  errorMessage: string = '';
-  successMessage: string = '';
 
   users: any[] = [];
+  currentUser: string = localStorage.getItem('userEmail') || '';
+
   filteredUsers: any[] = [];
   filterText: string = '';
-  currentUser: string = '';
 
   alertMessage: string | null = null;
   isError: boolean = false;
 
   constructor(private baseService: BaseService, private router: Router){ }
 
-  ngOnInit(): void {
-    this.currentUser = localStorage.getItem('userEmail') || '';
+  ngOnInit(): void { 
     this.loadUsers();
   }
 
-  applyFilter(): void{
-    this.filteredUsers = this.users.filter(user =>
-      user.userEmail.toLowerCase().includes(this.filterText.toLowerCase())
-    );
-  }
+  loadUsers(): void {
+    this.baseService.getUsers().subscribe( data => {
+      this.users = data;
+      this.filteredUsers = this.users;
 
-  showMessage(msg: string, isError: boolean = false, duration: number = 3000): void {
-    this.alertMessage = msg;
-    this.isError = isError;
-    setTimeout(() => {
-      this.alertMessage = null;
-      this.isError = false;
-    }, duration);
+      this.filteredUsers.sort((a, b) => {
+        if (a.userEmail == this.currentUser) return -1; // Current user comes first
+        if (b.userEmail == this.currentUser) return 1;
+        if (a.isAdmin && !b.isAdmin) return -1; // Admins come next
+        if (!a.isAdmin && b.isAdmin) return 1;
+        return a.userEmail.localeCompare(b.userEmail); // Sort alphabetically for others
+      });
+    });
   }
 
   registerUser(): void {
@@ -60,21 +58,6 @@ export class UserControlComponent implements OnInit{
         }
       );
     }
-  }
-
-  loadUsers(): void {
-    this.baseService.getUsers().subscribe( data => {
-      this.users = data;
-      this.filteredUsers = this.users;
-
-      this.filteredUsers.sort((a, b) => {
-        if (a.userEmail == this.currentUser) return -1; // Current user comes first
-        if (b.userEmail == this.currentUser) return 1;
-        if (a.isAdmin && !b.isAdmin) return -1; // Admins come next
-        if (!a.isAdmin && b.isAdmin) return 1;
-        return a.userEmail.localeCompare(b.userEmail); // Sort alphabetically for others
-      });
-    });
   }
 
   disableUser(userEmail: string): void {
@@ -131,5 +114,20 @@ export class UserControlComponent implements OnInit{
         console.error('Error demoting user:', error);
       }
     );
-  } 
+  }
+  
+  applyFilter(): void{
+    this.filteredUsers = this.users.filter(user =>
+      user.userEmail.toLowerCase().includes(this.filterText.toLowerCase())
+    );
+  }
+
+  showMessage(msg: string, isError: boolean = false, duration: number = 3000): void {
+    this.alertMessage = msg;
+    this.isError = isError;
+    setTimeout(() => {
+      this.alertMessage = null;
+      this.isError = false;
+    }, duration);
+  }
 }

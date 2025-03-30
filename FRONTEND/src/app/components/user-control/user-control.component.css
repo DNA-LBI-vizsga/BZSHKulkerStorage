@@ -13,7 +13,7 @@
     left: 50%;
     transform: translateX(-50%);
     z-index: 1055; /* Higher than Bootstrap's modal-backdrop (z-index: 1040) */
-    width: 50%; /* Adjust width as needed */
+    width: 50%;
     text-align: center;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   }

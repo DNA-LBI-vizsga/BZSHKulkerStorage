@@ -12,10 +12,48 @@ export class PasswordChangeComponent {
   newPassword: string = '';
   confirmPassword: string = '';
   showPassword: boolean = false;
+  
   alertMessage: string = '';
   isError: boolean = false;
 
+  passwordRequirements = [
+    { text: 'Min. 8 karakter hosszú', isValid: false },
+    { text: 'Nagy betű', isValid: false },
+    { text: 'Kis betű', isValid: false },
+    { text: 'Szám', isValid: false },
+    { text: 'Speciális karakter (!@#$%^&*)', isValid: false }
+  ];
+
   constructor(private baseService: BaseService, private router: Router) { }
+
+  togglePasswordVisibility(): void {
+    this.showPassword = !this.showPassword;
+  }
+
+  changePassword(): void {
+    if(this.newPassword === this.confirmPassword){
+      this.baseService.firstLogin(this.newPassword).subscribe(
+        response => {
+          console.log('Password changed:', response);
+          localStorage.removeItem('authToken');
+          this.router.navigate(['/login']);
+        },
+        error => {
+          if(error.status == 400) {
+            const errorMessage = error.error.errors[0].msg;
+            this.showMessage(errorMessage, true, 5000);
+          }
+          else {
+          this.showMessage('Hiba a jelszó megváltoztatásakor! Próbálja újra!', true, 5000);
+          }
+          console.error('Error changing password:', error);
+        });
+    }
+    else {
+      this.showMessage('A beütött jelszavak nem egyeznek!', true, 5000);
+      console.error('Passwords do not match');
+    }
+  }
 
   showMessage(msg: string, isError: boolean = false, duration: number = 3000): void {
     this.alertMessage = msg;
@@ -25,32 +63,16 @@ export class PasswordChangeComponent {
     }, duration);
   }
 
-  togglePasswordVisibility(): void {
-    this.showPassword = !this.showPassword;
+  checkPasswordRequirements(): void {
+    const password = this.newPassword;
+    this.passwordRequirements[0].isValid = password.length >= 8;
+    this.passwordRequirements[1].isValid = /[A-Z]/.test(password);
+    this.passwordRequirements[2].isValid = /[a-z]/.test(password);
+    this.passwordRequirements[3].isValid = /\d/.test(password);
+    this.passwordRequirements[4].isValid = /[!@#$%^&*]/.test(password);
   }
 
-  changePassword(): void {
-    if(this.newPassword === this.confirmPassword){
-    this.baseService.firstLogin(this.newPassword).subscribe(
-      response => {
-        console.log('Password changed:', response);
-        localStorage.removeItem('authToken');
-        this.router.navigate(['/login']);
-      },
-      error => {
-        if(error.status == 400) {
-          this.showMessage('A jelszó formátuma nem megfelelő! (Min. 8 karakter hosszú, 1 nagybetű, kisbetű, speciális karakter, szám!)', true, 5000);
-        }
-        else {
-        this.showMessage('Hiba a jelszó megváltoztatásakor! Próbálja újra!', true, 5000);
-        }
-        console.error('Error changing password:', error);
-      });
-    }
-  else {
-    this.showMessage('A beütött jelszavak nem egyeznek!', true, 5000);
-    console.error('Passwords do not match');
+  areAllRequirementsValid(): boolean {
+    return this.passwordRequirements.every(req => req.isValid);
   }
-}
-
 }

@@ -1,24 +1,22 @@
+/* General Styles */
 .container {
-  margin: 0 auto;
   font-family: 'Arial', sans-serif;
 }
 
-.mirror-horizontal {
-  transform:scaleX(-1);
-  display: inline-block;
-}
-
+/* Typography */
 h2, h3, h4 {
   color: #333;
   font-weight: bold;
 }
 
+/* Buttons */
 .btn-grey {
   background-color: #b4aead;
   color: black;
   border: none;
 }
 
+/* Inputs and Selects */
 .custom-select {
   background-color: #f8f9fa;
   display: flex;
@@ -29,28 +27,30 @@ h2, h3, h4 {
   line-height: 1.5;
 }
 
-.chechbox{
-  border: 1px solid #333;
-}
-
 .custom-input {
   width: 100%;
-}
-
-.page-select{
-  max-width: 65px;
 }
 
 .filter-input {
   max-width: 400px;
 }
 
-.form-contol-sm{
+.form-contol-sm {
   max-width: 100px;
 }
 
 .form-check-input {
   border: 1px solid #333;
+}
+
+.chechbox {
+  border: 1px solid #333;
+}
+
+/* Layout and Sections */
+.admin-tasks {
+  max-width: 600px;
+  margin: 0 auto;
 }
 
 .crud-section {
@@ -59,11 +59,11 @@ h2, h3, h4 {
   border-radius: 8px;
 }
 
-.row {
-  display: flex;
-  flex-wrap: wrap;
+.page-select {
+  max-width: 70px;
 }
 
+/* Table */
 .table {
   width: 100%;
   margin-top: 10px;
@@ -89,28 +89,42 @@ h2, h3, h4 {
 }
 
 .table th:nth-child(1), .table td:nth-child(1) {
-  width: 40%; /* Adjust width for the first column */
+  width: 40%;
 }
 
 .table th:nth-child(2), .table td:nth-child(2) {
-  width: 25%; /* Adjust width for the first column */
+  width: 25%;
 }
 
 .table th:nth-child(3), .table td:nth-child(3) {
-  width: 20%; /* Adjust width for the first column */
+  width: 20%;
 }
 
 .table th:nth-child(4), .table td:nth-child(4) {
-  width: 15%; /* Adjust width for the first column */
+  width: 15%;
 }
 
-.alert-message{
+td {
+  word-wrap: break-word;
+}
+
+/* Other */
+.mirror-horizontal {
+  transform: scaleX(-1);
+  display: inline-block;
+}
+
+.invisible {
+  visibility: hidden;
+}
+
+.alert-message {
   position: fixed;
   top: 20px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 1055; /* Higher than Bootstrap's modal-backdrop (z-index: 1040) */
-  width: 50%; /* Adjust width as needed */
+  width: 50%;
   text-align: center;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }

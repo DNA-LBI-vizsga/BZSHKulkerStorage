@@ -1,13 +1,9 @@
   <div class="d-flex align-items-center justify-content-center vh-100">
 
-    <div 
-    *ngIf="alertMessage" 
-    class="alert alert-dismissible fade show alert-message" 
-    [ngClass]="{'alert-danger': isError, 'alert-info': !isError}" 
-    role="alert"
-  >
-    {{ alertMessage }}
-  </div>
+    <div *ngIf="alertMessage" class="alert alert-dismissible fade show alert-message" 
+      [ngClass]="{'alert-danger': isError, 'alert-info': !isError}" role="alert">
+      {{ alertMessage }}
+    </div>
 
     <div class="card p-4 shadow-sm" style="width: 350px">
       <div class="text-center">
@@ -20,13 +16,13 @@
           <label for="userEmail">Email</label>
           <input
             type="email"
-            class="form-control"
             id="userEmail"
-            [(ngModel)]="userEmail"
             name="userEmail"
-            required
-            #userEmailInput="ngModel"
+            class="form-control"
             placeholder="Email"
+            [(ngModel)]="userEmail"
+            #userEmailInput="ngModel"
+            required
           />
           <div *ngIf="userEmailInput.invalid && userEmailInput.touched" class="text-danger mt-1">
             Email megadása kötelező.  
@@ -38,20 +34,19 @@
           <div class="input-group">
             <input
               [type]="showPassword ? 'text' : 'password'"
-              class="form-control"
               id="userPassword"
-              [(ngModel)]="userPassword"
               name="userPassword"
-              required
-              #userPasswordInput="ngModel"
+              class="form-control"
               placeholder="Jelszó"
+              [(ngModel)]="userPassword"
+              #userPasswordInput="ngModel"
+              required
             />
             <button
               type="button"
               class="btn btn-outline-secondary"
               (click)="togglePasswordVisibility()"
-              tabindex="-1"
-            >
+              tabindex="-1">
               <i [ngClass]="showPassword ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
             </button>
           </div>
@@ -85,14 +80,12 @@
               class="btn btn-primary" 
               data-bs-dismiss="modal" 
               (click)="passwordChange()" 
-              [disabled]="!userEmail || userEmail.trim() === ''"
-            >
+              [disabled]="!userEmail || userEmail.trim() === ''">
               Küldés
             </button>
           </div>
         </div>
       </div>
     </div>
-
   </div>
 
