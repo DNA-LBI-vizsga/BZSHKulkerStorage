@@ -115,6 +115,8 @@ export class UserControlComponent implements OnInit{
       }
     );
   }
+
+  timeoutId: any = null;
   
   applyFilter(): void{
     this.filteredUsers = this.users.filter(user =>
@@ -122,12 +124,19 @@ export class UserControlComponent implements OnInit{
     );
   }
 
-  showMessage(msg: string, isError: boolean = false, duration: number = 3000): void {
+  showMessage(msg: string, isError: boolean, duration: number): void {
     this.alertMessage = msg;
     this.isError = isError;
-    setTimeout(() => {
+    
+    if (this.timeoutId) {
+      clearTimeout(this.timeoutId);
+    }
+
+    // Set a new timeout
+    this.timeoutId = setTimeout(() => {
       this.alertMessage = null;
       this.isError = false;
+      this.timeoutId = null; // Reset the timeoutId
     }, duration);
   }
 }

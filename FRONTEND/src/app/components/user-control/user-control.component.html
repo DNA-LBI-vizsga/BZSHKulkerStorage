@@ -7,7 +7,7 @@
     {{ alertMessage }}
   </div>
 
-  <h2 class="text-center">Felhasználókezelő</h2>
+
 
   <div class="row">
     <div class="form-group col-sm-4 mb-1">
@@ -32,14 +32,13 @@
                 Admin?
               </th>
               <th>
-                Műveletek
                 <button
                   type="button"
                   class="btn btn-link p-0"
                   data-bs-toggle="modal"
                   data-bs-target="#registerModal"
                   aria-label="Add User">
-                  <i class="bi bi-plus-circle text-primary"></i>
+                  <i class="bi bi-person-fill-add fs-4"></i>
                 </button>
               </th>
             </tr>
@@ -50,30 +49,27 @@
                 <td>{{ user.userEmail }}</td>
                 <td>
                   <i 
-                    class="bi" 
+                    class="bi fs-5" 
                     [ngClass]="user.isAdmin ? 'bi bi-check-lg' : 'bi bi-x-lg'"
                     aria-label="Admin Status"
                   ></i>
                 </td>
                 <td>
                   <ng-container *ngIf="user.userEmail != currentUser; else currentUserDisplay">
-                    <button
-                      class="btn btn-sm btn-outline-success me-1"
-                      (click)="promoteUser(user.userEmail)"
+                    <span
+                      (click)="promoteUser(user.userEmail)" class="mouse-hover"
                       *ngIf="!user.isAdmin">
-                      <i class="bi bi-arrow-up-circle"></i>
-                    </button>
-                    <button
-                      class="btn btn-sm btn-outline-warning me-1"
-                      (click)="demoteUser(user.userEmail)"
+                      <i class="bi bi-person-fill-up fs-4 text-success"></i>
+                    </span>
+                    <span
+                      (click)="demoteUser(user.userEmail)" class="mouse-hover"
                       *ngIf="user.isAdmin">
-                      <i class="bi bi-arrow-down-circle"></i>
-                    </button>
-                    <button
-                      class="btn btn-sm btn-outline-danger"
-                      (click)="disableUser(user.userEmail)">
-                      Letiltás
-                    </button>
+                      <i class="bi bi-person-fill-down fs-4 text-warning"></i>
+                    </span>
+                    <span
+                      (click)="disableUser(user.userEmail)" class="mouse-hover ml-1">
+                      <i class="bi bi-person-fill-x fs-4 text-danger"></i>
+                  </span>
                   </ng-container>
                   <ng-template #currentUserDisplay>
                     <span class="text-muted">(Jelenlegi felhasználó)</span>
@@ -90,7 +86,7 @@
           <thead class="thead-light">
             <tr>
               <th>Email</th>
-              <th>Műveletek</th>
+              <th></th>
             </tr>
           </thead>
           <tbody>
@@ -98,12 +94,9 @@
               <tr *ngIf="user.isDisabled">
                 <td>{{ user.userEmail }}</td>
                 <td>
-                  <button
-                    class="btn btn-sm btn-outline-success"
-                    (click)="enableUser(user.userEmail)"
-                  >
-                    <i class="bi bi-check-circle"></i>
-                  </button>
+                  <span (click)="enableUser(user.userEmail)" class="mouse-hover">
+                  <i class="bi bi-person-fill-check fs-4 text-success"></i>
+                </span>
                 </td>
               </tr>
             </ng-container>
@@ -117,7 +110,7 @@
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="registerModalTitle">Új felhasználó hozzáadás</h5>
+        <h5 class="modal-title" id="registerModalTitle">Új felhasználó felvétele</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <form (ngSubmit)="registerUser()">
@@ -144,8 +137,8 @@
           </div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Mégse</button>
-          <button type="submit" class="btn btn-primary" [disabled]="!userEmail || userEmail.trim() === ''" data-bs-dismiss="modal">Email Küldése</button>
+          <button type="button" class="btn btn-grey" data-bs-dismiss="modal">Mégse</button>
+          <button type="submit" class="btn btn-grey" [disabled]="!userEmail || userEmail.trim() === ''" data-bs-dismiss="modal">Email Küldése</button>
         </div>
       </form>  
      

@@ -7,6 +7,10 @@
     font-weight: bold;
   }
 
+  .mouse-hover{
+    cursor: pointer;
+  }
+
   .alert-message{
     position: fixed;
     top: 20px;
@@ -43,6 +47,18 @@
   
   .table-bordered th, .table-bordered td {
     border: 1px solid #dee2e6;
+  }
+
+  .table th:nth-child(1), .table td:nth-child(1) {
+    width: 40%;
+  }
+  
+  .table th:nth-child(2), .table td:nth-child(2) {
+    width: 20%;
+  }
+  
+  .table th:nth-child(3), .table td:nth-child(3) {
+    width: 30%;
   }
 
   .btn-grey {

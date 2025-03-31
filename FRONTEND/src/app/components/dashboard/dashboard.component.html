@@ -5,8 +5,6 @@
     {{ alertMessage }}
   </div>
 
-  <h2 class="text-center">Termékek Kezelése</h2>
-
   <div class="mt-3">
     <div class="row" [ngClass]="{'justify-content-center': isAdmin()==false}">
 
@@ -142,12 +140,13 @@
               <h3 class="text-center">Tárolók</h3>
               <div class="input-group mb-2">
                 <input [(ngModel)]="newStoragePlace" placeholder="Új Tároló Felvétele" class="form-control">
-                <button class="btn btn-grey" (click)="createStoragePlace()">Hozzáadás</button>
+                <button class="btn btn-grey" (click)="createStoragePlace()" [disabled]="!newStoragePlace || newStoragePlace.trim() === ''">Hozzáadás</button>
               </div>
               <div *ngFor="let storagePlace of storagePlaces" class="row my-1">
                 <div class="input-group">
                   <input [(ngModel)]="storagePlace.storage" class="form-control" readonly>
-                  <button class="btn btn-grey btn-sm" (click)="deleteStoragePlace(storagePlace.id)">Törlés</button>
+                  <button class="btn btn-grey btn-sm" (click)="openTypeDeleteModal('storagePlace', storagePlace.id)"
+                    data-bs-toggle="modal" data-bs-target="#deleteTypeConfirmationModal">Törlés</button>
                 </div>
               </div>
             </div>
@@ -157,12 +156,13 @@
               <h3 class="text-center">Termékek</h3>
               <div class="input-group mb-2">
                 <input [(ngModel)]="newItemName" placeholder="Új Termék Felvétele" class="form-control">
-                <button class="btn btn-grey" (click)="createItemName()">Hozzáadás</button>
+                <button class="btn btn-grey" (click)="createItemName()" [disabled]="!newItemName || newItemName.trim() === ''">Hozzáadás</button>
               </div>
               <div *ngFor="let itemName of itemNames" class="row my-1">
                 <div class="input-group">
                   <input [(ngModel)]="itemName.item" class="form-control" readonly>
-                  <button class="btn btn-grey btn-sm" (click)="deleteItemName(itemName.id)">Törlés</button>
+                  <button class="btn btn-grey btn-sm" (click)="openTypeDeleteModal('itemName',itemName.id)"
+                  data-bs-toggle="modal" data-bs-target="#deleteTypeConfirmationModal">Törlés</button>
                 </div>
               </div>
             </div>
@@ -200,11 +200,32 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-grey" data-bs-dismiss="modal">Mégse</button>
-        <button type="button" class="btn btn-grey" (click)="createItem()" data-bs-dismiss="modal">Hozzáadás</button>
+        <button type="button" class="btn btn-grey" (click)="createItem()" data-bs-dismiss="modal" [disabled]="!newItem.itemNameId || !newItem.storagePlaceId || !newItem.quantity">Hozzáadás</button>
       </div>
     </div>
   </div>
 </div>
+
+  <!--Storage/Item Type Delete Confirmation Modal-->
+<div class="modal fade" id="deleteTypeConfirmationModal" tabindex="-1" role="dialog" aria-labelledby="deleteTypeConfirmationModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deleteTypeConfirmationModalLabel">Megerősítés</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        Biztosan törölni szeretné a kijelölt {{ deleteType === 'itemName' ? 'terméket' : 'tárolót' }}?
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-grey" data-bs-dismiss="modal">Mégse</button>
+        <button type="button" class="btn btn-grey" (click)="confirmTypeDelete()"
+          data-bs-dismiss="modal">Törlés</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 
   <!-- Delete Confirmation Modal -->
 <div class="modal fade" id="deleteConfirmationModal" tabindex="-1" role="dialog" aria-labelledby="deleteConfirmationModalLabel" aria-hidden="true">
@@ -215,7 +236,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        Biztosan törölni szeretné a kijelölt elemeket?
+        Biztosan törölni szeretné a kijelölt termékeket?
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-grey" data-bs-dismiss="modal">Mégse</button>
