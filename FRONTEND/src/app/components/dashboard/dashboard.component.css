@@ -27,6 +27,16 @@ h2, h3, h4 {
   line-height: 1.5;
 }
 
+.scrollable-section {
+  max-height: 200px;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  padding-right: 5px;
+  box-sizing: content-box;
+  scrollbar-color: #b4aead #f1f1f1;
+  scrollbar-width: thin;
+}
+
 .custom-input {
   width: 100%;
 }

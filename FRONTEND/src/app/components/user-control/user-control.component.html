@@ -1,13 +1,8 @@
 <div class="container mt-5">
-  <div 
-    *ngIf="alertMessage" 
-    class="alert alert-dismissible fade show alert-message" 
-    [ngClass]="{'alert-danger': isError, 'alert-info': !isError}" 
-    role="alert">
+  <div *ngIf="alertMessage" class="alert alert-dismissible fade show alert-message" 
+    [ngClass]="{'alert-danger': isError, 'alert-info': !isError}" role="alert">
     {{ alertMessage }}
   </div>
-
-
 
   <div class="row">
     <div class="form-group col-sm-4 mb-1">
@@ -38,7 +33,7 @@
                   data-bs-toggle="modal"
                   data-bs-target="#registerModal"
                   aria-label="Add User">
-                  <i class="bi bi-person-fill-add fs-4"></i>
+                  <i class="bi bi-person-fill-add fs-3"></i>
                 </button>
               </th>
             </tr>
@@ -50,7 +45,7 @@
                 <td>
                   <i 
                     class="bi fs-5" 
-                    [ngClass]="user.isAdmin ? 'bi bi-check-lg' : 'bi bi-x-lg'"
+                    [ngClass]="user.isAdmin ? 'bi bi-check-lg text-success' : 'bi bi-x-lg text-danger'"
                     aria-label="Admin Status"
                   ></i>
                 </td>
@@ -59,16 +54,16 @@
                     <span
                       (click)="promoteUser(user.userEmail)" class="mouse-hover"
                       *ngIf="!user.isAdmin">
-                      <i class="bi bi-person-fill-up fs-4 text-success"></i>
+                      <i class="bi bi-person-fill-up fs-3 text-success"></i>
                     </span>
                     <span
                       (click)="demoteUser(user.userEmail)" class="mouse-hover"
                       *ngIf="user.isAdmin">
-                      <i class="bi bi-person-fill-down fs-4 text-warning"></i>
+                      <i class="bi bi-person-fill-down fs-3 text-warning"></i>
                     </span>
                     <span
-                      (click)="disableUser(user.userEmail)" class="mouse-hover ml-1">
-                      <i class="bi bi-person-fill-x fs-4 text-danger"></i>
+                      (click)="disableUser(user.userEmail)" class="mouse-hover ml-3">
+                      <i class="bi bi-person-fill-x fs-3 text-danger"></i>
                   </span>
                   </ng-container>
                   <ng-template #currentUserDisplay>
@@ -95,7 +90,7 @@
                 <td>{{ user.userEmail }}</td>
                 <td>
                   <span (click)="enableUser(user.userEmail)" class="mouse-hover">
-                  <i class="bi bi-person-fill-check fs-4 text-success"></i>
+                  <i class="bi bi-person-fill-check fs-3 text-success"></i>
                 </span>
                 </td>
               </tr>
@@ -105,7 +100,7 @@
       </div>
   </div>
 
-<!-- User Registarion Modal -->
+  <!-- User Registarion Modal -->
 <div class="modal fade" id="registerModal" tabindex="-1" role="dialog" aria-labelledby="registerModalTitle" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
@@ -115,7 +110,6 @@
       </div>
       <form (ngSubmit)="registerUser()">
         <div class="modal-body">
-       
           <div class="form-group">
             <label for="email">Email:</label>
             <input
@@ -141,7 +135,6 @@
           <button type="submit" class="btn btn-grey" [disabled]="!userEmail || userEmail.trim() === ''" data-bs-dismiss="modal">Email Küldése</button>
         </div>
       </form>  
-     
     </div>
   </div>
 </div>

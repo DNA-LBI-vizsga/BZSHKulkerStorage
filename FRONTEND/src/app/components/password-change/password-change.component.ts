@@ -13,8 +13,10 @@ export class PasswordChangeComponent {
   confirmPassword: string = '';
   showPassword: boolean = false;
   
-  alertMessage: string = '';
+  alertMessage: string | null = null;
   isError: boolean = false;
+
+  timeoutId: any = null;
 
   passwordRequirements = [
     { text: 'Min. 8 karakter hosszú', isValid: false },
@@ -55,11 +57,18 @@ export class PasswordChangeComponent {
     }
   }
 
-  showMessage(msg: string, isError: boolean = false, duration: number = 3000): void {
+  showMessage(msg: string, isError: boolean, duration: number): void {
     this.alertMessage = msg;
     this.isError = isError;
-    setTimeout(() => {
-      this.alertMessage = '';
+    
+    if (this.timeoutId) {
+      clearTimeout(this.timeoutId);
+    }
+
+    this.timeoutId = setTimeout(() => {
+      this.alertMessage = null;
+      this.isError = false;
+      this.timeoutId = null;
     }, duration);
   }
 

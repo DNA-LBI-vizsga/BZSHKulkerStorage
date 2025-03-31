@@ -21,6 +21,8 @@ export class UserControlComponent implements OnInit{
   alertMessage: string | null = null;
   isError: boolean = false;
 
+  timeoutId: any = null;
+
   constructor(private baseService: BaseService, private router: Router){ }
 
   ngOnInit(): void { 
@@ -33,11 +35,11 @@ export class UserControlComponent implements OnInit{
       this.filteredUsers = this.users;
 
       this.filteredUsers.sort((a, b) => {
-        if (a.userEmail == this.currentUser) return -1; // Current user comes first
+        if (a.userEmail == this.currentUser) return -1;
         if (b.userEmail == this.currentUser) return 1;
-        if (a.isAdmin && !b.isAdmin) return -1; // Admins come next
+        if (a.isAdmin && !b.isAdmin) return -1;
         if (!a.isAdmin && b.isAdmin) return 1;
-        return a.userEmail.localeCompare(b.userEmail); // Sort alphabetically for others
+        return a.userEmail.localeCompare(b.userEmail);
       });
     });
   }
@@ -115,8 +117,6 @@ export class UserControlComponent implements OnInit{
       }
     );
   }
-
-  timeoutId: any = null;
   
   applyFilter(): void{
     this.filteredUsers = this.users.filter(user =>
@@ -132,11 +132,10 @@ export class UserControlComponent implements OnInit{
       clearTimeout(this.timeoutId);
     }
 
-    // Set a new timeout
     this.timeoutId = setTimeout(() => {
       this.alertMessage = null;
       this.isError = false;
-      this.timeoutId = null; // Reset the timeoutId
+      this.timeoutId = null;
     }, duration);
   }
 }

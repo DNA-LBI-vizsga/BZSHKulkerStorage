@@ -200,9 +200,25 @@ export class DashboardComponent implements OnInit {
       this.showMessage('A raktár helye nem lehet üres!', true, 3000);
       return;
     }
-    this.baseService.createStoragePlace(this.newStoragePlace).subscribe(() => {
-      this.loadStoragePlaces();
-      this.newStoragePlace = '';
+  
+    const isDuplicate = this.storagePlaces.some(
+      place => place.storage.toLowerCase() === this.newStoragePlace.trim().toLowerCase()
+    );
+    if (isDuplicate) {
+      this.showMessage('Ez a raktár már létezik!', true, 3000);
+      return;
+    }
+  
+    this.baseService.createStoragePlace(this.newStoragePlace).subscribe({
+      next: () => {
+        this.loadStoragePlaces();
+        this.newStoragePlace = '';
+        this.showMessage('A raktár sikeresen hozzáadva!', false, 3000);
+      },
+      error: (err) => {
+        console.error('Error creating storage place:', err);
+        this.showMessage('Hiba a raktár hozzáadása közben! Próbálja újra.', true, 5000);
+      }
     });
   }
 
@@ -224,9 +240,23 @@ export class DashboardComponent implements OnInit {
       this.showMessage('A termék neve nem lehet üres!', true, 3000);
       return;
     }
-    this.baseService.createItemName(this.newItemName).subscribe(() => {
-      this.loadItemNames();
-      this.newItemName = '';
+  
+    const isDuplicate = this.itemNames.some(item => item.item.toLowerCase() === this.newItemName.trim().toLowerCase());
+    if (isDuplicate) {
+      this.showMessage('Ez a termék típus már létezik!', true, 3000);
+      return;
+    }
+  
+    this.baseService.createItemName(this.newItemName).subscribe({
+      next: () => {
+        this.loadItemNames();
+        this.newItemName = '';
+        this.showMessage('A termék sikeresen hozzáadva!', false, 3000);
+      },
+      error: (err) => {
+        console.error('Error creating item name:', err);
+        this.showMessage('Hiba a termék hozzáadása közben! Próbálja újra.', true, 5000);
+      }
     });
   }
 
@@ -498,11 +528,10 @@ export class DashboardComponent implements OnInit {
       clearTimeout(this.timeoutId);
     }
 
-    // Set a new timeout
     this.timeoutId = setTimeout(() => {
       this.alertMessage = null;
       this.isError = false;
-      this.timeoutId = null; // Reset the timeoutId
+      this.timeoutId = null;
     }, duration);
   }
 }

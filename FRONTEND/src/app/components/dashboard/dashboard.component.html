@@ -44,7 +44,7 @@
           </div>
         </div>
 
-        <table class="table table-bordered table-hover">
+        <table class="table table-bordered table-striped">
           <thead class="thead-light">
             <tr>
               <th (click)="orderBy('id')">
@@ -133,15 +133,16 @@
 
       <!-- Admin Section -->
       <div class="col-lg-4 col-12 admin-tasks" *ngIf="isAdmin()">
-          <div class="row">
-
-            <!-- Storage Control Section -->
-            <div class="col-12 storage-control mb-3">
-              <h3 class="text-center">Tárolók</h3>
-              <div class="input-group mb-2">
-                <input [(ngModel)]="newStoragePlace" placeholder="Új Tároló Felvétele" class="form-control">
-                <button class="btn btn-grey" (click)="createStoragePlace()" [disabled]="!newStoragePlace || newStoragePlace.trim() === ''">Hozzáadás</button>
-              </div>
+        <div class="row">
+      
+          <!-- Storage Control Section -->
+          <div class="col-12 storage-control mb-3">
+            <h3 class="text-center">Tárolók</h3>
+            <div class="input-group mb-2">
+              <input [(ngModel)]="newStoragePlace" placeholder="Új Tároló Felvétele" class="form-control">
+              <button class="btn btn-grey" (click)="createStoragePlace()" [disabled]="!newStoragePlace || newStoragePlace.trim() === ''">Hozzáadás</button>
+            </div>
+            <div class="scrollable-section">
               <div *ngFor="let storagePlace of storagePlaces" class="row my-1">
                 <div class="input-group">
                   <input [(ngModel)]="storagePlace.storage" class="form-control" readonly>
@@ -150,23 +151,27 @@
                 </div>
               </div>
             </div>
-
-            <!-- Item Name Control Section -->
-            <div class="col-12 item-name-control">
-              <h3 class="text-center">Termékek</h3>
-              <div class="input-group mb-2">
-                <input [(ngModel)]="newItemName" placeholder="Új Termék Felvétele" class="form-control">
-                <button class="btn btn-grey" (click)="createItemName()" [disabled]="!newItemName || newItemName.trim() === ''">Hozzáadás</button>
-              </div>
+          </div>
+      
+          <!-- Item Name Control Section -->
+          <div class="col-12 item-name-control">
+            <h3 class="text-center">Termékek</h3>
+            <div class="input-group mb-2">
+              <input [(ngModel)]="newItemName" placeholder="Új Termék Felvétele" class="form-control">
+              <button class="btn btn-grey" (click)="createItemName()" [disabled]="!newItemName || newItemName.trim() === ''">Hozzáadás</button>
+            </div>
+            <div class="scrollable-section">
               <div *ngFor="let itemName of itemNames" class="row my-1">
                 <div class="input-group">
                   <input [(ngModel)]="itemName.item" class="form-control" readonly>
-                  <button class="btn btn-grey btn-sm" (click)="openTypeDeleteModal('itemName',itemName.id)"
-                  data-bs-toggle="modal" data-bs-target="#deleteTypeConfirmationModal">Törlés</button>
+                  <button class="btn btn-grey btn-sm" (click)="openTypeDeleteModal('itemName', itemName.id)"
+                    data-bs-toggle="modal" data-bs-target="#deleteTypeConfirmationModal">Törlés</button>
                 </div>
               </div>
             </div>
           </div>
+      
+        </div>
       </div>
     </div>
   </div>

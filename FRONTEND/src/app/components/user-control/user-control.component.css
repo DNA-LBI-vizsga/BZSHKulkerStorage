@@ -1,68 +1,74 @@
+/* Typography */
+h2, h3, h4 {
+  color: #333;
+  font-weight: bold;
+}
+
+/* Buttons */
+.btn-grey {
+  background-color: #b4aead;
+  color: black;
+  border: none;
+}
+
+/* Inputs */
 .form-check-input {
-    border: 1px solid #333;
-  }
+  border: 1px solid #333;
+}
 
-  h2, h3, h4 {
-    color: #333;
-    font-weight: bold;
-  }
+/* Mouse Interaction */
+.mouse-hover {
+  cursor: pointer;
+}
 
-  .mouse-hover{
-    cursor: pointer;
-  }
+/* Alert Messages */
+.alert-message {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1055; /* Higher than Bootstrap's modal-backdrop (z-index: 1040) */
+  width: 50%;
+  text-align: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
 
-  .alert-message{
-    position: fixed;
-    top: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 1055; /* Higher than Bootstrap's modal-backdrop (z-index: 1040) */
-    width: 50%;
-    text-align: center;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  }
+/* Tables */
+.table {
+  width: 100%;
+  margin-top: 20px;
+  border-collapse: separate;
+  border: 5px solid #a2c2e2;
+  border-radius: 8px;
+}
 
-  .table {
-    width: 100%;
-    margin-top: 20px;
-    border-collapse: separate;
-    border: 5px solid #a2c2e2;
-    border-radius: 8px;
-  }
-  
-  .table th, .table td {
-    text-align: center;
-    vertical-align: middle;
-    padding: 10px;
-  }
-  
-  .table thead th {
-    background-color: #f8f9fa;
-    font-weight: bold;
-  }
-  
-  .table tbody tr:hover {
-    background-color: #f1f1f1;
-  }
-  
-  .table-bordered th, .table-bordered td {
-    border: 1px solid #dee2e6;
-  }
+.table th, .table td {
+  text-align: center;
+  vertical-align: middle;
+  padding: 10px;
+}
 
-  .table th:nth-child(1), .table td:nth-child(1) {
-    width: 40%;
-  }
-  
-  .table th:nth-child(2), .table td:nth-child(2) {
-    width: 20%;
-  }
-  
-  .table th:nth-child(3), .table td:nth-child(3) {
-    width: 30%;
-  }
+.table thead th {
+  background-color: #f8f9fa;
+  font-weight: bold;
+}
 
-  .btn-grey {
-    background-color: #b4aead;
-    color: black;
-    border: none;
-  }
+.table tbody tr:hover {
+  background-color: #f1f1f1;
+}
+
+.table-bordered th, .table-bordered td {
+  border: 1px solid #dee2e6;
+}
+
+.table th:nth-child(1), .table td:nth-child(1) {
+  width: 40%;
+}
+
+.table th:nth-child(2), .table td:nth-child(2) {
+  width: 20%;
+}
+
+.table th:nth-child(3), .table td:nth-child(3) {
+  width: 30%;
+}

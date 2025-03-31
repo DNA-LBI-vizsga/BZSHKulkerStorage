@@ -12,8 +12,10 @@ export class LoginComponent {
   userPassword: string = '';
   showPassword: boolean = false;
 
-  alertMessage: string = '';
+  alertMessage: string | null = null;
   isError: boolean = false;
+
+  timeoutId: any = null;
   
   constructor(private baseService: BaseService, private router: Router) { }
 
@@ -66,11 +68,18 @@ export class LoginComponent {
     );
   }
 
-  showMessage(msg: string, isError: boolean = false, duration: number = 3000): void {
+  showMessage(msg: string, isError: boolean, duration: number): void {
     this.alertMessage = msg;
     this.isError = isError;
-    setTimeout(() => {
-      this.alertMessage = '';
+    
+    if (this.timeoutId) {
+      clearTimeout(this.timeoutId);
+    }
+
+    this.timeoutId = setTimeout(() => {
+      this.alertMessage = null;
+      this.isError = false;
+      this.timeoutId = null;
     }, duration);
   }
 
