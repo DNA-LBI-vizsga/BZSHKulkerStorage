@@ -1,13 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import { BaseService } from '../../services/base.service';
+import { UserService } from '../../services/user/user.service';
 
 @Component({
   selector: 'app-user-control',
   templateUrl: './user-control.component.html',
   styleUrls: ['./user-control.component.css']
 })
-export class UserControlComponent implements OnInit{
+export class UserControlComponent implements OnInit {
 
   userEmail: string = '';
   isAdmin: boolean = false;
@@ -23,14 +22,14 @@ export class UserControlComponent implements OnInit{
 
   timeoutId: any = null;
 
-  constructor(private baseService: BaseService, private router: Router){ }
+  constructor(private userService: UserService) { }
 
-  ngOnInit(): void { 
+  ngOnInit(): void {
     this.loadUsers();
   }
 
   loadUsers(): void {
-    this.baseService.getUsers().subscribe( data => {
+    this.userService.getUsers().subscribe(data => {
       this.users = data;
       this.filteredUsers = this.users;
 
@@ -47,7 +46,7 @@ export class UserControlComponent implements OnInit{
   registerUser(): void {
     const token = localStorage.getItem('authToken');
     if (token) {
-      this.baseService.registerUser(this.userEmail, this.isAdmin).subscribe(
+      this.userService.registerUser(this.userEmail, this.isAdmin).subscribe(
         response => {
           this.showMessage('Email kiküldve!', false, 5000);
           console.log('User registered:', response);
@@ -63,7 +62,7 @@ export class UserControlComponent implements OnInit{
   }
 
   disableUser(userEmail: string): void {
-    this.baseService.disableUser(userEmail).subscribe(
+    this.userService.disableUser(userEmail).subscribe(
       response => {
         this.showMessage('Felhasználó letiltva!', false, 3000);
         console.log('User disabled:', response);
@@ -77,7 +76,7 @@ export class UserControlComponent implements OnInit{
   }
 
   enableUser(userEmail: string): void {
-    this.baseService.enableUser(userEmail).subscribe(
+    this.userService.enableUser(userEmail).subscribe(
       response => {
         this.showMessage('Felhasználó aktiválva!', false, 3000);
         console.log('User enabled:', response);
@@ -91,7 +90,7 @@ export class UserControlComponent implements OnInit{
   }
 
   promoteUser(userEmail: string): void {
-    this.baseService.promoteUser(userEmail).subscribe(
+    this.userService.promoteUser(userEmail).subscribe(
       response => {
         this.showMessage('Admin jog átállítva!', false, 3000);
         console.log('User promoted:', response);
@@ -105,7 +104,7 @@ export class UserControlComponent implements OnInit{
   }
 
   demoteUser(userEmail: string): void {
-    this.baseService.demoteUser(userEmail).subscribe(
+    this.userService.demoteUser(userEmail).subscribe(
       response => {
         this.showMessage('Admin jog elvéve!', false, 3000);
         console.log('User demoted:', response);
@@ -117,8 +116,8 @@ export class UserControlComponent implements OnInit{
       }
     );
   }
-  
-  applyFilter(): void{
+
+  applyFilter(): void {
     this.filteredUsers = this.users.filter(user =>
       user.userEmail.toLowerCase().includes(this.filterText.toLowerCase())
     );
@@ -127,7 +126,7 @@ export class UserControlComponent implements OnInit{
   showMessage(msg: string, isError: boolean, duration: number): void {
     this.alertMessage = msg;
     this.isError = isError;
-    
+
     if (this.timeoutId) {
       clearTimeout(this.timeoutId);
     }

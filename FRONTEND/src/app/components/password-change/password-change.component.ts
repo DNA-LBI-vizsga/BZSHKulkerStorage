@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { BaseService } from '../../services/base.service';
+import { UserService } from '../../services/user/user.service';
 import { Router } from '@angular/router';
 
 @Component({
@@ -26,7 +26,7 @@ export class PasswordChangeComponent {
     { text: 'Speciális karakter (!@#$%^&*)', isValid: false }
   ];
 
-  constructor(private baseService: BaseService, private router: Router) { }
+  constructor(private userService : UserService, private router: Router) { }
 
   togglePasswordVisibility(): void {
     this.showPassword = !this.showPassword;
@@ -34,10 +34,9 @@ export class PasswordChangeComponent {
 
   changePassword(): void {
     if(this.newPassword === this.confirmPassword){
-      this.baseService.firstLogin(this.newPassword).subscribe(
+      this.userService.firstLogin(this.newPassword).subscribe(
         response => {
           console.log('Password changed:', response);
-          localStorage.removeItem('authToken');
           this.router.navigate(['/login']);
         },
         error => {

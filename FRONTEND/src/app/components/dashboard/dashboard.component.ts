@@ -1,6 +1,11 @@
 import { Component, OnInit } from '@angular/core';
-import { BaseService } from '../../services/base.service';
+import { AuthService } from '../../services/auth/auth.service';
 import * as XLSX from 'xlsx';
+import { ItemNameService } from '../../services/item-name/item-name.service';
+import { StorageService } from '../../services/storage/storage.service';
+import { ItemService } from '../../services/item/item.service';
+import { LogService } from '../../services/log/log.service';
+
 
 interface Item {
   id: number;
@@ -41,6 +46,10 @@ export class DashboardComponent implements OnInit {
   // Messages
   alertMessage: string | null = null;
   isError: boolean = false;
+  timeoutId: any = null;
+
+  deleteType: 'itemName' | 'storagePlace' = 'itemName';
+  deleteId: number | null = null;
 
   // Modals
   newItem: any = {
@@ -73,96 +82,32 @@ export class DashboardComponent implements OnInit {
   // Selection
   isChecked: boolean = false;
 
-  deleteType: 'itemName' | 'storagePlace' = 'itemName';
-  deleteId: number | null = null;
-
-  timeoutId: any = null;
+  // Admin Check
+  isAdmin: boolean = false;
 
   
-  constructor(private baseService: BaseService) {}
-
-  openTypeDeleteModal(type: 'itemName' | 'storagePlace', id: number): void {
-    this.deleteType = type;
-    this.deleteId = id;
-  }
-
-  confirmTypeDelete(): void {
-    if (this.deleteType === 'itemName') {
-      this.deleteItemName(this.deleteId!);
-    }
-    if (this.deleteType === 'storagePlace') {
-      this.deleteStoragePlace(this.deleteId!);
-    }
-  }
+  constructor(
+    private authService: AuthService,
+    private itemService: ItemService, 
+    private itemNameService: ItemNameService,
+    private storageService: StorageService,
+    private logService: LogService
+  ) {}
   
   ngOnInit(): void {
+    this.isAdmin = this.authService.isAdmin();
     this.loadItemNames();
     this.loadStoragePlaces();
     this.loadItems();
   }
 
-  
-  // CRUD Methods
-  createItem(): void {
-    if (!this.newItem.quantity || !this.newItem.itemNameId || !this.newItem.storagePlaceId) {
-      this.showMessage('Minden mező kitöltése kötelező!', true, 3000);
-      return;
-    }
-  
-    this.baseService.createItem(this.newItem.itemNameId, this.newItem.storagePlaceId, this.newItem.quantity).subscribe({
-      next: () => {
-        this.filterText = '';
-        this.loadItems();
-        this.newItem = { itemNameId: null, quantity: 0 };
-        this.showMessage('Sikeres hozzáadás!', false, 3000);
-      },
-      error: (err) => {
-        console.error('Error creating item:', err);
-        this.showMessage('Hiba történt a termék hozzáadása közben! Próbálja újra.', true, 5000);
-      }
-    });
-  }
-
-  deleteItem(itemIdList: number[]): void {
-    this.baseService.deleteItem(itemIdList).subscribe({
-      next: () => {
-        this.loadItemNames();
-        this.loadItems();
-        this.clearSelection();
-        this.filterText = '';
-        this.showMessage('A termék(ek) sikeresen törölve!', false, 3000); // Success message
-      },
-      error: err => {
-        console.error('Error deleting item(s):', err);
-        this.showMessage('Hiba történt a termék(ek) törlése közben! Próbálja újra.', true, 5000); // Error message
-      }
-    });
-  }
-
-  updateItem(itemIdList: number[], newStoragePlaceId: number): void {
-    this.baseService.updateItem(itemIdList, newStoragePlaceId).subscribe({
-      next: () => {
-        this.loadItems();
-        this.clearSelection();
-        this.newStoragePlaceId = null;
-        this.filterText = '';
-        this.showMessage('A termék(ek) sikeresen áthelyezve!', false, 3000); // Success message
-      },
-      error: (err) => {
-        console.error('Error updating item(s):', err);
-        this.showMessage('Hiba történt a termék(ek) áthelyezése közben! Próbálja újra.', true, 5000); // Error message
-      }
-    });
-  }
-
-  
   // Loading Data
   loadItems(): void {
     if (this.itemNames.length === 0) {
       this.loadItemNames();
     }
 
-    this.baseService.getItems().subscribe((data: Item[]) => {
+    this.itemService.getItems().subscribe((data: Item[]) => {
       this.items = data.map((item: Item) => ({
         ...item,
         productCode: `BZSH-${this.getItemName(item.itemNameId)}-${item.id}`
@@ -180,21 +125,74 @@ export class DashboardComponent implements OnInit {
   }
 
   loadStoragePlaces(): void {
-    this.baseService.getStoragePlaces().subscribe(data => {
+    this.storageService.getStoragePlaces().subscribe(data => {
       this.storagePlaces = data;
       console.log("Storage Places: ", this.storagePlaces);
     });
   }
 
   loadItemNames(): void {
-    this.baseService.getItemNames().subscribe(data => {
+    this.itemNameService.getItemNames().subscribe(data => {
       this.itemNames = data;
       console.log("Item Names: ", this.itemNames);
     });
   }
 
   
-  // Create / Delete Item Names & Storage Places
+  // Item CRUD Methods
+  createItem(): void {
+    if (!this.newItem.quantity || !this.newItem.itemNameId || !this.newItem.storagePlaceId) {
+      this.showMessage('Minden mező kitöltése kötelező!', true, 3000);
+      return;
+    }
+  
+    this.itemService.createItem(this.newItem.itemNameId, this.newItem.storagePlaceId, this.newItem.quantity).subscribe({
+      next: () => {
+        this.filterText = '';
+        this.loadItems();
+        this.newItem = { itemNameId: null, quantity: 0 };
+        this.showMessage('Sikeres hozzáadás!', false, 3000);
+      },
+      error: (err) => {
+        console.error('Error creating item:', err);
+        this.showMessage('Hiba történt a termék hozzáadása közben! Próbálja újra.', true, 5000);
+      }
+    });
+  }
+
+  updateItem(itemIdList: number[], newStoragePlaceId: number): void {
+    this.itemService.updateItem(itemIdList, newStoragePlaceId).subscribe({
+      next: () => {
+        this.loadItems();
+        this.clearSelection();
+        this.newStoragePlaceId = null;
+        this.filterText = '';
+        this.showMessage('A termék(ek) sikeresen áthelyezve!', false, 3000);
+      },
+      error: (err) => {
+        console.error('Error updating item(s):', err);
+        this.showMessage('Hiba történt a termék(ek) áthelyezése közben! Próbálja újra.', true, 5000);
+      }
+    });
+  }
+
+  deleteItem(itemIdList: number[]): void {
+    this.itemService.deleteItem(itemIdList).subscribe({
+      next: () => {
+        this.loadItemNames();
+        this.loadItems();
+        this.clearSelection();
+        this.filterText = '';
+        this.showMessage('A termék(ek) sikeresen törölve!', false, 3000); // Success message
+      },
+      error: err => {
+        console.error('Error deleting item(s):', err);
+        this.showMessage('Hiba történt a termék(ek) törlése közben! Próbálja újra.', true, 5000); // Error message
+      }
+    });
+  }
+  
+  // Create / Delete Storage Place
   createStoragePlace(): void {
     if (!this.newStoragePlace || this.newStoragePlace.trim() === '') {
       this.showMessage('A raktár helye nem lehet üres!', true, 3000);
@@ -209,7 +207,7 @@ export class DashboardComponent implements OnInit {
       return;
     }
   
-    this.baseService.createStoragePlace(this.newStoragePlace).subscribe({
+    this.storageService.createStoragePlace(this.newStoragePlace).subscribe({
       next: () => {
         this.loadStoragePlaces();
         this.newStoragePlace = '';
@@ -223,7 +221,7 @@ export class DashboardComponent implements OnInit {
   }
 
   deleteStoragePlace(id: number): void {
-    this.baseService.deleteStoragePlace(id).subscribe({
+    this.storageService.deleteStoragePlace(id).subscribe({
       next: () => {
         this.loadStoragePlaces();
         this.showMessage('A raktár törlése sikeres!', false, 3000);
@@ -235,6 +233,7 @@ export class DashboardComponent implements OnInit {
     });
   }
 
+   // Create / Delete Item Name
   createItemName(): void {
     if (!this.newItemName || this.newItemName.trim() === '') {
       this.showMessage('A termék neve nem lehet üres!', true, 3000);
@@ -247,7 +246,7 @@ export class DashboardComponent implements OnInit {
       return;
     }
   
-    this.baseService.createItemName(this.newItemName).subscribe({
+    this.itemNameService.createItemName(this.newItemName).subscribe({
       next: () => {
         this.loadItemNames();
         this.newItemName = '';
@@ -261,7 +260,7 @@ export class DashboardComponent implements OnInit {
   }
 
   deleteItemName(id: number): void {
-    this.baseService.deleteItemName(id).subscribe({
+    this.itemNameService.deleteItemName(id).subscribe({
       next: () => {
         this.loadItemNames();
         this.showMessage('A termék törlése sikeres!', false, 3000);
@@ -349,7 +348,7 @@ export class DashboardComponent implements OnInit {
       return;
     }
 
-    this.baseService.downloadLogs(this.logFilters).subscribe(
+    this.logService.downloadLogs(this.logFilters).subscribe(
       response => {
         const url = window.URL.createObjectURL(response);
         const a = document.createElement('a');
@@ -479,15 +478,6 @@ export class DashboardComponent implements OnInit {
     return storagePlace ? storagePlace.storage : 'Unknown';
   }
 
-  isAdmin(): boolean {
-    const token = localStorage.getItem('authToken');
-    if (token) {
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      return payload.isAdmin;
-    }
-    return false;
-  }
-
   validateFilters(): boolean {
     this.filterError = null;
     if (this.logFilters.fromDate && this.logFilters.toDate) {
@@ -518,6 +508,20 @@ export class DashboardComponent implements OnInit {
       toDate: undefined
     };
     this.filterError = null;
+  }
+
+  openTypeDeleteModal(type: 'itemName' | 'storagePlace', id: number): void {
+    this.deleteType = type;
+    this.deleteId = id;
+  }
+
+  confirmTypeDelete(): void {
+    if (this.deleteType === 'itemName') {
+      this.deleteItemName(this.deleteId!);
+    }
+    if (this.deleteType === 'storagePlace') {
+      this.deleteStoragePlace(this.deleteId!);
+    }
   }
 
   showMessage(msg: string, isError: boolean, duration: number): void {

@@ -1,12 +1,12 @@
 <div class="container mt-5">
   <!--Alert-->
   <div *ngIf="alertMessage" class="alert alert-dismissible fade show alert-message"
-    [ngClass]="{'alert-danger': isError, 'alert-info': !isError}" role="alert">
+    [ngClass]="{'alert-danger': isError, 'alert-info': !isError}" role="alert" (click)="alertMessage = null">
     {{ alertMessage }}
   </div>
 
   <div class="mt-3">
-    <div class="row" [ngClass]="{'justify-content-center': isAdmin()==false}">
+    <div class="row" [ngClass]="{'justify-content-center': !isAdmin}">
 
       <!-- Filter Input -->
       <div class="form-group col-sm-4">
@@ -26,7 +26,7 @@
     </div>
 
     <!-- Items Display -->
-    <div class="row" [ngClass]="{'justify-content-center': isAdmin()==false}">
+    <div class="row" [ngClass]="{'justify-content-center': !isAdmin}">
       <div class="col-lg-8 col-12">
 
         <!-- Actions Top -->
@@ -35,7 +35,7 @@
             <button type="button" class="btn btn-grey btn-sm mr-2" data-bs-toggle="modal"
               data-bs-target="#addItemModal">Hozzáadás</button>
               <button type="button" class="btn btn-grey btn-sm mr-2" (click)="resetFilters()">Szűrők Törlése</button>
-            <ng-container *ngIf="isAdmin()">
+            <ng-container *ngIf="isAdmin">
               <button type="button" class="btn btn-grey btn-sm mr-2" [disabled]="selectedItemIds.length === 0"
                 data-bs-toggle="modal" data-bs-target="#deleteConfirmationModal">Törlés</button>
               <button type="button" class="btn btn-grey btn-sm mr-2" [disabled]="selectedItemIds.length === 0"
@@ -64,7 +64,7 @@
                 <i class="bi"
                   [ngClass]="currentSortColumn == 'storagePlace' ? (isAscending ? 'bi-arrow-down' : 'bi-arrow-up') : 'bi-arrow-down invisible'"></i>
               </th>
-              <ng-container *ngIf="isAdmin()">
+              <ng-container *ngIf="isAdmin">
                 <th>
                   <div class="form-check d-flex justify-content-center">
                     <input type="checkbox" class="form-check-input mr-2" (change)="toggleSelectAll()">
@@ -80,7 +80,7 @@
                 <td>{{ item.productCode }}</td>
                 <td>{{ getItemName(item.itemNameId) }}</td>
                 <td>{{ getStoragePlaceById(item.storagePlaceId) }}</td>
-                <ng-container *ngIf="isAdmin()">
+                <ng-container *ngIf="isAdmin">
                   <td>
                     <div class="form-check">
                       <input type="checkbox" class="form-check-input" [value]="item.id"
@@ -100,7 +100,7 @@
             <button type="button" class="btn btn-grey btn-sm mr-2" data-bs-toggle="modal"
               data-bs-target="#addItemModal">Hozzáadás</button>
               <button type="button" class="btn btn-grey btn-sm mr-2" (click)="resetFilters()">Szűrők Törlése</button>
-            <ng-container *ngIf="isAdmin()">
+            <ng-container *ngIf="isAdmin">
               <button type="button" class="btn btn-grey btn-sm mr-2" [disabled]="selectedItemIds.length === 0"
                 data-bs-toggle="modal" data-bs-target="#deleteConfirmationModal">Törlés</button>
               <button type="button" class="btn btn-grey btn-sm mr-2" [disabled]="selectedItemIds.length === 0"
@@ -110,7 +110,7 @@
         </div>
 
         <!-- Downloads -->
-        <div class="row mt-1" *ngIf="isAdmin()">
+        <div class="row mt-1" *ngIf="isAdmin">
           <div class="col">
             <button type="button" class="btn btn-grey btn-sm mr-2" data-bs-toggle="modal"
                 data-bs-target="#downloadLogModal">Műveleti Napló Letöltése</button>
@@ -132,7 +132,7 @@
       </div>
 
       <!-- Admin Section -->
-      <div class="col-lg-4 col-12 admin-tasks" *ngIf="isAdmin()">
+      <div class="col-lg-4 col-12 admin-tasks" *ngIf="isAdmin">
         <div class="row">
       
           <!-- Storage Control Section -->

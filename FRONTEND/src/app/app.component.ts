@@ -7,4 +7,13 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'Külker Leltár';
+
+  checkAuth(): boolean {
+    const token = localStorage.getItem('authToken');
+    const payload = token ? JSON.parse(atob(token.split('.')[1])) : null;
+    if (token && payload && payload.isDisabled == false && payload.isFirstLogin == false) {
+      return true;
+    }
+    return false;
+  }
 }

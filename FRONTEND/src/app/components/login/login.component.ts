@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
-import { BaseService } from '../../services/base.service';
+import { UserService } from '../../services/user/user.service';
 
 @Component({
   selector: 'app-login',
@@ -14,10 +14,9 @@ export class LoginComponent {
 
   alertMessage: string | null = null;
   isError: boolean = false;
-
   timeoutId: any = null;
   
-  constructor(private baseService: BaseService, private router: Router) { }
+  constructor(private userService: UserService, private router: Router) { }
 
   ngOnInit(): void {
     localStorage.removeItem('authToken');
@@ -25,7 +24,7 @@ export class LoginComponent {
   }
 
   loginUser(): void {
-    this.baseService.loginUser(this.userEmail, this.userPassword).subscribe(
+    this.userService.loginUser(this.userEmail, this.userPassword).subscribe(
       response => {
         if (response.token) {
           localStorage.setItem('userEmail',this.userEmail);
@@ -52,7 +51,7 @@ export class LoginComponent {
   }
 
   passwordChange(): void {
-    this.baseService.passwordChange(this.userEmail).subscribe(
+    this.userService.passwordChange(this.userEmail).subscribe(
       response => {
         this.showMessage('Jelszó elküldve az email címre!', false, 5000);
         console.log('Password change:', response);
