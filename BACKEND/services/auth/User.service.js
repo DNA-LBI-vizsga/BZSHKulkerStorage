@@ -81,6 +81,10 @@ async function deleteAdminRole(userEmail){
             throw new Error(`User not found`);
         }
 
+        if (user.userEmail === "admin") {
+            throw new Error(`Cannot demote admin`);
+        }
+
         user.set({isAdmin: false})
         await user.save()
 
@@ -115,6 +119,10 @@ async function disableUser(userEmail){
 
         if (!user) {
             throw new Error(`User not found`);
+        }
+
+        if (user.userEmail === "admin") {
+            throw new Error(`Cannot disable admin`);
         }
 
         user.set({isDisabled: true, isAdmin: false})
