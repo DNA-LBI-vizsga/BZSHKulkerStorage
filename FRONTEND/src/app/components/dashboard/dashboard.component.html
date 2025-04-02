@@ -78,7 +78,7 @@
             <ng-container *ngFor="let item of paginatedItems">
               <tr>
                 <td>{{ item.productCode }}</td>
-                <td>{{ getItemName(item.itemNameId) }}</td>
+                <td>{{ getItemNameById(item.itemNameId) }}</td>
                 <td>{{ getStoragePlaceById(item.storagePlaceId) }}</td>
                 <ng-container *ngIf="isAdmin">
                   <td>
@@ -272,7 +272,7 @@
             </button>
           </div>
           <select [(ngModel)]="selectedStoragePlaces" class="form-select" multiple>
-            <option *ngFor="let storagePlace of storagePlaces" [value]="storagePlace.id">{{ storagePlace.storage }}
+            <option *ngFor="let storagePlace of filteredStoragePlaces" [value]="storagePlace.id">{{ storagePlace.storage }}
             </option>
           </select>
         </div>
@@ -306,7 +306,7 @@
             </button>
           </div>
           <select [(ngModel)]="selectedItemNames" class="form-select" multiple>
-            <option *ngFor="let itemName of itemNames" [value]="itemName.id">{{ itemName.item }}</option>
+            <option *ngFor="let itemName of filteredItemNames" [value]="itemName.id">{{ itemName.item }}</option>
           </select>
         </div>
       </div>
@@ -333,7 +333,7 @@
           <select [(ngModel)]="newStoragePlaceId" class="form-control custom-select">
             <ng-container *ngFor="let place of storagePlaces">
               <option [value]="place.id">{{ place.storage }}</option>
-            </ng-container> <!-- *ngIf="place.id != selectedStoragePlace" -->
+            </ng-container>
           </select>
         </div>
       </div>
@@ -398,7 +398,10 @@
         </div>
         <div class="form-group">
           <label for="filterCreatedBy"><strong>Felhasználó</strong></label>
-          <input [(ngModel)]="logFilters.createdBy" type="text" class="form-control" placeholder="Felhasználó azonosító">
+          <select [(ngModel)]="logFilters.userId" class="form-control custom-select">
+            <option [value]="undefined">Összes</option>
+            <option *ngFor="let user of users" [value]="user.userId">{{ user.userEmail }}</option>
+          </select>
         </div>
         <div class="form-group">
           <label for="filterFromDate"><strong>Kezdő Dátum</strong></label>

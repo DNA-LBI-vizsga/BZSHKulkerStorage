@@ -5,6 +5,7 @@ import { ItemNameService } from '../../services/item-name/item-name.service';
 import { StorageService } from '../../services/storage/storage.service';
 import { ItemService } from '../../services/item/item.service';
 import { LogService } from '../../services/log/log.service';
+import { UserService } from '../../services/user/user.service';
 
 
 interface Item {
@@ -27,6 +28,7 @@ export class DashboardComponent implements OnInit {
   filteredItems: any[] = [];
   storagePlaces: any[] = [];
   itemNames: any[] = [];
+  users: any[] = [];
 
   selectedItemIds: number[] = [];
   selectedStoragePlaceIds: number[] = [];
@@ -68,6 +70,7 @@ export class DashboardComponent implements OnInit {
   logFilters = {
     itemNameId: undefined,
     storagePlaceId: undefined,
+    userId: undefined,
     createdBy: undefined,
     fromDate: undefined,
     toDate: undefined
@@ -91,7 +94,8 @@ export class DashboardComponent implements OnInit {
     private itemService: ItemService, 
     private itemNameService: ItemNameService,
     private storageService: StorageService,
-    private logService: LogService
+    private logService: LogService,
+    private userService: UserService
   ) {}
   
   ngOnInit(): void {
@@ -99,6 +103,7 @@ export class DashboardComponent implements OnInit {
     this.loadItemNames();
     this.loadStoragePlaces();
     this.loadItems();
+    this.loadUsers();
   }
 
   // Loading Data
@@ -110,23 +115,24 @@ export class DashboardComponent implements OnInit {
     this.itemService.getItems().subscribe((data: Item[]) => {
       this.items = data.map((item: Item) => ({
         ...item,
-        productCode: `BZSH-${this.getItemName(item.itemNameId)}-${item.id}`
+        productCode: `BZSH-${this.getItemNameById(item.itemNameId)}-${item.id}`
       }));
 
-      const hasUnknownItemName = this.items.some(item => this.getItemName(item.itemNameId) === 'Unknown');
+      const hasUnknownItemName = this.items.some(item => this.getItemNameById(item.itemNameId) === 'Unknown');
       if (hasUnknownItemName) {
         console.warn('Unknown item name detected. Refreshing the page...');
         window.location.reload();
       }
-
-      console.log(this.items);
+      console.log("Items: ", this.items);
       this.filteredItems = [...this.items];
     });
+    
   }
 
   loadStoragePlaces(): void {
     this.storageService.getStoragePlaces().subscribe(data => {
       this.storagePlaces = data;
+      this.filteredStoragePlaces = [...this.storagePlaces];
       console.log("Storage Places: ", this.storagePlaces);
     });
   }
@@ -134,9 +140,17 @@ export class DashboardComponent implements OnInit {
   loadItemNames(): void {
     this.itemNameService.getItemNames().subscribe(data => {
       this.itemNames = data;
+      this.filteredItemNames = [...this.itemNames];
       console.log("Item Names: ", this.itemNames);
     });
   }
+
+  loadUsers(): void {
+    this.userService.getUsers().subscribe(data => {
+      this.users = data;
+      console.log("Users: ", this.users);
+      });
+  };
 
   
   // Item CRUD Methods
@@ -279,22 +293,30 @@ export class DashboardComponent implements OnInit {
   applyStorageFilter(): void { this.applyCombinedFilters(); }
   applyTableFilters(): void { this.applyCombinedFilters(); }
 
+  filteredStoragePlaces: any[] = [];
+  filteredItemNames: any[] = [];
+
   applyCombinedFilters(): void {
     const lowerCaseFilter = this.filterText.toLowerCase();
 
     this.filteredItems = this.items.filter(item => {
       const matchesSearchBar =
         item.productCode.toLowerCase().includes(lowerCaseFilter) ||
-        this.getItemName(item.itemNameId).toLowerCase().includes(lowerCaseFilter) ||
+        this.getItemNameById(item.itemNameId).toLowerCase().includes(lowerCaseFilter) ||
         this.getStoragePlaceById(item.storagePlaceId).toLowerCase().includes(lowerCaseFilter);
 
       const matchesItemName =
         this.selectedItemNames.length === 0 || this.selectedItemNames.includes(item.itemNameId);
       const matchesStoragePlace =
         this.selectedStoragePlaces.length === 0 || this.selectedStoragePlaces.includes(item.storagePlaceId);
-
       return matchesSearchBar && matchesItemName && matchesStoragePlace;
     });
+
+    const filteredItemNameIds = new Set(this.filteredItems.map(item => item.itemNameId));
+    const filteredStoragePlaceIds = new Set(this.filteredItems.map(item => item.storagePlaceId));
+
+    this.filteredItemNames = this.itemNames.filter(itemName => filteredItemNameIds.has(itemName.id));
+    this.filteredStoragePlaces = this.storagePlaces.filter(storagePlace => filteredStoragePlaceIds.has(storagePlace.id));
 
     this.currentPage = 1;
   }
@@ -302,14 +324,18 @@ export class DashboardComponent implements OnInit {
   deselectAllFilters(): void {
     this.selectedItemNames = [];
     this.selectedStoragePlaces = [];
+    this.filteredItemNames = [...this.itemNames];
+    this.filteredStoragePlaces = [...this.storagePlaces];
   }
 
   deselectItemNames(): void {
     this.selectedItemNames = [];
+    this.filteredItemNames = [...this.itemNames];
   }
 
   deselectStoragePlaces(): void {
     this.selectedStoragePlaces = [];
+    this.filteredStoragePlaces = [...this.storagePlaces];
   }
 
   toggleSelectAllItems(event: Event): void {
@@ -330,8 +356,8 @@ export class DashboardComponent implements OnInit {
       : this.filteredItems;
 
     const dataForExport = selectedItemsData.map(item => ({
-      'Termék kód': `BZSH-${this.getItemName(item.itemNameId)}-${item.id}`,
-      'Termék név': this.getItemName(item.itemNameId),
+      'Termék kód': `BZSH-${this.getItemNameById(item.itemNameId)}-${item.id}`,
+      'Termék név': this.getItemNameById(item.itemNameId),
       'Raktár hely': this.getStoragePlaceById(item.storagePlaceId)
     }));
 
@@ -384,8 +410,8 @@ export class DashboardComponent implements OnInit {
         valueA = a.id;
         valueB = b.id;
       } else if (column === "itemName") {
-        valueA = this.getItemName(a.itemNameId).toLowerCase();
-        valueB = this.getItemName(b.itemNameId).toLowerCase();
+        valueA = this.getItemNameById(a.itemNameId).toLowerCase();
+        valueB = this.getItemNameById(b.itemNameId).toLowerCase();
       } else if (column === "storagePlace") {
         valueA = this.getStoragePlaceById(a.storagePlaceId).toLowerCase();
         valueB = this.getStoragePlaceById(b.storagePlaceId).toLowerCase();
@@ -468,7 +494,7 @@ export class DashboardComponent implements OnInit {
   
   // Utility Methods
   
-  getItemName(itemNameId: number): string {
+  getItemNameById(itemNameId: number): string {
     const item = this.itemNames.find(i => i.id === itemNameId);
     return item ? item.item : 'Unknown';
   }
@@ -503,6 +529,7 @@ export class DashboardComponent implements OnInit {
     this.logFilters = {
       itemNameId: undefined,
       storagePlaceId: undefined,
+      userId: undefined,
       createdBy: undefined,
       fromDate: undefined,
       toDate: undefined

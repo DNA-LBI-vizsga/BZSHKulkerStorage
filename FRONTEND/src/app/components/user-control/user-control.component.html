@@ -24,7 +24,7 @@
             <tr>
               <th>Email</th>
               <th>
-                Admin?
+                Admin
               </th>
               <th>
                 <button
@@ -33,14 +33,14 @@
                   data-bs-toggle="modal"
                   data-bs-target="#registerModal"
                   aria-label="Add User">
-                  <i class="bi bi-person-fill-add fs-3"></i>
+                  <i class="bi bi-person-fill-add fs-3" title="Felhasználó felvétel"></i>
                 </button>
               </th>
             </tr>
           </thead>
           <tbody>
             <ng-container *ngFor="let user of filteredUsers">
-              <tr *ngIf="!user.isDisabled">
+              <tr *ngIf="!user.isDisabled && user.userEmail != 'admin'">
                 <td>{{ user.userEmail }}</td>
                 <td>
                   <i 
@@ -54,16 +54,16 @@
                     <span
                       (click)="promoteUser(user.userEmail)" class="mouse-hover"
                       *ngIf="!user.isAdmin">
-                      <i class="bi bi-person-fill-up fs-3 text-success"></i>
+                      <i class="bi bi-person-fill-up fs-3 text-success" title="Admin jog adás"></i>
                     </span>
                     <span
                       (click)="demoteUser(user.userEmail)" class="mouse-hover"
                       *ngIf="user.isAdmin">
-                      <i class="bi bi-person-fill-down fs-3 text-warning"></i>
+                      <i class="bi bi-person-fill-down fs-3 text-warning" title="Admin jog elvétel"></i>
                     </span>
                     <span
                       (click)="disableUser(user.userEmail)" class="mouse-hover ml-3">
-                      <i class="bi bi-person-fill-x fs-3 text-danger"></i>
+                      <i class="bi bi-person-fill-x fs-3 text-danger" title="Felhasználó letiltás"></i>
                   </span>
                   </ng-container>
                   <ng-template #currentUserDisplay>
@@ -90,7 +90,7 @@
                 <td>{{ user.userEmail }}</td>
                 <td>
                   <span (click)="enableUser(user.userEmail)" class="mouse-hover">
-                  <i class="bi bi-person-fill-check fs-3 text-success"></i>
+                  <i class="bi bi-person-fill-check fs-3 text-success" title="Felhasználó aktiválás"></i>
                 </span>
                 </td>
               </tr>
