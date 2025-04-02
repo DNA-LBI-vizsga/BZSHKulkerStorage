@@ -95,7 +95,6 @@ export class DashboardComponent implements OnInit {
   ) {}
   
   ngOnInit(): void {
-    this.loadItemNames();
     this.loadStoragePlaces();
     this.loadItems();
     if(this.isAdmin){
@@ -109,23 +108,18 @@ export class DashboardComponent implements OnInit {
 
   // Loading Data
   loadItems(): void {
-    if (this.itemNames.length === 0) {
-      this.loadItemNames();
-    }
-
+    // Have to load item names first and in loadItems (not onInit) to get product codes correctly
+    this.loadItemNames();
     this.itemService.getItems().subscribe((data: Item[]) => {
       this.items = data.map((item: Item) => ({
         ...item,
         productCode: `BZSH-${this.getItemNameById(item.itemNameId)}-${item.id}`
       }));
-
-      const hasUnknownItemName = this.items.some(item => this.getItemNameById(item.itemNameId) === 'Unknown');
-      if (hasUnknownItemName) {
-        console.warn('Unknown item name detected. Refreshing the page...');
-        window.location.reload();
-      }
       console.log("Items: ", this.items);
       this.filteredItems = [...this.items];
+      console.log("Filtered Items: ", this.filteredItems);
+      this.filterByItemName();
+      this.filterByStoragePlace();
     });
     
   }
@@ -313,13 +307,24 @@ export class DashboardComponent implements OnInit {
       return matchesSearchBar && matchesItemName && matchesStoragePlace;
     });
 
-    const filteredItemNameIds = new Set(this.filteredItems.map(item => item.itemNameId));
-    const filteredStoragePlaceIds = new Set(this.filteredItems.map(item => item.storagePlaceId));
-
-    this.filteredItemNames = this.itemNames.filter(itemName => filteredItemNameIds.has(itemName.id));
-    this.filteredStoragePlaces = this.storagePlaces.filter(storagePlace => filteredStoragePlaceIds.has(storagePlace.id));
+    this.filterByItemName();
+    this.filterByStoragePlace();
 
     this.currentPage = 1;
+
+    console.log("Filtered Items: ", this.filteredItems);
+  }
+
+  filterByItemName(){
+    const filteredItemNameIds = new Set(this.filteredItems.map(item => item.itemNameId));
+    this.filteredItemNames = this.itemNames.filter(itemName => filteredItemNameIds.has(itemName.id));
+    console.log("Filtered Item Names: ", this.filteredItemNames);
+  }
+
+  filterByStoragePlace(){
+    const filteredStoragePlaceIds = new Set(this.filteredItems.map(item => item.storagePlaceId));
+    this.filteredStoragePlaces = this.storagePlaces.filter(storagePlace => filteredStoragePlaceIds.has(storagePlace.id));
+    console.log("Filtered Storage Places: ", this.filteredStoragePlaces);
   }
 
   deselectAllFilters(): void {
