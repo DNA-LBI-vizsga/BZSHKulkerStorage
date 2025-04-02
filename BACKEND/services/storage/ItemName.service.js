@@ -23,21 +23,6 @@ async function createItemName(item_name){
     
 }
 
-// async function updateItemName(id, item_name){
-//     try{
-//         const item = await ItemName.findOne({ where: {id: id}});
-//         item.set({
-//             item: item_name
-//         });
-//         await item.save();
-//         return {message: "Item updated successfully"} 
-//     }
-//     catch(err){
-//         throw new Error("Failed to update item");
-//     }
-    
-// }
-
 async function deleteItemName(id){
     try{
         const item = await ItemName.findOne({ where: {id: id}});
@@ -52,6 +37,5 @@ async function deleteItemName(id){
 export{
     getItemNames,
     createItemName,
-    //updateItemName,
     deleteItemName
 }
