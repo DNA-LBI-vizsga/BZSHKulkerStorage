@@ -85,10 +85,6 @@ export class DashboardComponent implements OnInit {
   // Selection
   isChecked: boolean = false;
 
-  // Admin Check
-  isAdmin: boolean = false;
-
-  
   constructor(
     private authService: AuthService,
     private itemService: ItemService, 
@@ -99,11 +95,16 @@ export class DashboardComponent implements OnInit {
   ) {}
   
   ngOnInit(): void {
-    this.isAdmin = this.authService.isAdmin();
     this.loadItemNames();
     this.loadStoragePlaces();
     this.loadItems();
-    this.loadUsers();
+    if(this.isAdmin){
+      this.loadUsers();
+    }
+  }
+
+  get isAdmin(): boolean {
+    return this.authService.isAdmin();
   }
 
   // Loading Data

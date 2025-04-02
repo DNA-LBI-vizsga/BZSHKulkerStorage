@@ -1,19 +1,19 @@
-import { Component } from '@angular/core';
+import { Component} from '@angular/core';
+import { NavigationEnd, Router } from '@angular/router';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrl: './app.component.css'
+  styleUrls: ['./app.component.css']
 })
-export class AppComponent {
-  title = 'Külker Leltár';
+export class AppComponent{
+  showNavbar: boolean = false;
 
-  checkAuth(): boolean {
-    const token = localStorage.getItem('authToken');
-    const payload = token ? JSON.parse(atob(token.split('.')[1])) : null;
-    if (token && payload && payload.isDisabled == false && payload.isFirstLogin == false) {
-      return true;
-    }
-    return false;
+  constructor(private router: Router){
+    this.router.events.subscribe(event => {
+      if (event instanceof NavigationEnd) {
+        this.showNavbar = !['/login','/passwordchange'].includes(event.url);
+      }
+    })
   }
 }
