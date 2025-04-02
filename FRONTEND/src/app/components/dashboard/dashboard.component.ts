@@ -95,8 +95,8 @@ export class DashboardComponent implements OnInit {
   ) {}
   
   ngOnInit(): void {
+    this.loadItemNames(() => {this.loadItems();}); // Load item names first, then load items
     this.loadStoragePlaces();
-    this.loadItems();
     if(this.isAdmin){
       this.loadUsers();
     }
@@ -108,8 +108,6 @@ export class DashboardComponent implements OnInit {
 
   // Loading Data
   loadItems(): void {
-    // Have to load item names first and in loadItems (not onInit) to get product codes correctly
-    this.loadItemNames();
     this.itemService.getItems().subscribe((data: Item[]) => {
       this.items = data.map((item: Item) => ({
         ...item,
@@ -121,22 +119,23 @@ export class DashboardComponent implements OnInit {
       this.filterByItemName();
       this.filterByStoragePlace();
     });
-    
   }
 
   loadStoragePlaces(): void {
     this.storageService.getStoragePlaces().subscribe(data => {
       this.storagePlaces = data;
-      this.filteredStoragePlaces = [...this.storagePlaces];
       console.log("Storage Places: ", this.storagePlaces);
     });
   }
 
-  loadItemNames(): void {
+  loadItemNames(callback?: () => void): void {
     this.itemNameService.getItemNames().subscribe(data => {
       this.itemNames = data;
-      this.filteredItemNames = [...this.itemNames];
       console.log("Item Names: ", this.itemNames);
+
+      if (callback) {
+        callback();
+      }
     });
   }
 
@@ -188,7 +187,6 @@ export class DashboardComponent implements OnInit {
   deleteItem(itemIdList: number[]): void {
     this.itemService.deleteItem(itemIdList).subscribe({
       next: () => {
-        this.loadItemNames();
         this.loadItems();
         this.clearSelection();
         this.filterText = '';
@@ -283,15 +281,10 @@ export class DashboardComponent implements OnInit {
 
   
   // Filtering
-  applyFilter(): void { this.applyCombinedFilters(); }
-  applyNameFilter(): void { this.applyCombinedFilters(); }
-  applyStorageFilter(): void { this.applyCombinedFilters(); }
-  applyTableFilters(): void { this.applyCombinedFilters(); }
-
   filteredStoragePlaces: any[] = [];
   filteredItemNames: any[] = [];
 
-  applyCombinedFilters(): void {
+  applyFilters(): void {
     const lowerCaseFilter = this.filterText.toLowerCase();
 
     this.filteredItems = this.items.filter(item => {
@@ -528,7 +521,7 @@ export class DashboardComponent implements OnInit {
     this.filterText = '';
     this.selectedItemNames = [];
     this.selectedStoragePlaces = [];
-    this.applyCombinedFilters();
+    this.applyFilters();
   }
 
   resetLogFilters(): void {

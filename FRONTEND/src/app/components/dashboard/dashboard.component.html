@@ -12,7 +12,7 @@
       <div class="form-group col-sm-4">
         <label for="filterInput" class="ml-1"><strong>Keresés:</strong></label>
         <input type="text" id="filterInput" class="form-control form-control-sm filter-input"
-          placeholder="Keresés termék kód, név vagy raktár alapján..." [(ngModel)]="filterText" (input)="applyFilter()">
+          placeholder="Keresés termék kód, név vagy raktár alapján..." [(ngModel)]="filterText" (input)="applyFilters()">
       </div>
 
       <!-- Items per Page Select -->
@@ -279,7 +279,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-grey" data-bs-dismiss="modal">Mégse</button>
-        <button type="button" class="btn btn-grey" (click)="applyStorageFilter()"
+        <button type="button" class="btn btn-grey" (click)="applyFilters()"
           data-bs-dismiss="modal">Szűrés</button>
       </div>
     </div>
@@ -312,7 +312,7 @@
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-grey" data-bs-dismiss="modal">Mégse</button>
-        <button type="button" class="btn btn-grey" (click)="applyNameFilter()"
+        <button type="button" class="btn btn-grey" (click)="applyFilters()"
           data-bs-dismiss="modal">Szűrés</button>
       </div>
     </div>
