@@ -115,7 +115,7 @@
             <button type="button" class="btn btn-grey btn-sm mr-2" data-bs-toggle="modal"
                 data-bs-target="#downloadLogModal">Műveleti Napló Letöltése</button>
               <button type="button" class="btn btn-grey btn-sm" data-bs-toggle="modal"
-                data-bs-target="#downloadTagModal">Cimkék Letöltése</button>
+                data-bs-target="#downloadTagModal">Címkék Letöltése</button>
           </div>
         </div>
 
@@ -257,24 +257,35 @@
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="storageFilterModalLabel">Megerősítés</h5>
+        <h5 class="modal-title" id="storageFilterModalLabel">Tároló Szűrés</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
         <div class="form-group">
-          <label for="filterStoragePlace"><strong>Tároló</strong></label>
+          <label for="filterStoragePlace"><strong>Tárolók</strong></label>
           <div class="d-flex align-items-center mb-2">
-            <input type="checkbox" id="selectAllStoragePlaces" (change)="toggleSelectAllStoragePlaces($event)"
+            <input type="checkbox" id="selectAllItems" (change)="toggleSelectAllStoragePlaces()"
               [checked]="selectedStoragePlaces.length === storagePlaces.length" />
-            <label for="selectAllStoragePlaces" class="ml-2 pt-2">Mindet kijelöl</label>
+            <label for="selectAllItems" class="ml-2 pt-2">Mindet kijelöl</label>
+            <!-- <button type="button" class="btn btn-sm btn-grey" (click)="toggleSelectAllStoragePlaces()">
+              Mindet kijelöl
+            </button> -->
             <button type="button" class="btn btn-sm btn-grey ml-auto" (click)="deselectStoragePlaces()">
               Kijelölések törlése
             </button>
           </div>
-          <select [(ngModel)]="selectedStoragePlaces" class="form-select" multiple>
-            <option *ngFor="let storagePlace of filteredStoragePlaces" [value]="storagePlace.id">{{ storagePlace.storage }}
-            </option>
-          </select>
+          <div class="scrollable-list">
+            <ul class="list-group">
+              <li
+                *ngFor="let storagePlace of filteredStoragePlaces"
+                class="list-group-item"
+                [class.selected]="selectedStoragePlaces.includes(storagePlace.id)"
+                (click)="toggleSelectStoragePlace(storagePlace.id)"
+              >
+                {{ storagePlace.storage }}
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
       <div class="modal-footer">
@@ -291,27 +302,36 @@
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="nameFilterModalLabel">Megerősítés</h5>
+        <h5 class="modal-title" id="nameFilterModalLabel">Termék Szűrés</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
         <div class="form-group">
-          <label for="filterItemName"><strong>Termék</strong></label>
+          <label for="filterItemName"><strong>Termékek</strong></label>
           <div class="d-flex align-items-center mb-2">
-            <input type="checkbox" id="selectAllItems" (change)="toggleSelectAllItems($event)"
+            <input type="checkbox" id="selectAllItems" (change)="toggleSelectAllItemNames()"
               [checked]="selectedItemNames.length === itemNames.length" />
             <label for="selectAllItems" class="ml-2 pt-2">Mindet kijelöl</label>
             <button type="button" class="btn btn-sm btn-grey ml-auto" (click)="deselectItemNames()">
               Kijelölések törlése
             </button>
           </div>
-          <select [(ngModel)]="selectedItemNames" class="form-select" multiple>
-            <option *ngFor="let itemName of filteredItemNames" [value]="itemName.id">{{ itemName.item }}</option>
-          </select>
+          <div class="scrollable-list">
+            <ul class="list-group">
+              <li
+                *ngFor="let itemName of filteredItemNames"
+                class="list-group-item"
+                [class.selected]="selectedItemNames.includes(itemName.id)"
+                (click)="toggleSelectItemName(itemName.id)"
+              >
+                {{ itemName.item }}
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-grey" data-bs-dismiss="modal">Mégse</button>
+        <button type="button" class="btn btn-grey" data-bs-dismiss="modal" (click)="deselectItemNames()">Mégse</button>
         <button type="button" class="btn btn-grey" (click)="applyFilters()"
           data-bs-dismiss="modal">Szűrés</button>
       </div>

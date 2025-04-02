@@ -51,7 +51,7 @@ export class DashboardComponent implements OnInit {
   timeoutId: any = null;
 
   deleteType: 'itemName' | 'storagePlace' = 'itemName';
-  deleteId: number | null = null;
+  deleteTypeId: number | null = null;
 
   // Modals
   newItem: any = {
@@ -76,6 +76,9 @@ export class DashboardComponent implements OnInit {
     toDate: undefined
   };
   filterError: string | null = null;
+
+  filteredStoragePlaces: any[] = [];
+  filteredItemNames: any[] = [];
 
   // Pagination
   currentPage: number = 1;
@@ -281,9 +284,6 @@ export class DashboardComponent implements OnInit {
 
   
   // Filtering
-  filteredStoragePlaces: any[] = [];
-  filteredItemNames: any[] = [];
-
   applyFilters(): void {
     const lowerCaseFilter = this.filterText.toLowerCase();
 
@@ -304,47 +304,101 @@ export class DashboardComponent implements OnInit {
     this.filterByStoragePlace();
 
     this.currentPage = 1;
-
-    console.log("Filtered Items: ", this.filteredItems);
   }
 
   filterByItemName(){
     const filteredItemNameIds = new Set(this.filteredItems.map(item => item.itemNameId));
     this.filteredItemNames = this.itemNames.filter(itemName => filteredItemNameIds.has(itemName.id));
-    console.log("Filtered Item Names: ", this.filteredItemNames);
+    //console.log("Filtered Item Names: ", this.filteredItemNames);
   }
 
   filterByStoragePlace(){
     const filteredStoragePlaceIds = new Set(this.filteredItems.map(item => item.storagePlaceId));
     this.filteredStoragePlaces = this.storagePlaces.filter(storagePlace => filteredStoragePlaceIds.has(storagePlace.id));
-    console.log("Filtered Storage Places: ", this.filteredStoragePlaces);
-  }
-
-  deselectAllFilters(): void {
-    this.selectedItemNames = [];
-    this.selectedStoragePlaces = [];
-    this.filteredItemNames = [...this.itemNames];
-    this.filteredStoragePlaces = [...this.storagePlaces];
+    //console.log("Filtered Storage Places: ", this.filteredStoragePlaces);
   }
 
   deselectItemNames(): void {
     this.selectedItemNames = [];
-    this.filteredItemNames = [...this.itemNames];
+    this.filterByItemName();
+    //console.log('Deselected all item names');
   }
 
   deselectStoragePlaces(): void {
     this.selectedStoragePlaces = [];
-    this.filteredStoragePlaces = [...this.storagePlaces];
+    this.filterByStoragePlace();
+    //console.log('Deselected all storage places');
   }
 
-  toggleSelectAllItems(event: Event): void {
-    const checkbox = event.target as HTMLInputElement;
-    this.selectedItemNames = checkbox.checked ? this.itemNames.map(item => item.id) : [];
+  toggleSelectItemName(itemNameId: number): void {
+    const index = this.selectedItemNames.indexOf(itemNameId);
+    if (index === -1) {
+      this.selectedItemNames.push(itemNameId);
+    } else {
+      this.selectedItemNames.splice(index, 1);
+    }
+    //console.log('Selected Item Names:', this.selectedItemNames);
   }
 
-  toggleSelectAllStoragePlaces(event: Event): void {
-    const checkbox = event.target as HTMLInputElement;
-    this.selectedStoragePlaces = checkbox.checked ? this.storagePlaces.map(place => place.id) : [];
+  toggleSelectStoragePlace(storagePlaceId: number): void {
+    const index = this.selectedStoragePlaces.indexOf(storagePlaceId);
+    if (index === -1) {
+      this.selectedStoragePlaces.push(storagePlaceId);
+    } else {
+      this.selectedStoragePlaces.splice(index, 1);
+    }
+    //console.log('Selected Storage Places:', this.selectedStoragePlaces);
+  }
+
+  toggleSelectAllItemNames(): void {
+    if (this.selectedItemNames.length === this.filteredItemNames.length) {
+      this.selectedItemNames = [];
+    } else {
+      this.selectedItemNames = this.filteredItemNames.map(item => item.id);
+    }
+    //console.log('Selected Item Names:', this.selectedItemNames);
+  }
+
+  toggleSelectAllStoragePlaces(): void {
+    if (this.selectedStoragePlaces.length === this.filteredStoragePlaces.length) {
+      this.selectedStoragePlaces = [];
+    } else {
+      this.selectedStoragePlaces = this.filteredStoragePlaces.map(place => place.id);
+    }
+    //console.log('Selected Storage Places:', this.selectedStoragePlaces);
+  }
+
+  resetFilters(): void {
+    this.filterText = '';
+    this.selectedItemNames = [];
+    this.selectedStoragePlaces = [];
+    this.applyFilters();
+  }
+
+  validateLogFilters(): boolean {
+    this.filterError = null;
+    if (this.logFilters.fromDate && this.logFilters.toDate) {
+      const fromDate = new Date(this.logFilters.fromDate);
+      const toDate = new Date(this.logFilters.toDate);
+      if (toDate < fromDate) {
+        this.filterError = 'Letöltés sikertelen! A záró dátum nem lehet korábbi, mint a kezdő dátum!';
+        this.showMessage(this.filterError, true, 5000);
+        return false;
+      }
+    }
+    return true;
+  }
+
+  resetLogFilters(): void {
+    this.logFilters = {
+      itemNameId: undefined,
+      storagePlaceId: undefined,
+      userId: undefined,
+      createdBy: undefined,
+      fromDate: undefined,
+      toDate: undefined
+    };
+    this.filterError = null;
   }
 
   
@@ -368,7 +422,7 @@ export class DashboardComponent implements OnInit {
   }
 
   downloadLogs(): void {
-    if (!this.validateFilters()) {
+    if (!this.validateLogFilters()) {
       this.resetLogFilters();
       return;
     }
@@ -503,50 +557,19 @@ export class DashboardComponent implements OnInit {
     return storagePlace ? storagePlace.storage : 'Unknown';
   }
 
-  validateFilters(): boolean {
-    this.filterError = null;
-    if (this.logFilters.fromDate && this.logFilters.toDate) {
-      const fromDate = new Date(this.logFilters.fromDate);
-      const toDate = new Date(this.logFilters.toDate);
-      if (toDate < fromDate) {
-        this.filterError = 'Letöltés sikertelen! A záró dátum nem lehet korábbi, mint a kezdő dátum!';
-        this.showMessage(this.filterError, true, 5000);
-        return false;
-      }
-    }
-    return true;
-  }
-
-  resetFilters(): void {
-    this.filterText = '';
-    this.selectedItemNames = [];
-    this.selectedStoragePlaces = [];
-    this.applyFilters();
-  }
-
-  resetLogFilters(): void {
-    this.logFilters = {
-      itemNameId: undefined,
-      storagePlaceId: undefined,
-      userId: undefined,
-      createdBy: undefined,
-      fromDate: undefined,
-      toDate: undefined
-    };
-    this.filterError = null;
-  }
+  
 
   openTypeDeleteModal(type: 'itemName' | 'storagePlace', id: number): void {
     this.deleteType = type;
-    this.deleteId = id;
+    this.deleteTypeId = id;
   }
 
   confirmTypeDelete(): void {
     if (this.deleteType === 'itemName') {
-      this.deleteItemName(this.deleteId!);
+      this.deleteItemName(this.deleteTypeId!);
     }
     if (this.deleteType === 'storagePlace') {
-      this.deleteStoragePlace(this.deleteId!);
+      this.deleteStoragePlace(this.deleteTypeId!);
     }
   }
 

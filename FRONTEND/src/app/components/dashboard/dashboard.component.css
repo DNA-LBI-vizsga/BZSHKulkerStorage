@@ -37,6 +37,24 @@ h2, h3, h4 {
   scrollbar-width: thin;
 }
 
+.scrollable-list {
+  max-height: 200px;
+  overflow-y: auto;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.list-group-item.selected {
+  background-color: #a7a7a7;
+  color: black;
+  cursor: pointer;
+}
+
+.list-group-item {
+  cursor: pointer;
+  user-select: none;
+}
+
 .custom-input {
   width: 100%;
 }
