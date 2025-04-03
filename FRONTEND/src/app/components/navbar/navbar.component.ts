@@ -9,13 +9,10 @@ import { AuthService } from '../../services/auth/auth.service';
 })
 export class NavbarComponent {
 
-  isAdmin: boolean = false;
-
   constructor(private authService: AuthService, private router: Router) { }
 
-  ngOnInit(): void {
-    this.isAdmin = this.authService.isAdmin();
-    console.log('isAdmin: ', this.isAdmin);
+  get isAdmin(): boolean {
+    return this.authService.isAdmin();
   }
 
   logoutUser(): void {

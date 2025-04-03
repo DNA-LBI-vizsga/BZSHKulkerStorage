@@ -31,7 +31,8 @@ export class DashboardComponent implements OnInit {
   users: any[] = [];
 
   selectedItemIds: number[] = [];
-  selectedStoragePlaceIds: number[] = [];
+  isChecked: boolean = false;
+
   selectedItemNames: number[] = [];
   selectedStoragePlaces: number[] = [];
 
@@ -57,8 +58,7 @@ export class DashboardComponent implements OnInit {
   newItem: any = {
     itemNameId: null,
     storagePlaceId: null,
-    quantity: 0,
-    description: '',
+    quantity: 0
   };
 
   // Filters
@@ -70,18 +70,11 @@ export class DashboardComponent implements OnInit {
     fromDate: undefined,
     toDate: undefined
   };
-  filterError: string | null = null;
-
-  filteredStoragePlaces: any[] = [];
-  filteredItemNames: any[] = [];
 
   // Pagination
   currentPage: number = 1;
   itemsPerPage: number = 10;
-  itemsPerPageOptions: number[] = [5, 10, 25, 50, 100, 250];
-
-  // Selection
-  isChecked: boolean = false;
+  itemsPerPageOptions: number[] = [5, 10, 25, 50, 100, 250];  
 
   constructor(
     private authService: AuthService,
@@ -110,8 +103,6 @@ export class DashboardComponent implements OnInit {
       console.log("Items: ", this.items);
       this.filteredItems = [...this.items];
       console.log("Filtered Items: ", this.filteredItems);
-      this.filterByItemName();
-      this.filterByStoragePlace();
     });
   }
 
@@ -152,6 +143,7 @@ export class DashboardComponent implements OnInit {
       next: () => {
         this.filterText = '';
         this.loadItems();
+        this.clearSelection();
         this.newItem = { itemNameId: null, quantity: 0 };
         this.showMessage('Sikeres hozzáadás!', false, 3000);
       },
@@ -273,9 +265,24 @@ export class DashboardComponent implements OnInit {
     });
   }
 
+  openTypeDeleteModal(type: 'itemName' | 'storagePlace', id: number): void {
+    this.deleteType = type;
+    this.deleteTypeId = id;
+  }
+
+  confirmTypeDelete(): void {
+    if (this.deleteType === 'itemName') {
+      this.deleteItemName(this.deleteTypeId!);
+    }
+    if (this.deleteType === 'storagePlace') {
+      this.deleteStoragePlace(this.deleteTypeId!);
+    }
+  }
+
   
   // Filtering
   applyFilters(): void {
+    this.clearSelection();
     const lowerCaseFilter = this.filterText.toLowerCase();
 
     this.filteredItems = this.items.filter(item => {
@@ -291,33 +298,18 @@ export class DashboardComponent implements OnInit {
       return matchesSearchBar && matchesItemName && matchesStoragePlace;
     });
 
-    this.filterByItemName();
-    this.filterByStoragePlace();
-
     this.currentPage = 1;
-  }
-
-  filterByItemName(){
-    const filteredItemNameIds = new Set(this.filteredItems.map(item => item.itemNameId));
-    this.filteredItemNames = this.itemNames.filter(itemName => filteredItemNameIds.has(itemName.id));
-    //console.log("Filtered Item Names: ", this.filteredItemNames);
-  }
-
-  filterByStoragePlace(){
-    const filteredStoragePlaceIds = new Set(this.filteredItems.map(item => item.storagePlaceId));
-    this.filteredStoragePlaces = this.storagePlaces.filter(storagePlace => filteredStoragePlaceIds.has(storagePlace.id));
-    //console.log("Filtered Storage Places: ", this.filteredStoragePlaces);
   }
 
   deselectItemNames(): void {
     this.selectedItemNames = [];
-    this.filterByItemName();
+    this.applyFilters();
     //console.log('Deselected all item names');
   }
 
   deselectStoragePlaces(): void {
     this.selectedStoragePlaces = [];
-    this.filterByStoragePlace();
+    this.applyFilters();
     //console.log('Deselected all storage places');
   }
 
@@ -342,19 +334,19 @@ export class DashboardComponent implements OnInit {
   }
 
   toggleSelectAllItemNames(): void {
-    if (this.selectedItemNames.length === this.filteredItemNames.length) {
+    if (this.selectedItemNames.length === this.itemNames.length) {
       this.selectedItemNames = [];
     } else {
-      this.selectedItemNames = this.filteredItemNames.map(item => item.id);
+      this.selectedItemNames = this.itemNames.map(item => item.id);
     }
     //console.log('Selected Item Names:', this.selectedItemNames);
   }
 
   toggleSelectAllStoragePlaces(): void {
-    if (this.selectedStoragePlaces.length === this.filteredStoragePlaces.length) {
+    if (this.selectedStoragePlaces.length === this.storagePlaces.length) {
       this.selectedStoragePlaces = [];
     } else {
-      this.selectedStoragePlaces = this.filteredStoragePlaces.map(place => place.id);
+      this.selectedStoragePlaces = this.storagePlaces.map(place => place.id);
     }
     //console.log('Selected Storage Places:', this.selectedStoragePlaces);
   }
@@ -426,6 +418,7 @@ export class DashboardComponent implements OnInit {
   // Selection Methods
   toggleItemSelection(event: Event, itemId: number): void {
     const checkbox = event.target as HTMLInputElement;
+    this.resetSelectAllCheckbox();
     if (checkbox.checked) {
       this.selectedItemIds.push(itemId);
     } else {
@@ -435,7 +428,6 @@ export class DashboardComponent implements OnInit {
   }
 
   selectAllItems(): void {
-    this.isChecked = !this.isChecked;
     const toggleCheckboxes = document.querySelectorAll('.form-check-input[type="checkbox"]') as NodeListOf<HTMLInputElement>;
     if (this.isChecked) {
       const currentPageIds = this.paginatedItems.map(item => item.id);
@@ -452,13 +444,12 @@ export class DashboardComponent implements OnInit {
     const selectAllCheckbox = document.querySelector('.form-check-input[type="checkbox"]') as HTMLInputElement;
     if (selectAllCheckbox) {
       selectAllCheckbox.checked = false;
+      this.isChecked = false;
     }
   }
 
   clearSelection(): void {
     this.selectedItemIds = [];
-    this.selectedStoragePlaceIds = [];
-    this.isChecked = false;
     this.resetSelectAllCheckbox();
   }
 
@@ -508,13 +499,11 @@ export class DashboardComponent implements OnInit {
   }
 
   validateLogFilters(): boolean {
-    this.filterError = null;
     if (this.logFilters.fromDate && this.logFilters.toDate) {
       const fromDate = new Date(this.logFilters.fromDate);
       const toDate = new Date(this.logFilters.toDate);
       if (toDate < fromDate) {
-        this.filterError = 'Letöltés sikertelen! A záró dátum nem lehet korábbi, mint a kezdő dátum!';
-        this.showMessage(this.filterError, true, 5000);
+        this.showMessage('Letöltés sikertelen! A záró dátum nem lehet korábbi, mint a kezdő dátum!', true, 5000);
         return false;
       }
     }
@@ -530,7 +519,6 @@ export class DashboardComponent implements OnInit {
       fromDate: undefined,
       toDate: undefined
     };
-    this.filterError = null;
   }
  
   // Admin Check
@@ -549,20 +537,6 @@ export class DashboardComponent implements OnInit {
   getStoragePlaceById(storagePlaceId: number): string {
     const storagePlace = this.storagePlaces.find(place => place.id === storagePlaceId);
     return storagePlace ? storagePlace.storage : 'Unknown';
-  }
-
-  openTypeDeleteModal(type: 'itemName' | 'storagePlace', id: number): void {
-    this.deleteType = type;
-    this.deleteTypeId = id;
-  }
-
-  confirmTypeDelete(): void {
-    if (this.deleteType === 'itemName') {
-      this.deleteItemName(this.deleteTypeId!);
-    }
-    if (this.deleteType === 'storagePlace') {
-      this.deleteStoragePlace(this.deleteTypeId!);
-    }
   }
 
   // Alert Message Handling

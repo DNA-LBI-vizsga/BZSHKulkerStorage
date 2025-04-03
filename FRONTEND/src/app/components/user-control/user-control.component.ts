@@ -8,8 +8,8 @@ import { UserService } from '../../services/user/user.service';
 })
 export class UserControlComponent implements OnInit {
 
-  userEmail: string = '';
-  isAdmin: boolean = false;
+  newUserEmail: string = '';
+  newUserAdmin: boolean = false;
 
   users: any[] = [];
   currentUser: string = localStorage.getItem('userEmail') || '';
@@ -19,7 +19,6 @@ export class UserControlComponent implements OnInit {
 
   alertMessage: string | null = null;
   isError: boolean = false;
-
   timeoutId: any = null;
 
   constructor(private userService: UserService) { }
@@ -44,21 +43,24 @@ export class UserControlComponent implements OnInit {
   }
 
   registerUser(): void {
-    const token = localStorage.getItem('authToken');
-    if (token) {
-      this.userService.registerUser(this.userEmail, this.isAdmin).subscribe(
-        response => {
-          this.showMessage('Email kiküldve!', false, 5000);
-          console.log('User registered:', response);
-          this.userEmail = '';
-          this.loadUsers();
-        },
-        error => {
-          this.showMessage('Hiba a felvétel során!', true, 5000);
-          console.error('Error registering user:', error);
-        }
-      );
+    const emailExists = this.users.some(user => user.userEmail === this.newUserEmail);
+    if (emailExists) {
+      this.showMessage('Már létezik felhasználó ilyen email címmel!', true, 3000);
+      return;
     }
+
+    this.userService.registerUser(this.newUserEmail, this.newUserAdmin).subscribe(
+      response => {
+        this.showMessage('Email kiküldve!', false, 5000);
+        console.log('User registered:', response);
+        this.newUserEmail = '';
+        this.loadUsers();
+      },
+      error => {
+        this.showMessage('Hiba a felvétel során!', true, 5000);
+        console.error('Error registering user:', error);
+      }
+    );
   }
 
   disableUser(userEmail: string): void {

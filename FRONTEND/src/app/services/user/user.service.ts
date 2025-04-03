@@ -37,15 +37,15 @@ export class UserService {
     return this.http.post(`${this.apiUrl}/login`, { userEmail, userPassword });
   }
 
+  registerUser(userEmail: string, isAdmin: boolean): Observable<any> {
+    return this.http.post(`${this.apiUrl}/register`, { userEmail,  isAdmin }, { headers: this.authService.getAuthHeaders() });
+  }
+
   firstLogin(userPassword: string): Observable<any> {
     return this.http.put(`${this.apiUrl}/firstLogin`, { userPassword }, { headers: this.authService.getAuthHeaders() });
   }
 
   passwordChange(userEmail: string): Observable<any> {
     return this.http.put(`${this.apiUrl}/passwordChange`, { userEmail });
-  }
-
-  registerUser(userEmail: string, isAdmin: boolean): Observable<any> {
-    return this.http.post(`${this.apiUrl}/register`, { userEmail,  isAdmin }, { headers: this.authService.getAuthHeaders() });
   }
 }

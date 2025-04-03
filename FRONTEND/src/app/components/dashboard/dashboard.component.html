@@ -67,7 +67,8 @@
               <ng-container *ngIf="isAdmin">
                 <th>
                   <div class="form-check d-flex justify-content-center">
-                    <input type="checkbox" class="form-check-input mr-2" (change)="selectAllItems()">
+                    <input type="checkbox" class="form-check-input mr-2" (change)="selectAllItems()"
+                      [checked]="selectedItemIds.length === paginatedItems.length" [(ngModel)]="isChecked"/>
                     <label class="form-check-label ml-1"><i class="bi bi-arrow-90deg-down mirror-horizontal "></i></label>
                   </div>
                 </th>
@@ -277,7 +278,7 @@
           <div class="scrollable-list">
             <ul class="list-group">
               <li
-                *ngFor="let storagePlace of filteredStoragePlaces"
+                *ngFor="let storagePlace of storagePlaces"
                 class="list-group-item"
                 [class.selected]="selectedStoragePlaces.includes(storagePlace.id)"
                 (click)="toggleSelectStoragePlace(storagePlace.id)"
@@ -319,7 +320,7 @@
           <div class="scrollable-list">
             <ul class="list-group">
               <li
-                *ngFor="let itemName of filteredItemNames"
+                *ngFor="let itemName of itemNames"
                 class="list-group-item"
                 [class.selected]="selectedItemNames.includes(itemName.id)"
                 (click)="toggleSelectItemName(itemName.id)"
@@ -331,7 +332,7 @@
         </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-grey" data-bs-dismiss="modal" (click)="deselectItemNames()">Mégse</button>
+        <button type="button" class="btn btn-grey" data-bs-dismiss="modal">Mégse</button>
         <button type="button" class="btn btn-grey" (click)="applyFilters()"
           data-bs-dismiss="modal">Szűrés</button>
       </div>
