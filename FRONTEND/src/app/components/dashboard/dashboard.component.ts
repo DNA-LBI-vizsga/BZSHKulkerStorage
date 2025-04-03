@@ -31,7 +31,7 @@ export class DashboardComponent implements OnInit {
   users: any[] = [];
 
   selectedItemIds: number[] = [];
-  isChecked: boolean = false;
+  selectAllChecked: boolean = false;
 
   selectedItemNames: number[] = [];
   selectedStoragePlaces: number[] = [];
@@ -355,6 +355,7 @@ export class DashboardComponent implements OnInit {
     this.filterText = '';
     this.selectedItemNames = [];
     this.selectedStoragePlaces = [];
+    this.toggleSelectAllItems();
     this.applyFilters();
   }
 
@@ -418,7 +419,7 @@ export class DashboardComponent implements OnInit {
   // Selection Methods
   toggleItemSelection(event: Event, itemId: number): void {
     const checkbox = event.target as HTMLInputElement;
-    this.resetSelectAllCheckbox();
+    this.selectAllChecked = false;
     if (checkbox.checked) {
       this.selectedItemIds.push(itemId);
     } else {
@@ -427,9 +428,9 @@ export class DashboardComponent implements OnInit {
     console.log(this.selectedItemIds);
   }
 
-  selectAllItems(): void {
+  toggleSelectAllItems(): void {
     const toggleCheckboxes = document.querySelectorAll('.form-check-input[type="checkbox"]') as NodeListOf<HTMLInputElement>;
-    if (this.isChecked) {
+    if (this.selectAllChecked) {
       const currentPageIds = this.paginatedItems.map(item => item.id);
       this.selectedItemIds = Array.from(new Set([...this.selectedItemIds, ...currentPageIds]));
       toggleCheckboxes.forEach(cb => cb.checked = true);
@@ -440,17 +441,9 @@ export class DashboardComponent implements OnInit {
     console.log(this.selectedItemIds);
   }
 
-  resetSelectAllCheckbox(): void {
-    const selectAllCheckbox = document.querySelector('.form-check-input[type="checkbox"]') as HTMLInputElement;
-    if (selectAllCheckbox) {
-      selectAllCheckbox.checked = false;
-      this.isChecked = false;
-    }
-  }
-
   clearSelection(): void {
-    this.selectedItemIds = [];
-    this.resetSelectAllCheckbox();
+    this.selectAllChecked = false;
+    this.toggleSelectAllItems();
   }
 
   // Download Tags

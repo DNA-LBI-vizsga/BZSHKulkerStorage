@@ -67,8 +67,8 @@
               <ng-container *ngIf="isAdmin">
                 <th>
                   <div class="form-check d-flex justify-content-center">
-                    <input type="checkbox" class="form-check-input mr-2" (change)="selectAllItems()"
-                      [checked]="selectedItemIds.length === paginatedItems.length" [(ngModel)]="isChecked"/>
+                    <input type="checkbox" class="form-check-input mr-2" (change)="toggleSelectAllItems()"
+                      [checked]="selectedItemIds.length === paginatedItems.length" [(ngModel)]="selectAllChecked"/>
                     <label class="form-check-label ml-1"><i class="bi bi-arrow-90deg-down mirror-horizontal "></i></label>
                   </div>
                 </th>
