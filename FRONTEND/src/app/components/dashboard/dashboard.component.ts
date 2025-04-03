@@ -61,11 +61,6 @@ export class DashboardComponent implements OnInit {
     description: '',
   };
 
-  updatedItemModal: any = {
-    storagePlaceId: null,
-    newStoragePlaceId: null
-  };
-
   // Filters
   logFilters = {
     itemNameId: undefined,
@@ -103,10 +98,6 @@ export class DashboardComponent implements OnInit {
     if(this.isAdmin){
       this.loadUsers();
     }
-  }
-
-  get isAdmin(): boolean {
-    return this.authService.isAdmin();
   }
 
   // Loading Data
@@ -375,79 +366,10 @@ export class DashboardComponent implements OnInit {
     this.applyFilters();
   }
 
-  validateLogFilters(): boolean {
-    this.filterError = null;
-    if (this.logFilters.fromDate && this.logFilters.toDate) {
-      const fromDate = new Date(this.logFilters.fromDate);
-      const toDate = new Date(this.logFilters.toDate);
-      if (toDate < fromDate) {
-        this.filterError = 'Letöltés sikertelen! A záró dátum nem lehet korábbi, mint a kezdő dátum!';
-        this.showMessage(this.filterError, true, 5000);
-        return false;
-      }
-    }
-    return true;
-  }
-
-  resetLogFilters(): void {
-    this.logFilters = {
-      itemNameId: undefined,
-      storagePlaceId: undefined,
-      userId: undefined,
-      createdBy: undefined,
-      fromDate: undefined,
-      toDate: undefined
-    };
-    this.filterError = null;
-  }
-
-  
-  // Download Methods
-  downloadTags(): void {
-    const selectedItemsData = this.selectedItemIds.length > 0
-      ? this.items.filter(item => this.selectedItemIds.includes(item.id))
-      : this.filteredItems;
-
-    const dataForExport = selectedItemsData.map(item => ({
-      'Termék kód': `BZSH-${this.getItemNameById(item.itemNameId)}-${item.id}`,
-      'Termék név': this.getItemNameById(item.itemNameId),
-      'Raktár hely': this.getStoragePlaceById(item.storagePlaceId)
-    }));
-
-    const worksheet = XLSX.utils.json_to_sheet(dataForExport);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Termékek");
-    XLSX.writeFile(workbook, `${this.fileName}.xlsx`);
-    this.fileName = '';
-  }
-
-  downloadLogs(): void {
-    if (!this.validateLogFilters()) {
-      this.resetLogFilters();
-      return;
-    }
-
-    this.logService.downloadLogs(this.logFilters).subscribe(
-      response => {
-        const url = window.URL.createObjectURL(response);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'logs.xlsx';
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        window.URL.revokeObjectURL(url);
-        this.showMessage('A napló sikeresen letöltve!', false, 3000);
-      },
-      error => {
-        console.error('Error downloading logs:', error);
-        this.showMessage('Hiba történt a napló letöltése közben!', true, 3000);
-      }
-    );
-  }
 
   // Sorting
   orderBy(column: string): void {
+    // 
     if (this.currentSortColumn === column) {
       this.isAscending = !this.isAscending;
     } else {
@@ -512,12 +434,8 @@ export class DashboardComponent implements OnInit {
     console.log(this.selectedItemIds);
   }
 
-  toggleSelectAll(): void {
+  selectAllItems(): void {
     this.isChecked = !this.isChecked;
-    this.selectAll();
-  }
-
-  selectAll(): void {
     const toggleCheckboxes = document.querySelectorAll('.form-check-input[type="checkbox"]') as NodeListOf<HTMLInputElement>;
     if (this.isChecked) {
       const currentPageIds = this.paginatedItems.map(item => item.id);
@@ -530,13 +448,6 @@ export class DashboardComponent implements OnInit {
     console.log(this.selectedItemIds);
   }
 
-  clearSelection(): void {
-    this.selectedItemIds = [];
-    this.selectedStoragePlaceIds = [];
-    this.isChecked = false;
-    this.resetSelectAllCheckbox();
-  }
-
   resetSelectAllCheckbox(): void {
     const selectAllCheckbox = document.querySelector('.form-check-input[type="checkbox"]') as HTMLInputElement;
     if (selectAllCheckbox) {
@@ -544,8 +455,91 @@ export class DashboardComponent implements OnInit {
     }
   }
 
-  
-  // Utility Methods
+  clearSelection(): void {
+    this.selectedItemIds = [];
+    this.selectedStoragePlaceIds = [];
+    this.isChecked = false;
+    this.resetSelectAllCheckbox();
+  }
+
+  // Download Tags
+  downloadTags(): void {
+    const selectedItemsData = this.selectedItemIds.length > 0
+      ? this.items.filter(item => this.selectedItemIds.includes(item.id))
+      : this.filteredItems;
+
+    const dataForExport = selectedItemsData.map(item => ({
+      'Termék kód': `BZSH-${this.getItemNameById(item.itemNameId)}-${item.id}`,
+      'Termék név': this.getItemNameById(item.itemNameId),
+      'Raktár hely': this.getStoragePlaceById(item.storagePlaceId)
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(dataForExport);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Termékek");
+    XLSX.writeFile(workbook, `${this.fileName}.xlsx`);
+    this.fileName = '';
+  }
+
+  // Download Logs
+  downloadLogs(): void {
+    if (!this.validateLogFilters()) {
+      this.resetLogFilters();
+      return;
+    }
+
+    this.logService.downloadLogs(this.logFilters).subscribe(
+      response => {
+        const url = window.URL.createObjectURL(response);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'logs.xlsx';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+        this.showMessage('A napló sikeresen letöltve!', false, 3000);
+      },
+      error => {
+        console.error('Error downloading logs:', error);
+        this.showMessage('Hiba történt a napló letöltése közben!', true, 3000);
+      }
+    );
+  }
+
+  validateLogFilters(): boolean {
+    this.filterError = null;
+    if (this.logFilters.fromDate && this.logFilters.toDate) {
+      const fromDate = new Date(this.logFilters.fromDate);
+      const toDate = new Date(this.logFilters.toDate);
+      if (toDate < fromDate) {
+        this.filterError = 'Letöltés sikertelen! A záró dátum nem lehet korábbi, mint a kezdő dátum!';
+        this.showMessage(this.filterError, true, 5000);
+        return false;
+      }
+    }
+    return true;
+  }
+
+  resetLogFilters(): void {
+    this.logFilters = {
+      itemNameId: undefined,
+      storagePlaceId: undefined,
+      userId: undefined,
+      createdBy: undefined,
+      fromDate: undefined,
+      toDate: undefined
+    };
+    this.filterError = null;
+  }
+ 
+  // Admin Check
+
+  get isAdmin(): boolean {
+    return this.authService.isAdmin();
+  }
+
+  // Getters for Item Names and Storage Places
   
   getItemNameById(itemNameId: number): string {
     const item = this.itemNames.find(i => i.id === itemNameId);
@@ -556,8 +550,6 @@ export class DashboardComponent implements OnInit {
     const storagePlace = this.storagePlaces.find(place => place.id === storagePlaceId);
     return storagePlace ? storagePlace.storage : 'Unknown';
   }
-
-  
 
   openTypeDeleteModal(type: 'itemName' | 'storagePlace', id: number): void {
     this.deleteType = type;
@@ -572,6 +564,8 @@ export class DashboardComponent implements OnInit {
       this.deleteStoragePlace(this.deleteTypeId!);
     }
   }
+
+  // Alert Message Handling
 
   showMessage(msg: string, isError: boolean, duration: number): void {
     this.alertMessage = msg;

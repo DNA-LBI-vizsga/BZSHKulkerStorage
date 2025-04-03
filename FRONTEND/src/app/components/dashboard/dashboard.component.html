@@ -48,7 +48,7 @@
           <thead class="thead-light">
             <tr>
               <th (click)="orderBy('id')">
-                Termék Kód
+                Termékkód
                 <i class="bi"
                   [ngClass]="currentSortColumn == 'id' ? (isAscending ? 'bi-arrow-down' : 'bi-arrow-up') : 'bi-arrow-down invisible'"></i>
               </th>
@@ -67,7 +67,7 @@
               <ng-container *ngIf="isAdmin">
                 <th>
                   <div class="form-check d-flex justify-content-center">
-                    <input type="checkbox" class="form-check-input mr-2" (change)="toggleSelectAll()">
+                    <input type="checkbox" class="form-check-input mr-2" (change)="selectAllItems()">
                     <label class="form-check-label ml-1"><i class="bi bi-arrow-90deg-down mirror-horizontal "></i></label>
                   </div>
                 </th>

@@ -12,7 +12,7 @@ export class AppComponent{
   constructor(private router: Router){
     this.router.events.subscribe(event => {
       if (event instanceof NavigationEnd) {
-        this.showNavbar = !['/login','/passwordchange'].includes(event.url);
+        this.showNavbar = !['/login','/passwordchange'].includes(this.router.url);
       }
     })
   }
