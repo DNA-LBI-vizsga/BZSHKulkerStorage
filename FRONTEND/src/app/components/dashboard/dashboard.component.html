@@ -12,7 +12,7 @@
       <div class="form-group col-sm-4">
         <label for="filterInput" class="ml-1"><strong>Keresés:</strong></label>
         <input type="text" id="filterInput" class="form-control form-control-sm filter-input"
-          placeholder="Keresés termék kód, név vagy raktár alapján..." [(ngModel)]="filterText" (input)="applyFilters()">
+          placeholder="Keresés termékkód, név vagy raktár alapján..." [(ngModel)]="filterText" (input)="applyFilters()">
       </div>
 
       <!-- Items per Page Select -->
@@ -375,10 +375,13 @@
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="downloadTagModalLabel">Leltárcimke Letöltése</h5>
+        <h5 class="modal-title" id="downloadTagModalLabel">Termékcímke Letöltése</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
+        <ng-container *ngIf="selectedItemIds.length==0">
+          <span class="text-danger mb-4"><i class="bi bi-exclamation-circle-fill mr-1"></i><strong>Nincs kiválasztva termék! Az összes letöltésre fog kerülni!</strong></span>
+        </ng-container>
         <div class="form-group">
           <label for="fileName"><strong>Fájl Név</strong></label>
           <input [(ngModel)]="fileName" type="text" class="form-control">

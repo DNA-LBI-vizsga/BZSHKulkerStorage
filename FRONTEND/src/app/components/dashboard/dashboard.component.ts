@@ -8,13 +8,6 @@ import { LogService } from '../../services/log/log.service';
 import { UserService } from '../../services/user/user.service';
 
 
-interface Item {
-  id: number;
-  itemNameId: number;
-  storagePlaceId: number;
-  [key: string]: any;
-}
-
 @Component({
   selector: 'app-dashboard',
   templateUrl: './dashboard.component.html',
@@ -40,10 +33,13 @@ export class DashboardComponent implements OnInit {
   newStoragePlace: any;
   newItemName: any;
 
+  //Sorting
   currentSortColumn: string | null = "id";
   isAscending: boolean = true;
 
+  // File Name for Tag Download
   fileName: string = '';
+
   filterText: string = '';
 
   // Messages
@@ -51,6 +47,8 @@ export class DashboardComponent implements OnInit {
   isError: boolean = false;
   timeoutId: any = null;
 
+
+  //Item Information Delete Modal
   deleteType: 'itemName' | 'storagePlace' = 'itemName';
   deleteTypeId: number | null = null;
 
@@ -61,7 +59,7 @@ export class DashboardComponent implements OnInit {
     quantity: 0
   };
 
-  // Filters
+  // Log Filters
   logFilters = {
     itemNameId: undefined,
     storagePlaceId: undefined,
@@ -95,8 +93,8 @@ export class DashboardComponent implements OnInit {
 
   // Loading Data
   loadItems(): void {
-    this.itemService.getItems().subscribe((data: Item[]) => {
-      this.items = data.map((item: Item) => ({
+    this.itemService.getItems().subscribe((data: any[]) => {
+      this.items = data.map((item: any) => ({
         ...item,
         productCode: `BZSH-${this.getItemNameById(item.itemNameId)}-${item.id}`
       }));
@@ -142,9 +140,9 @@ export class DashboardComponent implements OnInit {
     this.itemService.createItem(this.newItem.itemNameId, this.newItem.storagePlaceId, this.newItem.quantity).subscribe({
       next: () => {
         this.filterText = '';
-        this.loadItems();
         this.clearSelection();
         this.newItem = { itemNameId: null, quantity: 0 };
+        this.loadItems();
         this.showMessage('Sikeres hozzáadás!', false, 3000);
       },
       error: (err) => {
@@ -157,10 +155,10 @@ export class DashboardComponent implements OnInit {
   updateItem(itemIdList: number[], newStoragePlaceId: number): void {
     this.itemService.updateItem(itemIdList, newStoragePlaceId).subscribe({
       next: () => {
-        this.loadItems();
+        this.filterText = '';
         this.clearSelection();
         this.newStoragePlaceId = null;
-        this.filterText = '';
+        this.loadItems();
         this.showMessage('A termék(ek) sikeresen áthelyezve!', false, 3000);
       },
       error: (err) => {
@@ -173,9 +171,9 @@ export class DashboardComponent implements OnInit {
   deleteItem(itemIdList: number[]): void {
     this.itemService.deleteItem(itemIdList).subscribe({
       next: () => {
-        this.loadItems();
-        this.clearSelection();
         this.filterText = '';
+        this.clearSelection();
+        this.loadItems();
         this.showMessage('A termék(ek) sikeresen törölve!', false, 3000); // Success message
       },
       error: err => {
@@ -438,7 +436,7 @@ export class DashboardComponent implements OnInit {
       this.selectedItemIds = [];
       toggleCheckboxes.forEach(cb => cb.checked = false);
     }
-    console.log(this.selectedItemIds);
+    //console.log(this.selectedItemIds);
   }
 
   clearSelection(): void {
