@@ -43,80 +43,87 @@ export class UserControlComponent implements OnInit {
   }
 
   registerUser(): void {
+    const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i;
+
+    if (!emailRegex.test(this.newUserEmail)) {
+      this.showMessage('Kérem adjon meg egy érvényes email címet!', true, 3000);
+      return;
+    }
+
     const emailExists = this.users.some(user => user.userEmail === this.newUserEmail);
     if (emailExists) {
       this.showMessage('Már létezik felhasználó ilyen email címmel!', true, 3000);
       return;
     }
 
-    this.userService.registerUser(this.newUserEmail, this.newUserAdmin).subscribe(
-      response => {
+    this.userService.registerUser(this.newUserEmail, this.newUserAdmin).subscribe({
+      next: (response) => {
         this.showMessage('Email kiküldve!', false, 5000);
         console.log('User registered:', response);
         this.newUserEmail = '';
         this.loadUsers();
       },
-      error => {
+      error: (error) => {
         this.showMessage('Hiba a felvétel során!', true, 5000);
         console.error('Error registering user:', error);
       }
-    );
+    });
   }
 
   disableUser(userEmail: string): void {
-    this.userService.disableUser(userEmail).subscribe(
-      response => {
+    this.userService.disableUser(userEmail).subscribe({
+      next: (response) => {
         this.showMessage('Felhasználó letiltva!', false, 3000);
         console.log('User disabled:', response);
         this.loadUsers();
       },
-      error => {
+      error: (error) => {
         this.showMessage('Hiba a letiltás során. Próbálja újra!', true, 3000);
         console.error('Error disabling user:', error);
       }
-    );
+    });
   }
 
   enableUser(userEmail: string): void {
-    this.userService.enableUser(userEmail).subscribe(
-      response => {
+    this.userService.enableUser(userEmail).subscribe({
+      next: (response) => {
         this.showMessage('Felhasználó aktiválva!', false, 3000);
         console.log('User enabled:', response);
         this.loadUsers();
       },
-      error => {
+      error: (error) => {
         this.showMessage('Hiba a felhasználó aktiválásakor! Próbálja újra!', true, 3000);
         console.error('Error enabling user:', error);
       }
-    );
+    });
   }
 
   promoteUser(userEmail: string): void {
-    this.userService.promoteUser(userEmail).subscribe(
-      response => {
+    this.userService.promoteUser(userEmail).subscribe({
+      next: (response) => {
         this.showMessage('Admin jog átállítva!', false, 3000);
         console.log('User promoted:', response);
         this.loadUsers();
       },
-      error => {
+      error: (error) => {
         this.showMessage('Hiba a jog váloztatásnál! Próbálja újra!', true, 3000);
         console.error('Error promoting user:', error);
       }
-    );
+    });
   }
 
   demoteUser(userEmail: string): void {
-    this.userService.demoteUser(userEmail).subscribe(
-      response => {
+    this.userService.demoteUser(userEmail).subscribe({
+      next: (reponse) => {
         this.showMessage('Admin jog elvéve!', false, 3000);
-        console.log('User demoted:', response);
+        console.log('User demoted:', reponse);
         this.loadUsers();
       },
-      error => {
+      error: (error) => {
         this.showMessage('Hiba az admin jog elvételekor! Próbálja újra!', true, 3000);
         console.error('Error demoting user:', error);
       }
-    );
+    });
   }
 
   applyFilter(): void {
