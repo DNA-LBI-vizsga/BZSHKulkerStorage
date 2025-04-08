@@ -10,6 +10,7 @@ import { UserService } from '../../services/user/user.service';
 export class LoginComponent {
   userEmail: string = '';
   userPassword: string = '';
+  
   showPassword: boolean = false;
 
   alertMessage: string | null = null;
@@ -24,8 +25,8 @@ export class LoginComponent {
   }
 
   loginUser(): void {
-    this.userService.loginUser(this.userEmail, this.userPassword).subscribe(
-      response => {
+    this.userService.loginUser(this.userEmail, this.userPassword).subscribe({
+      next: (response) => {
         if (response.token) {
           localStorage.setItem('userEmail',this.userEmail);
           localStorage.setItem('authToken',response.token);
@@ -34,7 +35,7 @@ export class LoginComponent {
           
         }
       },
-      error => {
+      error: (error) => {
         if(error.status == 403) {
           this.showMessage('Felhasználó letiltva! Keressen fel egy rendszergazdát!', true, 5000);
         }
@@ -43,7 +44,7 @@ export class LoginComponent {
         }
         console.error('Error logging in:', error);
       }
-    );
+    });
   }
 
   togglePasswordVisibility(): void {
@@ -51,12 +52,12 @@ export class LoginComponent {
   }
 
   passwordChange(): void {
-    this.userService.passwordChange(this.userEmail).subscribe(
-      response => {
+    this.userService.passwordChange(this.userEmail).subscribe({
+      next: (response) => {
         this.showMessage('Jelszó elküldve az email címre!', false, 5000);
         console.log('Password change:', response);
       },
-      error => {
+      error: (error) => {
         if (error.status == 500) {
           this.showMessage('Nem található felhasználó ilyen email címmel!', true, 5000);
         } else {
@@ -64,7 +65,7 @@ export class LoginComponent {
         }
         console.error('Error changing password:', error);
       }
-    );
+    });
   }
 
   showMessage(msg: string, isError: boolean, duration: number): void {
