@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { AuthService } from '../../services/auth/auth.service';
 import * as XLSX from 'xlsx';
+import { AuthService } from '../../services/auth/auth.service';
 import { ItemNameService } from '../../services/item-name/item-name.service';
 import { StorageService } from '../../services/storage/storage.service';
 import { ItemService } from '../../services/item/item.service';
@@ -16,20 +16,25 @@ import { UserService } from '../../services/user/user.service';
 export class DashboardComponent implements OnInit {
   
   // Properties
-  
   items: any[] = [];
   filteredItems: any[] = [];
   storagePlaces: any[] = [];
   itemNames: any[] = [];
   users: any[] = [];
 
+  // Item Selection
   selectedItemIds: number[] = [];
   selectAllChecked: boolean = false;
 
+  // Filter and Search
+  filterText: string = '';
   selectedItemNames: number[] = [];
   selectedStoragePlaces: number[] = [];
 
+  //New Storage Place for item move
   newStoragePlaceId: any;
+
+  // Item Name and Storage Place Creation
   newStoragePlace: any;
   newItemName: any;
 
@@ -39,8 +44,6 @@ export class DashboardComponent implements OnInit {
 
   // File Name for Tag Download
   fileName: string = '';
-
-  filterText: string = '';
 
   // Messages
   alertMessage: string | null = null;
@@ -52,7 +55,7 @@ export class DashboardComponent implements OnInit {
   deleteType: 'itemName' | 'storagePlace' = 'itemName';
   deleteTypeId: number | null = null;
 
-  // Modals
+  // Modal for item creation
   newItem: any = {
     itemNameId: null,
     storagePlaceId: null,
@@ -138,15 +141,16 @@ export class DashboardComponent implements OnInit {
     }
   
     this.itemService.createItem(this.newItem.itemNameId, this.newItem.storagePlaceId, this.newItem.quantity).subscribe({
-      next: () => {
+      next: (response) => {
         this.filterText = '';
         this.clearSelection();
         this.newItem = { itemNameId: null, quantity: 0 };
         this.loadItems();
         this.showMessage('Sikeres hozzáadás!', false, 3000);
+        console.log('Item created:', response);
       },
-      error: (err) => {
-        console.error('Error creating item:', err);
+      error: (error) => {
+        console.error('Error creating item:', error);
         this.showMessage('Hiba történt a termék hozzáadása közben! Próbálja újra.', true, 5000);
       }
     });
@@ -154,15 +158,16 @@ export class DashboardComponent implements OnInit {
 
   updateItem(itemIdList: number[], newStoragePlaceId: number): void {
     this.itemService.updateItem(itemIdList, newStoragePlaceId).subscribe({
-      next: () => {
+      next: (reponse) => {
         this.filterText = '';
         this.clearSelection();
         this.newStoragePlaceId = null;
         this.loadItems();
         this.showMessage('A termék(ek) sikeresen áthelyezve!', false, 3000);
+        console.log('Item(s) updated:', reponse);
       },
-      error: (err) => {
-        console.error('Error updating item(s):', err);
+      error: (error) => {
+        console.error('Error updating item(s):', error);
         this.showMessage('Hiba történt a termék(ek) áthelyezése közben! Próbálja újra.', true, 5000);
       }
     });
@@ -170,15 +175,16 @@ export class DashboardComponent implements OnInit {
 
   deleteItem(itemIdList: number[]): void {
     this.itemService.deleteItem(itemIdList).subscribe({
-      next: () => {
+      next: (reponse) => {
         this.filterText = '';
         this.clearSelection();
         this.loadItems();
-        this.showMessage('A termék(ek) sikeresen törölve!', false, 3000); // Success message
+        this.showMessage('A termék(ek) sikeresen törölve!', false, 3000);
+        console.log('Item(s) deleted:', reponse);
       },
-      error: err => {
-        console.error('Error deleting item(s):', err);
-        this.showMessage('Hiba történt a termék(ek) törlése közben! Próbálja újra.', true, 5000); // Error message
+      error: error => {
+        console.error('Error deleting item(s):', error);
+        this.showMessage('Hiba történt a termék(ek) törlése közben! Próbálja újra.', true, 5000);
       }
     });
   }
@@ -204,8 +210,8 @@ export class DashboardComponent implements OnInit {
         this.newStoragePlace = '';
         this.showMessage('A raktár sikeresen hozzáadva!', false, 3000);
       },
-      error: (err) => {
-        console.error('Error creating storage place:', err);
+      error: (error) => {
+        console.error('Error creating storage place:', error);
         this.showMessage('Hiba a raktár hozzáadása közben! Próbálja újra.', true, 5000);
       }
     });
@@ -217,8 +223,8 @@ export class DashboardComponent implements OnInit {
         this.loadStoragePlaces();
         this.showMessage('A raktár törlése sikeres!', false, 3000);
       },
-      error: err => {
-        console.error('Error deleting item name:', err);
+      error: error => {
+        console.error('Error deleting item name:', error);
         this.showMessage('A raktár törlése sikertelen! Ellenőrizze, hogy nincs-e termék a raktárban!', true, 5000);
       }
     });
@@ -243,8 +249,8 @@ export class DashboardComponent implements OnInit {
         this.newItemName = '';
         this.showMessage('A termék sikeresen hozzáadva!', false, 3000);
       },
-      error: (err) => {
-        console.error('Error creating item name:', err);
+      error: (error) => {
+        console.error('Error creating item name:', error);
         this.showMessage('Hiba a termék hozzáadása közben! Próbálja újra.', true, 5000);
       }
     });
@@ -256,8 +262,8 @@ export class DashboardComponent implements OnInit {
         this.loadItemNames();
         this.showMessage('A termék törlése sikeres!', false, 3000);
       },
-      error: err => {
-        console.error('Error deleting item name:', err);
+      error: error => {
+        console.error('Error deleting item name:', error);
         this.showMessage('A termék törlése sikertelen! Ellenőrizze, hogy nincs-e raktárban ilyen termék!', true, 5000);
       }
     });
@@ -360,7 +366,6 @@ export class DashboardComponent implements OnInit {
 
   // Sorting
   orderBy(column: string): void {
-    // 
     if (this.currentSortColumn === column) {
       this.isAscending = !this.isAscending;
     } else {
@@ -470,8 +475,8 @@ export class DashboardComponent implements OnInit {
       return;
     }
 
-    this.logService.downloadLogs(this.logFilters).subscribe(
-      response => {
+    this.logService.downloadLogs(this.logFilters).subscribe({
+      next: (response) => {
         const url = window.URL.createObjectURL(response);
         const a = document.createElement('a');
         a.href = url;
@@ -482,11 +487,11 @@ export class DashboardComponent implements OnInit {
         window.URL.revokeObjectURL(url);
         this.showMessage('A napló sikeresen letöltve!', false, 3000);
       },
-      error => {
+      error: (error) => {
         console.error('Error downloading logs:', error);
         this.showMessage('Hiba történt a napló letöltése közben!', true, 3000);
       }
-    );
+    });
   }
 
   validateLogFilters(): boolean {

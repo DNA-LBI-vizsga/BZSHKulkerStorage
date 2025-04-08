@@ -8,14 +8,13 @@ import { Router } from '@angular/router';
   styleUrl: './password-change.component.css'
 })
 export class PasswordChangeComponent {
-
   newPassword: string = '';
   confirmPassword: string = '';
+
   showPassword: boolean = false;
   
   alertMessage: string | null = null;
   isError: boolean = false;
-
   timeoutId: any = null;
 
   passwordRequirements = [
@@ -34,12 +33,12 @@ export class PasswordChangeComponent {
 
   changePassword(): void {
     if(this.newPassword === this.confirmPassword){
-      this.userService.firstLogin(this.newPassword).subscribe(
-        response => {
+      this.userService.firstLogin(this.newPassword).subscribe({
+        next: (response) => {
           console.log('Password changed:', response);
           this.router.navigate(['/login']);
         },
-        error => {
+        error: (error) => {
           if(error.status == 400) {
             const errorMessage = error.error.errors[0].msg;
             this.showMessage(errorMessage, true, 5000);
@@ -48,7 +47,7 @@ export class PasswordChangeComponent {
           this.showMessage('Hiba a jelszó megváltoztatásakor! Próbálja újra!', true, 5000);
           }
           console.error('Error changing password:', error);
-        });
+      }});
     }
     else {
       this.showMessage('A beütött jelszavak nem egyeznek!', true, 5000);
@@ -77,7 +76,7 @@ export class PasswordChangeComponent {
     this.passwordRequirements[1].isValid = /[A-Z]/.test(password);
     this.passwordRequirements[2].isValid = /[a-z]/.test(password);
     this.passwordRequirements[3].isValid = /\d/.test(password);
-    this.passwordRequirements[4].isValid = /[!@#$%^&*]/.test(password);
+    this.passwordRequirements[4].isValid = /[!@#$%^&*()_+\-=\[\]{}|;:'",.<>?/]/.test(password);
   }
 
   areAllRequirementsValid(): boolean {
