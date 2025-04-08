@@ -796,8 +796,12 @@ router.put("/passwordChange",
         try{
         const {userEmail} = req.body
         const newPassword = await genPassword(8) 
-
-        await sendEmail(userEmail, 'Jelszó', `Jelszó: ${String(newPassword)}`, `Jelszó: ${String(newPassword)}`)
+        const user = await User.findOne({where:{userEmail: userEmail}})
+        if (!user) {
+            return res.status(400).json({ message: 'User not found' })  
+        } else {
+            await sendEmail(userEmail, 'Jelszó', `Jelszó: ${String(newPassword)}`, `Jelszó: ${String(newPassword)}`)
+        }    
         res.status(200).json(await updateUser(userEmail, newPassword))  
     }
     catch(err){
