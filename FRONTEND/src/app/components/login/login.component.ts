@@ -54,14 +54,14 @@ export class LoginComponent {
   passwordChange(): void {
     this.userService.passwordChange(this.userEmail).subscribe({
       next: (response) => {
-        this.showMessage('Jelszó elküldve az email címre!', false, 5000);
+        this.showMessage('Jelszó elküldve a megadott címre!', false, 5000);
         console.log('Password change:', response);
       },
       error: (error) => {
-        if (error.status == 500) {
-          this.showMessage('Nem található felhasználó ilyen email címmel!', true, 5000);
+        if (error.status == 400) {
+          this.showMessage('Jelszó elküldve a megadott címre!', true, 5000);
         } else {
-          this.showMessage('Hiba történt a jelszó visszaállítása során!', true, 5000);
+          this.showMessage('Hiba történt a jelszó visszaállítása során!', false, 5000);
         }
         console.error('Error changing password:', error);
       }
